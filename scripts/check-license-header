@@ -1,0 +1,91 @@
+#!/usr/bin/python
+#
+# Copyright (C) 2013 Codethink Limited.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+"""Checks whether a file contains a GPLv2+ license header."""
+
+
+import cliapp
+import re
+import sys
+
+
+class CheckLicenseHeader(cliapp.Application):
+
+    file_extensions = [
+        '.py',
+        '.sh',
+    ]
+
+    script_headers = [
+        '#!/usr/bin/env',
+        '#!/usr/bin',
+        '#!/bin/env',
+        '#!/bin',
+        '#!/usr/sbin/env',
+        '#!/usr/sbin',
+        '#!/sbin/env',
+        '#!/sbin',
+    ]
+
+    comment_pattern = re.compile(r'^\s*#(.*)\s*\n')
+
+    license_text = \
+        'This program is free software; you can redistribute it and/or ' \
+        'modify it under the terms of the GNU General Public License as ' \
+        'published by the Free Software Foundation; either version 2 of ' \
+        'the License, or (at your option) any later version'
+
+    def add_settings(self):
+        self.settings.boolean(['verbose', 'v'], 'be more verbose')
+
+    def setup(self):
+        self.header = []
+        self.in_header = True
+        self.is_script = False
+        self.is_first_line = True
+
+    def cleanup(self):
+        if self.is_script:
+            text = ' '.join([x for x in self.header if x])
+            if text.find(self.license_text) < 0:
+                if self.settings['verbose']:
+                    self.output.write('BAD %s\n' % (self.filename))
+                raise cliapp.AppException('GPLv2+ license header is missing')
+            else:
+                if self.settings['verbose']:
+                    self.output.write('OK %s\n' % (self.filename))
+
+    def process_input_line(self, filename, line):
+        if self.is_first_line:
+            self.filename = filename
+            if any(x for x in self.file_extensions if filename.endswith(x)):
+                self.is_script = True
+            elif any(x for x in self.script_headers if line.startswith(x)):
+                self.is_script = True
+
+        match = self.comment_pattern.match(line)
+        if match:
+            self.header.append(match.group(1).strip())
+        else:
+            self.in_header = False
+
+        self.is_first_line = False
+
+
+CheckLicenseHeader().run()

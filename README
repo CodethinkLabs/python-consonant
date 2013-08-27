@@ -1,0 +1,91 @@
+python-consonant
+================
+
+python-consonant is a reference implementation of Consonant. It is
+written in Python and designed to allow rapid development of command
+line applications and web services to run on top of Consonant stores.
+
+
+What is Consonant?
+------------------
+
+Consonant is an object-relational, cross-referenced, verifiable and
+service-oriented Git object store and corresponding web API.
+
+The Consonant specification is hosted on
+
+  https://github.com/consonant/consonant-specification
+
+
+Dependencies
+------------
+
+python-consonant depends on the following software components:
+
+  * Python >= 2.7.0
+  * PyYAML >= 3.10 (with libyaml support)
+  * pygit2 >= 0.19.0
+  * pylibmc >= 1.2.2
+
+For running the python-consonant test suite, the following additional
+components are required:
+
+  * python-coverage-test-runner >= 1.9
+  * pep5 >= 1.4.8
+  * pep257 >= 0.2.4
+
+
+Testing
+-------
+
+python-consonant comes with an elaborate test suite with the following
+features:
+
+  * License checking of all source files
+  * Unit tests
+  * Scenario tests
+  * Coding style checks (PEP 8, PEP 257)
+
+These tests can be executed with
+
+    python setup.py check
+
+from the root directory of the source tree.
+
+
+Building & Installing
+---------------------
+
+Like most Python projects, python-consonant can be using the standard
+commands
+
+    python setup.py build
+    sudo python setup.py install
+
+from the root directory of the source tree.
+
+
+Contributing
+------------
+
+The development of python-consonant takes place within the Consonant
+project on GitHub:
+
+  https://github.com/consonant
+
+Anyone interested in improving python-consonant or Consonant itself is
+welcome to clone the project repositories and send pull requests.
+
+We also use the `python-consonant-dev@consonant-project.org`
+mailinglist for discussions involving the development of
+python-consonant.
+
+
+License
+-------
+
+Copyright (C) 2013 Codethink Limited.
+
+python-consonant is licensed under the GNU General Public License,
+version 2 or later (GPLv2+). The full text of the license can be found
+in the COPYING file distributed along with this README.
