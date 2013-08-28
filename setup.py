@@ -33,6 +33,12 @@ class Check(Command):
     user_options = []
 
     def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
         sys.stdout.write('Checking coding style against PEP 8\n')
         subprocess.check_call(['pep8', '--statistics', '.'])
         sys.stdout.write('Checking coding style against PEP 257\n')
@@ -60,12 +66,6 @@ class Check(Command):
                 subprocess.check_call(
                     [os.path.join('scripts', 'check-license-header'),
                      '-v', filename])
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        pass
 
 
 class Clean(Command):
