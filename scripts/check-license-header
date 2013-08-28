@@ -61,7 +61,7 @@ class CheckLicenseHeader(cliapp.Application):
         self.is_first_line = True
 
     def cleanup(self):
-        if self.is_script:
+        if self.is_script or self.header:
             text = ' '.join([x for x in self.header if x])
             if text.find(self.license_text) < 0:
                 if self.settings['verbose']:
