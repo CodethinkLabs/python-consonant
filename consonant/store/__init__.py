@@ -18,5 +18,6 @@
 """Classes to read from and write to local and remote store repositories."""
 
 
+import properties
 import reference
 import timestamp
