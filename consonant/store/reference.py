@@ -15,8 +15,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
+"""Class to represent references between objects in or across stores."""
 
 
-import reference
-import timestamp
+class Reference(object):
+
+    """Class to represent references between objects in or across stores."""
+
+    def __init__(self, uuid, service, ref):
+        self.uuid = uuid
+        self.service = service
+        self.ref = ref
