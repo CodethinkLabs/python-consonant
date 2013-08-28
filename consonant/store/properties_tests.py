@@ -23,7 +23,7 @@ import random
 import re
 import unittest
 
-from consonant.store import properties, timestamp
+from consonant.store import properties, reference, timestamp
 
 
 class PropertyTests(unittest.TestCase):
@@ -271,3 +271,31 @@ class TimestampPropertyTest(unittest.TestCase):
             self.assertEqual(ts_property.obj, obj)
             self.assertEqual(ts_property.name, name)
             self.assertEqual(ts_property.value, ts)
+
+
+class ReferencePropertyTest(unittest.TestCase):
+
+    """Unit tests for the ReferenceProperty class."""
+
+    def test_constructor_sets_object_name_and_value_properly(self):
+        """Verify that the constructor sets object, name and value properly."""
+
+        test_references = [
+            reference.Reference(
+                '229dd334-321c-4c95-95a6-aff5533db1d6', None, None),
+            reference.Reference(
+                '12c814bc-f3e6-4ee3-9f25-4b69a4d6fb95', 'issues', None),
+            reference.Reference(
+                '4d47faf2-fc79-432f-ad7b-94047c303a22', None, 'master'),
+            reference.Reference(
+                '61427efc-e0cd-4f2a-b44e-d603ea506ab3', 'issues', 'master')
+        ]
+
+        for object_reference in test_references:
+            obj = object()
+            name = 'property name'
+            reference_property = properties.ReferenceProperty(
+                obj, name, object_reference)
+            self.assertEqual(reference_property.obj, obj)
+            self.assertEqual(reference_property.name, name)
+            self.assertEqual(reference_property.value, object_reference)
