@@ -82,6 +82,21 @@ class Clean(Command):
         pass
 
 
+class Doc(Command):
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        subprocess.check_call(['sphinx-apidoc', '-o', 'doc', 'consonant'])
+        subprocess.check_call(['make', '-C', 'doc', 'html'])
+
+
 setup(
     name='python-consonant',
     long_description='''\
@@ -119,4 +134,5 @@ setup(
     cmdclass={
         'check': Check,
         'clean': Clean,
+        'doc': Doc,
     })
