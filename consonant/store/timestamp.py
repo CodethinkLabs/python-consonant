@@ -31,7 +31,7 @@ class Timezone(datetime.tzinfo):
 
     def utcoffset(self, dt):
         """Return the offset to UTC in minutes."""
-        return datetime.timedelta(minutes=self.offset)
+        return datetime.timedelta(minutes=self.offset) + self.dst(dt)
 
     def tzname(self, dt):
         """Return the name of the timezone."""
