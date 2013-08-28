@@ -19,6 +19,7 @@
 
 
 import datetime
+import itertools
 import unittest
 
 from consonant.store import timestamp
@@ -90,3 +91,19 @@ class TimestampTests(unittest.TestCase):
 
         for raw_value in self.timestamps.iterkeys():
             self.assertEqual(timestamp.Timestamp(raw_value).raw(), raw_value)
+
+    def test_equality_operator_is_correct(self):
+        """Verify that the __eq__ operator is correct."""
+
+        for raw_value in self.timestamps.iterkeys():
+            ts1 = timestamp.Timestamp(raw_value)
+            ts2 = timestamp.Timestamp(raw_value)
+            self.assertEqual(ts1, ts2)
+
+        for raw1, raw2 in itertools.permutations(self.timestamps.keys(), 2):
+            ts1 = timestamp.Timestamp(raw1)
+            ts2 = timestamp.Timestamp(raw2)
+            self.assertNotEqual(ts1, ts2)
+
+        self.assertFalse(
+            timestamp.Timestamp('1377170684 +0100') == '1377170684 +0100')

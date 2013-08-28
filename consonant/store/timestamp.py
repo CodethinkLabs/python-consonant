@@ -62,3 +62,8 @@ class Timestamp(object):
         return '%s %s' % (
             calendar.timegm(self.value.utctimetuple()),
             self.value.tzinfo.tzname(self.value))
+
+    def __eq__(self, other):
+        if not isinstance(other, Timestamp):
+            return False
+        return self.value == other.value
