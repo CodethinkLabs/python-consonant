@@ -30,18 +30,17 @@ class PropertyTests(unittest.TestCase):
 
     """Unit tests for the Property class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, property name and value."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets property name and value."""
 
         test_input = [
-            (object(), 'property1', 1),
-            (object(), 'property2', 2.0),
-            (object(), 'property3', '3.1'),
+            ('property1', 1),
+            ('property2', 2.0),
+            ('property3', '3.1'),
         ]
 
-        for obj, name, value in test_input:
-            prop = properties.Property(obj, name, value)
-            self.assertEqual(prop.obj, obj)
+        for name, value in test_input:
+            prop = properties.Property(name, value)
             self.assertEqual(prop.name, name)
             self.assertEqual(prop.value, value)
 
@@ -50,18 +49,17 @@ class IntPropertyTest(unittest.TestCase):
 
     """Unit tests for the IntProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, property name and value."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets property name and value."""
 
         test_input = [
-            (object(), 'property1', 0),
-            (object(), 'property2', 1),
-            (object(), 'property3', 2),
+            ('property1', 0),
+            ('property2', 1),
+            ('property3', 2),
         ]
 
-        for obj, name, value in test_input:
-            int_property = properties.IntProperty(obj, name, value)
-            self.assertEqual(int_property.obj, obj)
+        for name, value in test_input:
+            int_property = properties.IntProperty(name, value)
             self.assertEqual(int_property.name, name)
             self.assertEqual(int_property.value, value)
 
@@ -74,8 +72,7 @@ class IntPropertyTest(unittest.TestCase):
         ]
 
         for value, str_value in test_input:
-            int_property = properties.IntProperty(
-                object(), 'property name', value)
+            int_property = properties.IntProperty('property name', value)
             self.assertEqual(int_property.value, value)
             self.assertEqual(str(int_property.value), str_value)
 
@@ -85,7 +82,7 @@ class IntPropertyTest(unittest.TestCase):
         test_input = [15, 15.4, 15.6, '15', True, False]
 
         for value in test_input:
-            int_property = properties.IntProperty(object(), 'name', value)
+            int_property = properties.IntProperty('name', value)
             self.assertTrue(isinstance(int_property.value, int))
             self.assertEqual(type(int_property.value), type(15))
             if isinstance(value, bool):
@@ -101,18 +98,17 @@ class FloatPropertyTest(unittest.TestCase):
 
     """Unit tests for the FloatProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, property name and value."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets property name and value."""
 
         test_input = [
-            (object(), 'property1', 0.1),
-            (object(), 'property2', 1.2),
-            (object(), 'property3', 2.3),
+            ('property1', 0.1),
+            ('property2', 1.2),
+            ('property3', 2.3),
         ]
 
-        for obj, name, value in test_input:
-            float_property = properties.FloatProperty(obj, name, value)
-            self.assertEqual(float_property.obj, obj)
+        for name, value in test_input:
+            float_property = properties.FloatProperty(name, value)
             self.assertEqual(float_property.name, name)
             self.assertEqual(float_property.value, value)
 
@@ -127,8 +123,7 @@ class FloatPropertyTest(unittest.TestCase):
         ]
 
         for value, str_value in test_input:
-            float_property = properties.FloatProperty(
-                object(), 'property name', value)
+            float_property = properties.FloatProperty('property name', value)
             self.assertEqual(float_property.value, value)
             self.assertEqual(str(float_property.value), str_value)
 
@@ -138,7 +133,7 @@ class FloatPropertyTest(unittest.TestCase):
         test_input = [15, 15.0, 15.000, '15', '15.000', True, False]
 
         for value in test_input:
-            float_property = properties.FloatProperty(object(), 'name', value)
+            float_property = properties.FloatProperty('name', value)
             self.assertTrue(isinstance(float_property.value, float))
             self.assertEqual(type(float_property.value), type(15.0))
             if isinstance(value, bool):
@@ -154,18 +149,17 @@ class BooleanPropertyTest(unittest.TestCase):
 
     """Unit tests for the BooleanProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, property name and value."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets property name and value."""
 
         test_input = [
-            (object(), 'property1', True),
-            (object(), 'property2', False),
-            (object(), 'property3', True),
+            ('property1', True),
+            ('property2', False),
+            ('property3', True),
         ]
 
-        for obj, name, value in test_input:
-            boolean_property = properties.BooleanProperty(obj, name, value)
-            self.assertEqual(boolean_property.obj, obj)
+        for name, value in test_input:
+            boolean_property = properties.BooleanProperty(name, value)
             self.assertEqual(boolean_property.name, name)
             self.assertEqual(boolean_property.value, value)
 
@@ -187,8 +181,7 @@ class BooleanPropertyTest(unittest.TestCase):
         ]
 
         for value, bool_value in test_input:
-            boolean_property = properties.BooleanProperty(
-                object(), 'name', value)
+            boolean_property = properties.BooleanProperty('name', value)
             self.assertTrue(isinstance(boolean_property.value, bool))
             self.assertEqual(type(boolean_property.value), type(True))
             self.assertEqual(boolean_property.value, bool_value)
@@ -198,19 +191,17 @@ class TextPropertyTest(unittest.TestCase):
 
     """Unit tests for the TextProperty class."""
 
-    def test_constructor_sets_object_name_value_and_expressions_properly(self):
-        """Verify the constructor sets object, name, value, expressions."""
+    def test_constructor_sets_name_value_and_expressions_properly(self):
+        """Verify the constructor sets property name, value, expressions."""
 
         test_input = [
-            (object(), 'property1', 'foo', []),
-            (object(), 'property2', 'bar', ['Foo']),
-            (object(), 'property3', 'foo bar', ['^Foo$', '^(.*)$']),
+            ('property1', 'foo', []),
+            ('property2', 'bar', ['Foo']),
+            ('property3', 'foo bar', ['^Foo$', '^(.*)$']),
         ]
 
-        for obj, name, value, expressions in test_input:
-            text_property = properties.TextProperty(
-                obj, name, value, expressions)
-            self.assertEqual(text_property.obj, obj)
+        for name, value, expressions in test_input:
+            text_property = properties.TextProperty(name, value, expressions)
             self.assertEqual(text_property.name, name)
             self.assertEqual(text_property.value, value)
             self.assertEqual(
@@ -237,8 +228,7 @@ class TextPropertyTest(unittest.TestCase):
         ]
 
         for value, str_value in test_input:
-            text_property = properties.TextProperty(
-                object(), 'name', value, [])
+            text_property = properties.TextProperty('name', value, [])
             self.assertTrue(isinstance(text_property.value, basestring))
             self.assertEqual(type(text_property.value), type('foo'))
             self.assertEqual(text_property.value, str_value)
@@ -248,8 +238,8 @@ class TimestampPropertyTest(unittest.TestCase):
 
     """Unit tests for the TimestampProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, name and value properly."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets name and value properly."""
 
         tz = timestamps.Timezone(60)
         self.timestamps = [
@@ -264,11 +254,9 @@ class TimestampPropertyTest(unittest.TestCase):
         ]
 
         for raw_value, datetime_value in self.timestamps:
-            obj = object()
             name = 'property name %d' % random.randint(0, 100)
-            ts_property = properties.TimestampProperty(obj, name, raw_value)
+            ts_property = properties.TimestampProperty(name, raw_value)
             ts = timestamps.Timestamp(raw_value)
-            self.assertEqual(ts_property.obj, obj)
             self.assertEqual(ts_property.name, name)
             self.assertEqual(ts_property.value, ts)
 
@@ -277,8 +265,8 @@ class ReferencePropertyTest(unittest.TestCase):
 
     """Unit tests for the ReferenceProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, name and value properly."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets name and value properly."""
 
         test_references = [
             references.Reference(
@@ -292,11 +280,9 @@ class ReferencePropertyTest(unittest.TestCase):
         ]
 
         for object_reference in test_references:
-            obj = object()
             name = 'property name'
             reference_property = properties.ReferenceProperty(
-                obj, name, object_reference)
-            self.assertEqual(reference_property.obj, obj)
+                name, object_reference)
             self.assertEqual(reference_property.name, name)
             self.assertEqual(reference_property.value, object_reference)
 
@@ -305,16 +291,16 @@ class ListPropertyTest(unittest.TestCase):
 
     """Unit tests for the ListProperty class."""
 
-    def test_constructor_sets_object_name_and_value_properly(self):
-        """Verify that the constructor sets object, name and value properly."""
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets name and value properly."""
 
         test_input = [
-            (object(), 'property1', []),
-            (object(), 'property2', [1]),
-            (object(), 'property3', [1.0, 2.1]),
-            (object(), 'property4', [1, 'foo']),
-            (object(), 'property5', ['foo', 'bar', 'baz']),
-            (object(), 'property6', [
+            ('property1', []),
+            ('property2', [1]),
+            ('property3', [1.0, 2.1]),
+            ('property4', [1, 'foo']),
+            ('property5', ['foo', 'bar', 'baz']),
+            ('property6', [
                 references.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
                                      None, 'master'),
                 references.Reference('61427efc-e0cd-4f2a-b44e-d603ea506ab3',
@@ -322,9 +308,8 @@ class ListPropertyTest(unittest.TestCase):
                 ]),
         ]
 
-        for obj, name, values in test_input:
-            list_property = properties.ListProperty(obj, name, values)
-            self.assertEqual(list_property.obj, obj)
+        for name, values in test_input:
+            list_property = properties.ListProperty(name, values)
             self.assertEqual(list_property.name, name)
             self.assertEqual(list_property.value, values)
 
@@ -345,8 +330,7 @@ class ListPropertyTest(unittest.TestCase):
         ]
 
         for value, list_value in test_input:
-            list_property = properties.ListProperty(
-                object(), 'property name', value)
+            list_property = properties.ListProperty('property name', value)
             self.assertTrue(isinstance(list_property.value, list))
             self.assertEquals(type(list_property.value), type([]))
             self.assertEquals(list_property.value, list_value)

@@ -27,8 +27,8 @@ class Property(object):
 
     """Abstract base class for property classes."""
 
-    def __init__(self, obj, name, value):
-        self.obj = obj
+    def __init__(self, name, value):
+        self.obj = None
         self.name = name
         self.value = value
 
@@ -37,32 +37,32 @@ class IntProperty(Property):
 
     """Object property of type `int` (64-bit integer)."""
 
-    def __init__(self, obj, name, value):
-        Property.__init__(self, obj, name, int(value))
+    def __init__(self, name, value):
+        Property.__init__(self, name, int(value))
 
 
 class FloatProperty(Property):
 
     """Object property of type `float` (double precision floating point)."""
 
-    def __init__(self, obj, name, value):
-        Property.__init__(self, obj, name, float(value))
+    def __init__(self, name, value):
+        Property.__init__(self, name, float(value))
 
 
 class BooleanProperty(Property):
 
     """Object property of type `boolean` (true or false)."""
 
-    def __init__(self, obj, name, value):
-        Property.__init__(self, obj, name, bool(value))
+    def __init__(self, name, value):
+        Property.__init__(self, name, bool(value))
 
 
 class TextProperty(Property):
 
     """Object property of type `text`."""
 
-    def __init__(self, obj, name, value, expressions):
-        Property.__init__(self, obj, name, str(value))
+    def __init__(self, name, value, expressions):
+        Property.__init__(self, name, str(value))
         self.expressions = [re.compile(x) for x in expressions]
 
 
@@ -70,8 +70,8 @@ class TimestampProperty(Property):
 
     """Object property of type `timestamp`."""
 
-    def __init__(self, obj, name, value):
-        Property.__init__(self, obj, name, timestamps.Timestamp(value))
+    def __init__(self, name, value):
+        Property.__init__(self, name, timestamps.Timestamp(value))
 
 
 class ReferenceProperty(Property):
@@ -85,7 +85,7 @@ class ListProperty(Property):
 
     """Object property of type `list`."""
 
-    def __init__(self, obj, name, value):
+    def __init__(self, name, value):
         if isinstance(value, dict):
             list_value = list(value.iteritems())
         else:
@@ -93,4 +93,4 @@ class ListProperty(Property):
                 list_value = list(value)
             except TypeError:
                 list_value = [value]
-        Property.__init__(self, obj, name, list_value)
+        Property.__init__(self, name, list_value)

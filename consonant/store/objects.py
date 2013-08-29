@@ -15,10 +15,26 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
+"""Classes to represent object classes and objects."""
 
 
-import objects
-import properties
-import references
-import timestamps
+class ObjectClass(object):
+
+    """An object class with a name and a set of object references."""
+
+    def __init__(self, name, objects):
+        self.name = name
+        self.objects = set(objects)
+
+
+class Object(object):
+
+    """An object with a UUID, a parent class and a set of properties."""
+
+    def __init__(self, uuid, klass, properties):
+        self.uuid = uuid
+        self.klass = klass
+        self.properties = dict((p.name, p) for p in properties)
+
+        for prop in self.properties.itervalues():
+            prop.obj = self

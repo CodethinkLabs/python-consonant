@@ -15,10 +15,4 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
-
-
-import objects
-import properties
-import references
-import timestamps
+"""Caching mechanisms for improving object and raw property loading."""
