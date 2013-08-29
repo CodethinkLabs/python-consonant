@@ -79,3 +79,18 @@ class ReferenceProperty(Property):
     """Object property of type `reference`."""
 
     pass
+
+
+class ListProperty(Property):
+
+    """Object property of type `list`."""
+
+    def __init__(self, obj, name, value):
+        if isinstance(value, dict):
+            list_value = list(value.iteritems())
+        else:
+            try:
+                list_value = list(value)
+            except TypeError:
+                list_value = [value]
+        Property.__init__(self, obj, name, list_value)

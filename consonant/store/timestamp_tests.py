@@ -104,6 +104,9 @@ class TimestampTests(unittest.TestCase):
             ts1 = timestamp.Timestamp(raw1)
             ts2 = timestamp.Timestamp(raw2)
             self.assertNotEqual(ts1, ts2)
+            self.assertFalse(ts1 == ts2)
 
+        self.assertNotEqual(
+            timestamp.Timestamp('1377170684 +0100'), '1377170684 +0100')
         self.assertFalse(
             timestamp.Timestamp('1377170684 +0100') == '1377170684 +0100')

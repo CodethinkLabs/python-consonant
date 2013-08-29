@@ -26,3 +26,10 @@ class Reference(object):
         self.uuid = uuid
         self.service = service
         self.ref = ref
+
+    def __eq__(self, other):
+        if not isinstance(other, Reference):
+            return False
+        return self.uuid == other.uuid \
+            and self.service == other.service \
+            and self.ref == other.ref

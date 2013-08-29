@@ -299,3 +299,54 @@ class ReferencePropertyTest(unittest.TestCase):
             self.assertEqual(reference_property.obj, obj)
             self.assertEqual(reference_property.name, name)
             self.assertEqual(reference_property.value, object_reference)
+
+
+class ListPropertyTest(unittest.TestCase):
+
+    """Unit tests for the ListProperty class."""
+
+    def test_constructor_sets_object_name_and_value_properly(self):
+        """Verify that the constructor sets object, name and value properly."""
+
+        test_input = [
+            (object(), 'property1', []),
+            (object(), 'property2', [1]),
+            (object(), 'property3', [1.0, 2.1]),
+            (object(), 'property4', [1, 'foo']),
+            (object(), 'property5', ['foo', 'bar', 'baz']),
+            (object(), 'property6', [
+                reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                    None, 'master'),
+                reference.Reference('61427efc-e0cd-4f2a-b44e-d603ea506ab3',
+                                    'issues', 'master'),
+                ]),
+        ]
+
+        for obj, name, values in test_input:
+            list_property = properties.ListProperty(obj, name, values)
+            self.assertEqual(list_property.obj, obj)
+            self.assertEqual(list_property.name, name)
+            self.assertEqual(list_property.value, values)
+
+    def test_input_value_is_converted_to_a_list(self):
+        """Verify that the input value is converted to a list."""
+
+        test_input = [
+            ([1, 2, 3], [1, 2, 3]),
+            ((1, 2, 3), [1, 2, 3]),
+            ({1: 'a', 2: 'b', 3: 'c'}, [(1, 'a'), (2, 'b'), (3, 'c')]),
+            ('abcdefgh', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']),
+            (1, [1]),
+            (2.0, [2.0]),
+            (reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                 'issues', 'master'),
+             [reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                  'issues', 'master')]),
+        ]
+
+        for value, list_value in test_input:
+            list_property = properties.ListProperty(
+                object(), 'property name', value)
+            self.assertTrue(isinstance(list_property.value, list))
+            self.assertEquals(type(list_property.value), type([]))
+            self.assertEquals(list_property.value, list_value)
