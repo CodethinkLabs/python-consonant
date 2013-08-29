@@ -23,7 +23,7 @@ import random
 import re
 import unittest
 
-from consonant.store import properties, reference, timestamp
+from consonant.store import properties, references, timestamps
 
 
 class PropertyTests(unittest.TestCase):
@@ -251,7 +251,7 @@ class TimestampPropertyTest(unittest.TestCase):
     def test_constructor_sets_object_name_and_value_properly(self):
         """Verify that the constructor sets object, name and value properly."""
 
-        tz = timestamp.Timezone(60)
+        tz = timestamps.Timezone(60)
         self.timestamps = [
             ('1377170684 +0100',
              datetime.datetime(2013, 8, 22, 12, 24, 44, 0, tz)),
@@ -267,7 +267,7 @@ class TimestampPropertyTest(unittest.TestCase):
             obj = object()
             name = 'property name %d' % random.randint(0, 100)
             ts_property = properties.TimestampProperty(obj, name, raw_value)
-            ts = timestamp.Timestamp(raw_value)
+            ts = timestamps.Timestamp(raw_value)
             self.assertEqual(ts_property.obj, obj)
             self.assertEqual(ts_property.name, name)
             self.assertEqual(ts_property.value, ts)
@@ -281,13 +281,13 @@ class ReferencePropertyTest(unittest.TestCase):
         """Verify that the constructor sets object, name and value properly."""
 
         test_references = [
-            reference.Reference(
+            references.Reference(
                 '229dd334-321c-4c95-95a6-aff5533db1d6', None, None),
-            reference.Reference(
+            references.Reference(
                 '12c814bc-f3e6-4ee3-9f25-4b69a4d6fb95', 'issues', None),
-            reference.Reference(
+            references.Reference(
                 '4d47faf2-fc79-432f-ad7b-94047c303a22', None, 'master'),
-            reference.Reference(
+            references.Reference(
                 '61427efc-e0cd-4f2a-b44e-d603ea506ab3', 'issues', 'master')
         ]
 
@@ -315,10 +315,10 @@ class ListPropertyTest(unittest.TestCase):
             (object(), 'property4', [1, 'foo']),
             (object(), 'property5', ['foo', 'bar', 'baz']),
             (object(), 'property6', [
-                reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
-                                    None, 'master'),
-                reference.Reference('61427efc-e0cd-4f2a-b44e-d603ea506ab3',
-                                    'issues', 'master'),
+                references.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                     None, 'master'),
+                references.Reference('61427efc-e0cd-4f2a-b44e-d603ea506ab3',
+                                     'issues', 'master'),
                 ]),
         ]
 
@@ -338,10 +338,10 @@ class ListPropertyTest(unittest.TestCase):
             ('abcdefgh', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']),
             (1, [1]),
             (2.0, [2.0]),
-            (reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
-                                 'issues', 'master'),
-             [reference.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
-                                  'issues', 'master')]),
+            (references.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                  'issues', 'master'),
+             [references.Reference('4d47faf2-fc79-432f-ad7b-94047c303a22',
+                                   'issues', 'master')]),
         ]
 
         for value, list_value in test_input:

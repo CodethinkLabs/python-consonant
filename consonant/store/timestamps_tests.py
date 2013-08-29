@@ -22,7 +22,7 @@ import datetime
 import itertools
 import unittest
 
-from consonant.store import timestamp
+from consonant.store import timestamps
 
 
 class TimezoneTests(unittest.TestCase):
@@ -32,13 +32,13 @@ class TimezoneTests(unittest.TestCase):
     def test_constructor_sets_offset_to_input_offset(self):
         """Verify that the constructor sets the offset the input offset."""
         for offset in xrange(-1400, 1400):
-            self.assertEqual(timestamp.Timezone(offset).offset, offset)
+            self.assertEqual(timestamps.Timezone(offset).offset, offset)
 
     def test_utcoffset_matches_input_offset(self):
         """Verify that Timezone.utcoffset() matches the input offset."""
         now = datetime.datetime.now()
         for offset in xrange(-1400, 1400):
-            timezone = timestamp.Timezone(offset)
+            timezone = timestamps.Timezone(offset)
             self.assertEqual(timezone.utcoffset(now),
                              datetime.timedelta(minutes=offset))
 
@@ -46,7 +46,7 @@ class TimezoneTests(unittest.TestCase):
         """Verify that names of Timezone objects match their input offset."""
         now = datetime.datetime.now()
         for offset in xrange(-1400, 1400):
-            timezone = timestamp.Timezone(offset)
+            timezone = timestamps.Timezone(offset)
             self.assertEqual(timezone.tzname(now),
                              '%s%0.2d%0.2d' % ('-' if offset < 0 else '+',
                                                abs(offset) / 60,
@@ -56,7 +56,7 @@ class TimezoneTests(unittest.TestCase):
         """Verify that Timezone objects have a DST adjustment of zero."""
         now = datetime.datetime.now()
         for offset in xrange(-1400, 1400):
-            timezone = timestamp.Timezone(offset)
+            timezone = timestamps.Timezone(offset)
             self.assertEqual(timezone.dst(now), datetime.timedelta(0))
 
 
@@ -67,7 +67,7 @@ class TimestampTests(unittest.TestCase):
     def setUp(self):
         """Initialise helper variables for the tests."""
 
-        tz = timestamp.Timezone(60)
+        tz = timestamps.Timezone(60)
         self.timestamps = {
             '1377170684 +0100': datetime.datetime(
                 2013, 8, 22, 12, 24, 44, 0, tz),
@@ -83,30 +83,30 @@ class TimestampTests(unittest.TestCase):
         """Verify that the construct sets the datetime value correctly."""
 
         for raw_value, datetime_value in self.timestamps.iteritems():
-            ts = timestamp.Timestamp(raw_value)
+            ts = timestamps.Timestamp(raw_value)
             self.assertEqual(ts.value, datetime_value)
 
     def test_conversion_back_to_raw_timestamp_is_correct(self):
         """Verify that the conversion back to the raw timestamp is correct."""
 
         for raw_value in self.timestamps.iterkeys():
-            self.assertEqual(timestamp.Timestamp(raw_value).raw(), raw_value)
+            self.assertEqual(timestamps.Timestamp(raw_value).raw(), raw_value)
 
     def test_equality_operator_is_correct(self):
         """Verify that the __eq__ operator is correct."""
 
         for raw_value in self.timestamps.iterkeys():
-            ts1 = timestamp.Timestamp(raw_value)
-            ts2 = timestamp.Timestamp(raw_value)
+            ts1 = timestamps.Timestamp(raw_value)
+            ts2 = timestamps.Timestamp(raw_value)
             self.assertEqual(ts1, ts2)
 
         for raw1, raw2 in itertools.permutations(self.timestamps.keys(), 2):
-            ts1 = timestamp.Timestamp(raw1)
-            ts2 = timestamp.Timestamp(raw2)
+            ts1 = timestamps.Timestamp(raw1)
+            ts2 = timestamps.Timestamp(raw2)
             self.assertNotEqual(ts1, ts2)
             self.assertFalse(ts1 == ts2)
 
         self.assertNotEqual(
-            timestamp.Timestamp('1377170684 +0100'), '1377170684 +0100')
+            timestamps.Timestamp('1377170684 +0100'), '1377170684 +0100')
         self.assertFalse(
-            timestamp.Timestamp('1377170684 +0100') == '1377170684 +0100')
+            timestamps.Timestamp('1377170684 +0100') == '1377170684 +0100')

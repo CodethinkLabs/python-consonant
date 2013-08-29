@@ -20,7 +20,7 @@
 
 import re
 
-from consonant.store import timestamp
+from consonant.store import timestamps
 
 
 class Property(object):
@@ -71,7 +71,7 @@ class TimestampProperty(Property):
     """Object property of type `timestamp`."""
 
     def __init__(self, obj, name, value):
-        Property.__init__(self, obj, name, timestamp.Timestamp(value))
+        Property.__init__(self, obj, name, timestamps.Timestamp(value))
 
 
 class ReferenceProperty(Property):

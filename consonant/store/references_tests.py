@@ -21,7 +21,7 @@
 import itertools
 import unittest
 
-from consonant.store import reference
+from consonant.store import references
 
 
 class ReferenceTests(unittest.TestCase):
@@ -42,7 +42,7 @@ class ReferenceTests(unittest.TestCase):
         """Verify that the constructor sets all members correctly."""
 
         for uuid, service, ref in self.references:
-            object_reference = reference.Reference(uuid, service, ref)
+            object_reference = references.Reference(uuid, service, ref)
             self.assertEqual(object_reference.uuid, uuid)
             self.assertEqual(object_reference.service, service)
             self.assertEqual(object_reference.ref, ref)
@@ -51,22 +51,22 @@ class ReferenceTests(unittest.TestCase):
         """Verify that the __eq__ operator is correct."""
 
         for uuid, service, ref in self.references:
-            reference1 = reference.Reference(uuid, service, ref)
-            reference2 = reference.Reference(uuid, service, ref)
+            reference1 = references.Reference(uuid, service, ref)
+            reference2 = references.Reference(uuid, service, ref)
             self.assertEqual(reference1, reference2)
 
         for input1, input2 in itertools.permutations(self.references, 2):
             uuid1, service1, ref1 = input1
             uuid2, service2, ref2 = input2
 
-            reference1 = reference.Reference(uuid1, service1, ref1)
-            reference2 = reference.Reference(uuid2, service2, ref2)
+            reference1 = references.Reference(uuid1, service1, ref1)
+            reference2 = references.Reference(uuid2, service2, ref2)
 
             self.assertNotEqual(reference1, reference2)
             self.assertFalse(reference1 == reference2)
 
         self.assertNotEqual(
-            reference.Reference(*self.references[0]),
+            references.Reference(*self.references[0]),
             self.references[0])
         self.assertFalse(
-            reference.Reference(*self.references[0]) == self.references[0])
+            references.Reference(*self.references[0]) == self.references[0])
