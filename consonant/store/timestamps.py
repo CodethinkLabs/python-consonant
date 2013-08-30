@@ -26,7 +26,7 @@ class Timezone(datetime.tzinfo):
 
     """Class to represent arbitrary timezones with offsets to UTC."""
 
-    def __init__(self, offset):
+    def __init__(self, offset=0):
         self.offset = int(offset)
 
     def utcoffset(self, dt):

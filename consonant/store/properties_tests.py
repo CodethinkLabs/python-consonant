@@ -19,6 +19,7 @@
 
 
 import datetime
+import itertools
 import random
 import re
 import unittest
@@ -43,6 +44,36 @@ class PropertyTests(unittest.TestCase):
             prop = properties.Property(name, value)
             self.assertEqual(prop.name, name)
             self.assertEqual(prop.value, value)
+
+    def test_equality_operator_is_false_for_different_property_types(self):
+        """Verify == is false when comparing properties of different types."""
+
+        test_properties = [
+            properties.IntProperty('name', 5),
+            properties.BooleanProperty('name', True),
+            properties.FloatProperty('name', 5.0),
+            properties.TextProperty('name', '5', []),
+            1,
+            2.0,
+            'some text'
+        ]
+
+        for p1, p2 in itertools.permutations(test_properties, 2):
+            self.assertNotEqual(p1, p2)
+            self.assertFalse(p1 == p2)
+
+    def test_properties_are_equal_only_when_name_and_value_are_equal(self):
+        """Verify properties are equal only when name and value are equal."""
+
+        self.assertNotEqual(
+            properties.IntProperty('name', 5),
+            properties.IntProperty('name', 6))
+        self.assertNotEqual(
+            properties.IntProperty('name1', 5),
+            properties.IntProperty('name2', 5))
+        self.assertEqual(
+            properties.IntProperty('name', 5),
+            properties.IntProperty('name', 5))
 
 
 class IntPropertyTest(unittest.TestCase):

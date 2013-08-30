@@ -26,6 +26,12 @@ class ObjectClass(object):
         self.name = name
         self.objects = set(objects)
 
+    def __eq__(self, other):
+        if not isinstance(other, ObjectClass):
+            return False
+        return self.name == other.name \
+            and self.objects == other.objects
+
 
 class Object(object):
 
@@ -38,3 +44,10 @@ class Object(object):
 
         for prop in self.properties.itervalues():
             prop.obj = self
+
+    def __eq__(self, other):
+        if not isinstance(other, Object):
+            return False
+        return self.uuid == other.uuid \
+            and self.klass == other.klass \
+            and self.properties == other.properties
