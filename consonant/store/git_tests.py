@@ -20,7 +20,7 @@
 
 import unittest
 
-from consonant.store import git
+from consonant.store import git, timestamps
 
 
 class _DummyCommit(object):  # pragma: no cover
@@ -57,3 +57,100 @@ class RefTests(unittest.TestCase):
             self.assertEqual(ref.name, name)
             self.assertEqual(ref.head, head)
             self.assertEqual(ref.aliases, list(aliases))
+
+
+class CommitTests(unittest.TestCase):
+
+    """Unit tests for the Commit class."""
+
+    def setUp(self):
+        """Initialise helper variables."""
+
+        self.test_input = {
+            'd9ce93603cafa8df7afe7c45e677fa70bc1ce8d4': {
+                'author': 'Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>',
+                'author-date': '1377708218 +0100',
+                'committer':
+                'Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>',
+                'committer-date': '1377708218 +0100',
+                'message': '''Implement the first batch of property classes
+
+This commit implements the following property classes:
+
+* consonant.store.properties.Property
+* consonant.store.properties.IntProperty
+* consonant.store.properties.FloatProperty
+* consonant.store.properties.BooleanProperty
+* consonant.store.properties.TextProperty
+* consonant.store.properties.TimestampProperty
+
+Unit tests for all these classes are included.''',
+                'parents': ['4bc6e58e0f6ce898c6e7b71fd7a9e514d191cd6a'],
+            }
+        }
+
+    def test_constructor_sets_members_correctly(self):
+        """Verify that the constructor sets all members correctly."""
+
+        for sha1, data in self.test_input.iteritems():
+            commit = git.Commit(
+                sha1,
+                data['author'],
+                timestamps.Timestamp(data['author-date']),
+                data['committer'],
+                timestamps.Timestamp(data['committer-date']),
+                data['message'],
+                data['parents'])
+
+            self.assertEqual(commit.sha1, sha1)
+            self.assertEqual(commit.author, data['author'])
+            self.assertEqual(commit.author_date,
+                             timestamps.Timestamp(data['author-date']))
+            self.assertEqual(commit.committer, data['committer'])
+            self.assertEqual(commit.committer_date,
+                             timestamps.Timestamp(data['committer-date']))
+            self.assertEqual(commit.message, data['message'])
+            self.assertEqual(commit.parents, data['parents'])
+
+    def test_message_subject_and_body_are_extracted_correctly(self):
+        """Verify that commit messages are split into subject and body."""
+
+        messages = {
+            '': ['', ''],
+            'Implement the ReferenceProperty class, with unit tests':
+            ('Implement the ReferenceProperty class, with unit tests', ''),
+
+            '''Implement the first batch of property classes
+
+This commit implements the following property classes:
+
+* consonant.store.properties.Property
+* consonant.store.properties.IntProperty
+* consonant.store.properties.FloatProperty
+* consonant.store.properties.BooleanProperty
+* consonant.store.properties.TextProperty
+* consonant.store.properties.TimestampProperty
+
+Unit tests for all these classes are included.''':
+            ('Implement the first batch of property classes',
+             '''This commit implements the following property classes:
+
+* consonant.store.properties.Property
+* consonant.store.properties.IntProperty
+* consonant.store.properties.FloatProperty
+* consonant.store.properties.BooleanProperty
+* consonant.store.properties.TextProperty
+* consonant.store.properties.TimestampProperty
+
+Unit tests for all these classes are included.''')
+        }
+
+        for message, data in messages.iteritems():
+            subject, body = data
+
+            commit = git.Commit(
+                'sha1', 'author', 'author date', 'comitter', 'committer date',
+                message, ['parent1', 'parent2'])
+            self.assertEqual(commit.message, message)
+            self.assertEqual(commit.message_subject(), subject)
+            self.assertEqual(commit.message_body(), body)

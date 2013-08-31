@@ -39,3 +39,30 @@ class Ref(object):
         aliases.append(re.sub(pattern, r'\2', name).replace('/', ':'))
         aliases.append(name.replace('/', ':'))
         return aliases
+
+
+class Commit(object):
+
+    """A Git commit with a SHA1, author, committer, message and parents."""
+
+    def __init__(self, sha1, author, author_date, committer, committer_date,
+                 message, parents):
+        self.sha1 = sha1
+        self.author = author
+        self.author_date = author_date
+        self.committer = committer
+        self.committer_date = committer_date
+        self.message = message
+        self.parents = parents
+
+    def message_subject(self):
+        """Extract the commit message subject line and return it."""
+
+        lines = self.message.splitlines()
+        return lines[0] if lines else ''
+
+    def message_body(self):
+        """Extract the commit message body line and return it."""
+
+        lines = self.message.splitlines(True)
+        return ''.join(lines[2:]) if lines else ''
