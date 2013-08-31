@@ -15,16 +15,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
+"""Classes to load from and write to remote stores."""
 
 
-import caches
-import git
-import objects
-import local
-import pools
-import properties
-import references
-import remote
-import stores
-import timestamps
+from consonant.store import stores
+
+
+class LocalStore(stores.Store):
+
+    """Store implementation for remote stores."""
+
+    pass

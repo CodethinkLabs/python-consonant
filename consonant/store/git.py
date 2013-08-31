@@ -15,16 +15,27 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
+"""Helper classes to represent refs and commits and work with repositories."""
 
 
-import caches
-import git
-import objects
-import local
-import pools
-import properties
-import references
-import remote
-import stores
-import timestamps
+import re
+
+
+class Ref(object):
+
+    """A Git reference (ref) like a tag or a branch."""
+
+    def __init__(self, name, head):
+        self.name = name
+        self.head = head
+        self.aliases = Ref.generate_url_aliases(name)
+
+    @classmethod
+    def generate_url_aliases(cls, name):
+        """Return a list of aliases for a Git reference for use in URLs."""
+
+        aliases = []
+        pattern = r'^refs/(heads|tags|notes)/(.*)$'
+        aliases.append(re.sub(pattern, r'\2', name).replace('/', ':'))
+        aliases.append(name.replace('/', ':'))
+        return aliases

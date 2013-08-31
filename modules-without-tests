@@ -1,2 +1,5 @@
 consonant/__init__.py
 consonant/store/__init__.py
+consonant/store/local.py
+consonant/store/remote.py
+consonant/store/stores.py
