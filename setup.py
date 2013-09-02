@@ -20,6 +20,7 @@
 """Script to test, build and install python-consonant."""
 
 
+import glob
 import os
 import subprocess
 import sys
@@ -50,6 +51,14 @@ class Check(Command):
              'consonant'])
         if os.path.exists('.coverage'):
             os.remove('.coverage')
+        sys.stdout.write('Running scenario tests\n')
+        subprocess.check_call(
+            ['yarn', '--verbose',
+             '--env=TEST_REPO_BASE_URL=%s' %
+                os.environ.get('TEST_REPO_BASE_URL', os.path.abspath(
+                    os.path.join(os.path.dirname(__file__), '..'))),
+             '-s', os.path.join('tests', 'yarn', 'python-consonant.sh')]
+            + glob.glob(os.path.join('tests', 'yarn', '*.yarn')))
         if os.path.isdir('.git'):
             sys.stdout.write('Collecting versioned files\n')
             files = subprocess.check_output(['git', 'ls-files']).splitlines()

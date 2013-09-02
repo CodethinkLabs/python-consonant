@@ -18,14 +18,47 @@
 """Classes to load from and write to local stores."""
 
 
-import os
-import urlparse
+import pygit2
 
-from consonant.store import stores
+from consonant.store import git, stores, timestamps
 
 
 class LocalStore(stores.Store):
 
     """Store implementation for local stores."""
 
-    pass
+    def __init__(self, url):
+        self.repo = pygit2.Repository(url)
+
+    def refs(self):
+        """Return a set of Ref objects for all Git refs in the store."""
+
+        refs = {}
+        for ref in self._list_refs():
+            commit = ref.get_object()
+
+            head = git.Commit(
+                commit.oid.hex,
+                str('%s <%s>' % (
+                    commit.author.name, commit.author.email)),
+                timestamps.Timestamp(commit.author.time,
+                                     commit.author.offset),
+                str('%s <%s>' % (
+                    commit.committer.name, commit.committer.email)),
+                timestamps.Timestamp(commit.committer.time,
+                                     commit.committer.offset),
+                str(commit.message),
+                [x.oid.hex for x in commit.parents])
+
+            if ref.name.startswith('refs/tags'):
+                refs[ref.name] = git.Ref('tag', ref.name, head)
+            else:
+                refs[ref.name] = git.Ref('branch', ref.name, head)
+        return refs
+
+    def _list_refs(self):
+        head = self.repo.lookup_reference('HEAD')
+        yield head
+        for name in self.repo.listall_references():
+            ref = self.repo.lookup_reference(name)
+            yield ref

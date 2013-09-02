@@ -1,0 +1,22 @@
+Black box tests for the consonant.store module
+==============================================
+
+The scenario tests in this document aim to provide extensive coverage
+of the `consonant.store` module, which provides a Python API to access
+Consonant stores.
+
+The tests operate against a set of public test schemas and stores, all
+of which are given names like `simple kanban store`. These test stores
+have specific properties such as particular branches, tags or commits
+being present, so it may not always be obvious why a scenario test is
+correct.
+
+Listing Git refs and commits
+----------------------------
+
+    SCENARIO list Git refs in a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     listing Git refs using consonant.store
+    THEN     the refs include a branch called master
+    THEN     the refs include a branch called HEAD
+    THEN     the refs include a tag called initial-data-set

@@ -53,7 +53,14 @@ These tests can be executed with
 
     python setup.py check
 
-from the root directory of the source tree.
+from the root directory of the source tree. The scenario tests are
+executed against a standard set of test schemas and stores. By default,
+these are expected to be located in the parent directory of
+python-consonant but this can be overriden by providing a different
+base URL, e.g.
+
+    TEST_REPO_BASE_URL=/path/to/the/test/repos \
+        python setup.py check
 
 
 Building & Installing

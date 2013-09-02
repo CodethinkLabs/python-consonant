@@ -1,0 +1,49 @@
+Scenario test implementation
+============================
+
+Implementation section for making stores available
+--------------------------------------------------
+
+    IMPLEMENTS GIVEN a local simple kanban store
+    cd $DATADIR
+    clone_test_schemas
+    clone_test_store consonant-test-store-01
+
+Implementation section for using consonant.store
+------------------------------------------------
+
+    IMPLEMENTS WHEN listing Git refs using consonant.store
+    export PYTHONPATH="$SRCDIR"
+    cat <<EOF > $DATADIR/list-refs.py
+    import consonant
+    import os
+    import yaml
+    
+    pool = consonant.store.pools.StorePool()
+    store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
+    refs = store.refs()
+    print yaml.dump(refs, default_flow_style=False)
+    EOF
+    python $DATADIR/list-refs.py > $DATADIR/output
+
+Implementation section for checking the output of commands
+----------------------------------------------------------
+
+    IMPLEMENTS THEN the refs include a (branch|tag) called (.*)
+    export PYTHONPATH="$SRCDIR"
+    cat <<EOF > $DATADIR/check-includes-ref.py
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        print data
+        if '$MATCH_1' == 'branch':
+            if '$MATCH_2' == 'HEAD':
+                assert 'HEAD' in data
+            else:
+                assert 'refs/heads/$MATCH_2' in data
+        else:
+            assert 'refs/tags/$MATCH_2' in data
+    EOF
+    python $DATADIR/check-includes-ref.py
