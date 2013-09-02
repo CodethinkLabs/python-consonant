@@ -34,6 +34,8 @@ components are required:
   * pep5 >= 1.4.8
   * pep257 >= 0.2.4
   * memcached >= 1.4.15
+  * cmdtest >= 0.9
+  * git >= 1.8.0
 
 
 Testing

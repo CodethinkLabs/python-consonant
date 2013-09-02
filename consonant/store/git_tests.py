@@ -19,6 +19,7 @@
 
 
 import unittest
+import yaml
 
 from consonant.store import git, timestamps
 
@@ -38,13 +39,10 @@ class RefTests(unittest.TestCase):
 
         self.test_input = {
             'refs/heads/master': [
-                ('master', 'refs:heads:master'),
-                _DummyCommit('36d1de2241349bf0d42f2c456835c8504b724c8c')],
-            'refs/heads/master': [
-                ('master', 'refs:heads:master'),
+                'branch', ('master', 'refs:heads:master'),
                 _DummyCommit('36d1de2241349bf0d42f2c456835c8504b724c8c')],
             'refs/tags/sometag-x.y': [
-                ('sometag-x.y', 'refs:tags:sometag-x.y'),
+                'tag', ('sometag-x.y', 'refs:tags:sometag-x.y'),
                 _DummyCommit('9cac7d647ea4363f4e43e2a79bde96b85d2a7273')],
         }
 
@@ -52,11 +50,23 @@ class RefTests(unittest.TestCase):
         """Verify that the constructor sets the Ref properties correctly."""
 
         for name, data in self.test_input.iteritems():
-            aliases, head = data
-            ref = git.Ref(name, head)
+            type, aliases, head = data
+            ref = git.Ref(type, name, head)
+            self.assertEqual(ref.type, type)
             self.assertEqual(ref.name, name)
             self.assertEqual(ref.head, head)
             self.assertEqual(ref.aliases, list(aliases))
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of Ref objects is ok."""
+
+        string = yaml.dump([git.Ref('branch', 'refs/heads/master', None)])
+        data = yaml.load(string)
+        self.assertEqual(data, [{
+            'type': 'branch',
+            'url-aliases': ['master', 'refs:heads:master'],
+            'head': None,
+            }])
 
 
 class CommitTests(unittest.TestCase):
@@ -96,19 +106,21 @@ Unit tests for all these classes are included.''',
             commit = git.Commit(
                 sha1,
                 data['author'],
-                timestamps.Timestamp(data['author-date']),
+                timestamps.Timestamp.from_raw(data['author-date']),
                 data['committer'],
-                timestamps.Timestamp(data['committer-date']),
+                timestamps.Timestamp.from_raw(data['committer-date']),
                 data['message'],
                 data['parents'])
 
             self.assertEqual(commit.sha1, sha1)
             self.assertEqual(commit.author, data['author'])
-            self.assertEqual(commit.author_date,
-                             timestamps.Timestamp(data['author-date']))
+            self.assertEqual(
+                commit.author_date,
+                timestamps.Timestamp.from_raw(data['author-date']))
             self.assertEqual(commit.committer, data['committer'])
-            self.assertEqual(commit.committer_date,
-                             timestamps.Timestamp(data['committer-date']))
+            self.assertEqual(
+                commit.committer_date,
+                timestamps.Timestamp.from_raw(data['committer-date']))
             self.assertEqual(commit.message, data['message'])
             self.assertEqual(commit.parents, data['parents'])
 
@@ -154,3 +166,28 @@ Unit tests for all these classes are included.''')
             self.assertEqual(commit.message, message)
             self.assertEqual(commit.message_subject(), subject)
             self.assertEqual(commit.message_body(), body)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of Commit objects is ok."""
+
+        for sha1, data in self.test_input.iteritems():
+            commit = git.Commit(
+                sha1,
+                data['author'],
+                timestamps.Timestamp.from_raw(data['author-date']),
+                data['committer'],
+                timestamps.Timestamp.from_raw(data['committer-date']),
+                data['message'],
+                data['parents'])
+
+            string = yaml.dump([commit])
+            yaml_data = yaml.load(string)
+            self.assertEqual(yaml_data, [{
+                'sha1': sha1,
+                'author': data['author'],
+                'author-date': data['author-date'],
+                'committer': data['committer'],
+                'committer-date': data['committer-date'],
+                'subject': data['message'].splitlines(True)[0].strip(),
+                'parents': data['parents'],
+                }])

@@ -77,7 +77,7 @@ class TimestampProperty(Property):
     """Object property of type `timestamp`."""
 
     def __init__(self, name, value):
-        Property.__init__(self, name, timestamps.Timestamp(value))
+        Property.__init__(self, name, timestamps.Timestamp.from_raw(value))
 
 
 class ReferenceProperty(Property):

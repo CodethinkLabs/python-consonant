@@ -75,7 +75,7 @@ class MemcachedObjectCacheTests(unittest.TestCase):
             5.3,
 
             'fd34b04d42a0644f04f581d1dcdec35eec681b95':
-            [10, 'foo', timestamps.Timestamp('1377703755 +0100')],
+            [10, 'foo', timestamps.Timestamp.from_raw('1377703755 +0100')],
 
             '1b695096b31b0fcd72e1e170aded87e1a201831b':
             {'foo': 'bar', 'baz': 17.3},

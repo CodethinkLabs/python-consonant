@@ -21,6 +21,7 @@
 import datetime
 import itertools
 import unittest
+import yaml
 
 from consonant.store import timestamps
 
@@ -68,45 +69,67 @@ class TimestampTests(unittest.TestCase):
         """Initialise helper variables for the tests."""
 
         tz = timestamps.Timezone(60)
-        self.timestamps = {
-            '1377170684 +0100': datetime.datetime(
-                2013, 8, 22, 12, 24, 44, 0, tz),
-            '1375287273 +0100': datetime.datetime(
-                2013, 7, 31, 17, 14, 33, 0, tz),
-            '1375199863 +0100': datetime.datetime(
-                2013, 7, 30, 16, 57, 43, 0, tz),
-            '1374578024 +0100': datetime.datetime(
-                2013, 7, 23, 12, 13, 44, 0, tz),
-        }
+        self.timestamps = [
+            ((1377170684, 60), '1377170684 +0100',
+             datetime.datetime(2013, 8, 22, 12, 24, 44, 0, tz)),
 
-    def test_constructor_sets_datetime_value_according_to_timestamp(self):
+            ((1375287273, 60), '1375287273 +0100',
+             datetime.datetime(2013, 7, 31, 17, 14, 33, 0, tz)),
+
+            ((1375199863, 60), '1375199863 +0100',
+             datetime.datetime(2013, 7, 30, 16, 57, 43, 0, tz)),
+
+            ((1374578024, 60), '1374578024 +0100',
+             datetime.datetime(2013, 7, 23, 12, 13, 44, 0, tz)),
+        ]
+
+    def test_constructor_sets_datetime_value_correctly(self):
         """Verify that the construct sets the datetime value correctly."""
 
-        for raw_value, datetime_value in self.timestamps.iteritems():
-            ts = timestamps.Timestamp(raw_value)
+        for args, raw, datetime_value in self.timestamps:
+            ts = timestamps.Timestamp(*args)
             self.assertEqual(ts.value, datetime_value)
 
     def test_conversion_back_to_raw_timestamp_is_correct(self):
         """Verify that the conversion back to the raw timestamp is correct."""
 
-        for raw_value in self.timestamps.iterkeys():
-            self.assertEqual(timestamps.Timestamp(raw_value).raw(), raw_value)
+        for args, raw, datetime_value in self.timestamps:
+            self.assertEqual(timestamps.Timestamp(*args).raw(), raw)
+
+    def test_parsing_from_raw_timestamp_is_correct(self):
+        """Verify parsing a Timestamp from a raw string is correct."""
+
+        for args, raw, datetime_value in self.timestamps:
+            self.assertEqual(timestamps.Timestamp.from_raw(raw).raw(), raw)
+            self.assertEqual(timestamps.Timestamp.from_raw(raw).value,
+                             datetime_value)
 
     def test_equality_operator_is_correct(self):
         """Verify that the __eq__ operator is correct."""
 
-        for raw_value in self.timestamps.iterkeys():
-            ts1 = timestamps.Timestamp(raw_value)
-            ts2 = timestamps.Timestamp(raw_value)
+        for args, raw, datetime_value in self.timestamps:
+            ts1 = timestamps.Timestamp(*args)
+            ts2 = timestamps.Timestamp(*args)
             self.assertEqual(ts1, ts2)
 
-        for raw1, raw2 in itertools.permutations(self.timestamps.keys(), 2):
-            ts1 = timestamps.Timestamp(raw1)
-            ts2 = timestamps.Timestamp(raw2)
+        for data1, data2 in itertools.permutations(self.timestamps, 2):
+            args1, _, _ = data1
+            args2, _, _ = data2
+            ts1 = timestamps.Timestamp(*args1)
+            ts2 = timestamps.Timestamp(*args2)
             self.assertNotEqual(ts1, ts2)
             self.assertFalse(ts1 == ts2)
 
-        self.assertNotEqual(
-            timestamps.Timestamp('1377170684 +0100'), '1377170684 +0100')
+        self.assertNotEqual(timestamps.Timestamp(1377170684, 60),
+                            '1377170684 +0100')
         self.assertFalse(
-            timestamps.Timestamp('1377170684 +0100') == '1377170684 +0100')
+            timestamps.Timestamp(1377170684, 60) == '1377170684 +0100')
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of Timestamp objects is ok."""
+
+        for args, raw, datetime_value in self.timestamps:
+            timestamp = timestamps.Timestamp(*args)
+            string = yaml.dump([timestamp])
+            data = yaml.load(string)
+            self.assertEqual(data, [raw])

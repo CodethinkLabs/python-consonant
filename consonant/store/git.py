@@ -19,31 +19,54 @@
 
 
 import re
+import yaml
 
 
-class Ref(object):
+class Ref(yaml.YAMLObject):
 
     """A Git reference (ref) like a tag or a branch."""
 
-    def __init__(self, name, head):
+    yaml_tag = u'!Ref'
+
+    def __init__(self, type, name, head):
+        self.type = type
         self.name = name
         self.head = head
-        self.aliases = Ref.generate_url_aliases(name)
+        self.aliases = list(Ref.generate_url_aliases(name))
 
     @classmethod
     def generate_url_aliases(cls, name):
         """Return a list of aliases for a Git reference for use in URLs."""
 
-        aliases = []
-        pattern = r'^refs/(heads|tags|notes)/(.*)$'
-        aliases.append(re.sub(pattern, r'\2', name).replace('/', ':'))
-        aliases.append(name.replace('/', ':'))
-        return aliases
+        pattern = r'^refs/(heads|tags|notes|remotes)/(.*)$'
+        aliases = [
+            re.sub(pattern, r'\2', name).replace('/', ':'),
+            name.replace('/', ':')
+        ]
+
+        seen = set()
+        for alias in aliases:
+            if not alias in seen:
+                yield alias
+                seen.add(alias)
+
+    @classmethod
+    def to_yaml(cls, dumper, ref):
+        """Return a YAML representation for the given Ref."""
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', {
+                'type': ref.type,
+                'url-aliases': ref.aliases,
+                'head': ref.head
+                })
 
 
-class Commit(object):
+class Commit(yaml.YAMLObject):
 
     """A Git commit with a SHA1, author, committer, message and parents."""
+
+    yaml_tag = u'!Commit'
 
     def __init__(self, sha1, author, author_date, committer, committer_date,
                  message, parents):
@@ -59,10 +82,25 @@ class Commit(object):
         """Extract the commit message subject line and return it."""
 
         lines = self.message.splitlines()
-        return lines[0] if lines else ''
+        return lines[0].strip() if lines else ''
 
     def message_body(self):
         """Extract the commit message body line and return it."""
 
         lines = self.message.splitlines(True)
         return ''.join(lines[2:]) if lines else ''
+
+    @classmethod
+    def to_yaml(cls, dumper, commit):
+        """Return a YAML representation of the given Commit."""
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', {
+                'sha1': commit.sha1,
+                'author': commit.author,
+                'author-date': commit.author_date,
+                'committer': commit.committer,
+                'committer-date': commit.committer_date,
+                'subject': commit.message_subject(),
+                'parents': commit.parents,
+                })

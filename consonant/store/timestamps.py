@@ -20,6 +20,7 @@
 
 import calendar
 import datetime
+import yaml
 
 
 class Timezone(datetime.tzinfo):
@@ -46,15 +47,23 @@ class Timezone(datetime.tzinfo):
         return datetime.timedelta(0)
 
 
-class Timestamp(object):
+class Timestamp(yaml.YAMLObject):
 
     """Class to represent timestamps from properties and commits."""
 
-    def __init__(self, timestamp):
-        ts, tz = timestamp.split()
+    yaml_tag = u'!Timestamp'
+
+    def __init__(self, time, offset):
+        tzinfo = Timezone(offset)
+        self.value = datetime.datetime.fromtimestamp(float(time), tzinfo)
+
+    @classmethod
+    def from_raw(cls, value):
+        """Parse a raw string representation("%s %z"), return a Timestamp."""
+
+        ts, tz = value.split()
         tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
-        tzinfo = Timezone(-tz_offset if tz[0] == '-' else tz_offset)
-        self.value = datetime.datetime.fromtimestamp(int(ts), tzinfo)
+        return Timestamp(ts, tz_offset)
 
     def raw(self):
         """Return a raw string representation ("%s %z") of the timestamp."""
@@ -62,6 +71,13 @@ class Timestamp(object):
         return '%s %s' % (
             calendar.timegm(self.value.utctimetuple()),
             self.value.tzinfo.tzname(self.value))
+
+    @classmethod
+    def to_yaml(cls, dumper, timestamp):
+        """Return a YAML representation of the given Timestamp."""
+
+        return dumper.represent_scalar(
+            u'tag:yaml.org,2002:str', timestamp.raw())
 
     def __eq__(self, other):
         if not isinstance(other, Timestamp):

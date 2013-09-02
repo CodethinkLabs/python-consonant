@@ -287,7 +287,7 @@ class TimestampPropertyTest(unittest.TestCase):
         for raw_value, datetime_value in self.timestamps:
             name = 'property name %d' % random.randint(0, 100)
             ts_property = properties.TimestampProperty(name, raw_value)
-            ts = timestamps.Timestamp(raw_value)
+            ts = timestamps.Timestamp.from_raw(raw_value)
             self.assertEqual(ts_property.name, name)
             self.assertEqual(ts_property.value, ts)
 
