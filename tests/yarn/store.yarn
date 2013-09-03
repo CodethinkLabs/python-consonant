@@ -11,12 +11,281 @@ have specific properties such as particular branches, tags or commits
 being present, so it may not always be obvious why a scenario test is
 correct.
 
-Listing Git refs and commits
-----------------------------
+Listing all Git refs in a store
+-------------------------------
 
     SCENARIO list Git refs in a local store using consonant.store
     GIVEN    a local simple kanban store
     WHEN     listing Git refs using consonant.store
-    THEN     the refs include a branch called master
-    THEN     the refs include a branch called HEAD
-    THEN     the refs include a tag called initial-data-set
+
+Make sure all the expected local branches are present:
+
+    THEN     the refs include a local branch called "HEAD"
+    AND      the refs include a local branch called "master"
+    AND      the local branch "HEAD" has an alias "HEAD"
+    AND      the local branch "master" has an alias "master"
+    AND      the local branch "master" has an alias "refs:heads:master"
+
+Make sure all the expected remote branches are present:
+
+    AND      the refs include a remote branch called "origin/HEAD"
+    AND      the refs include a remote branch called "origin/master"
+    AND      the remote branch "origin/HEAD" has an alias "origin:HEAD"
+    AND      the remote branch "origin/HEAD" has an alias "refs:remotes:origin:HEAD"
+    AND      the remote branch "origin/master" has an alias "origin:master"
+    AND      the remote branch "origin/master" has an alias "refs:remotes:origin:master"
+
+Make sure all the expected tags are present:
+
+    AND      the refs include a tag called "initial-data-set"
+    AND      the refs include a tag called "second-commit"
+    AND      the tag "initial-data-set" has an alias "initial-data-set"
+    AND      the tag "initial-data-set" has an alias "refs:tags:initial-data-set"
+    AND      the tag "second-commit" has an alias "second-commit"
+    AND      the tag "second-commit" has an alias "refs:tags:second-commit"
+
+Fetching individual refs from a store
+-------------------------------------
+
+    SCENARIO fetch the Git ref "HEAD" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "HEAD" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["HEAD"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs/heads/master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs/heads/master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs:heads:master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs:heads:master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs/remotes/origin/HEAD" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs/remotes/origin/HEAD" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "origin:HEAD" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "origin:HEAD" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs:remotes:origin:HEAD" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs:remotes:origin:HEAD" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs/remotes/origin/master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs/remotes/origin/master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "origin:master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "origin:master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs:remotes:origin:master" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs:remotes:origin:master" using consonant.store
+    THEN     the field "type" is set to "branch"
+    AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs/tags/initial-data-set" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs/tags/initial-data-set" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
+    AND      the field "head" > "sha1" is set to "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378118698 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378118698 +0100"
+    AND      the field "head" > "subject" is set to "Add initial set of cards and lanes"
+    AND      the field "head" > "parents" is set to []
+
+    SCENARIO fetch the Git ref "refs:tags:initial-data-set" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs:tags:initial-data-set" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
+    AND      the field "head" > "sha1" is set to "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378118698 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378118698 +0100"
+    AND      the field "head" > "subject" is set to "Add initial set of cards and lanes"
+    AND      the field "head" > "parents" is set to []
+
+    SCENARIO fetch the Git ref "initial-data-set" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "initial-data-set" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
+    AND      the field "head" > "sha1" is set to "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378118698 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378118698 +0100"
+    AND      the field "head" > "subject" is set to "Add initial set of cards and lanes"
+    AND      the field "head" > "parents" is set to []
+
+    SCENARIO fetch the Git ref "refs/tags/second-commit" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs/tags/second-commit" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "second-commit" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "second-commit" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch the Git ref "refs:tags:second-commit" from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "refs:tags:second-commit" using consonant.store
+    THEN     the field "type" is set to "tag"
+    AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
+    AND      the field "head" > "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "head" > "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "author-date" is set to "1378139687 +0100"
+    AND      the field "head" > "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "head" > "committer-date" is set to "1378139687 +0100"
+    AND      the field "head" > "subject" is set to "Add another card to the backlog lane"
+    AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+
+    SCENARIO fetch a non-existent Git ref from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the ref "non-existent-ref" using consonant.store
+    THEN     a RefNotFoundError is thrown
+
+Fetching individual commits from a store
+----------------------------------------
+
+    SCENARIO fetch a commit from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the commit 8cb438859cc3bdbfe6b2f685187b2a3b60331447 using consonant.store
+    THEN     the field "sha1" is set to "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the field "parents" is set to []
+    AND      the field "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "author-date" is set to "1378118698 +0100"
+    AND      the field "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "committer-date" is set to "1378118698 +0100"
+    AND      the field "subject" is set to "Add initial set of cards and lanes"
+
+    SCENARIO fetch another commit from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the commit 3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e using consonant.store
+    THEN     the field "sha1" is set to "3e17dbb3f0f19f04f390ee2d5b7ebaa01e82bc9e"
+    AND      the field "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
+    AND      the field "author" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "author-date" is set to "1378139687 +0100"
+    AND      the field "committer" is set to "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the field "committer-date" is set to "1378139687 +0100"
+    AND      the field "subject" is set to "Add another card to the backlog lane"
+
+    SCENARIO fetch a non-existent from a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     fetching the commit b7479fa94e9002442880adb93789b03a2ba96d99 using consonant.store
+    THEN     a CommitNotFoundError is thrown

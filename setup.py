@@ -53,7 +53,7 @@ class Check(Command):
             os.remove('.coverage')
         sys.stdout.write('Running scenario tests\n')
         subprocess.check_call(
-            ['yarn', '--verbose',
+            ['yarn',  # '--verbose',
              '--env=TEST_REPO_BASE_URL=%s' %
                 os.environ.get('TEST_REPO_BASE_URL', os.path.abspath(
                     os.path.join(os.path.dirname(__file__), '..'))),

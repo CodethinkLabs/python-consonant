@@ -12,9 +12,10 @@ Implementation section for making stores available
 Implementation section for using consonant.store
 ------------------------------------------------
 
+Fetch a list of all Git refs from a store.
+
     IMPLEMENTS WHEN listing Git refs using consonant.store
-    export PYTHONPATH="$SRCDIR"
-    cat <<EOF > $DATADIR/list-refs.py
+    python /dev/stdin > $DATADIR/output <<-EOF
     import consonant
     import os
     import yaml
@@ -24,26 +25,127 @@ Implementation section for using consonant.store
     refs = store.refs()
     print yaml.dump(refs, default_flow_style=False)
     EOF
-    python $DATADIR/list-refs.py > $DATADIR/output
+
+Fetch a single ref from a store.
+
+    IMPLEMENTS WHEN fetching the ref "([a-zA-Z0-9:\-_/]+)" using consonant.store
+    python /dev/stdin > $DATADIR/output <<-EOF
+    import consonant
+    import os
+    import yaml
+
+    pool = consonant.store.pools.StorePool()
+    store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
+    try:
+        ref = store.ref('$MATCH_1')
+        print yaml.dump(ref, default_flow_style=False)
+    except Exception, e:
+        print e.__class__.__name__
+    EOF
+
+Fetch a single commit from a store.
+
+    IMPLEMENTS WHEN fetching the commit ([abcdefABCDEF0-9]{40}) using consonant.store
+    python /dev/stdin > $DATADIR/output <<-EOF
+    import consonant
+    import os
+    import yaml
+
+    pool = consonant.store.pools.StorePool()
+    store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
+    try:
+        commit = store.commit('$MATCH_1')
+        print yaml.dump(commit, default_flow_style=False)
+    except Exception, e:
+        print e.__class__.__name__
+    EOF
 
 Implementation section for checking the output of commands
 ----------------------------------------------------------
 
-    IMPLEMENTS THEN the refs include a (branch|tag) called (.*)
-    export PYTHONPATH="$SRCDIR"
-    cat <<EOF > $DATADIR/check-includes-ref.py
+Check whether a specific local/remote branch or a tag is included in a
+list of refs.
+
+    IMPLEMENTS THEN the refs include a (local|remote) branch called "(.+)"
+    python /dev/stdin <<-EOF
     import os
     import yaml
 
     with open(os.path.join('$DATADIR', 'output')) as f:
         data = yaml.load(f)
-        print data
-        if '$MATCH_1' == 'branch':
+        if '$MATCH_1' == 'local':
             if '$MATCH_2' == 'HEAD':
                 assert 'HEAD' in data
             else:
                 assert 'refs/heads/$MATCH_2' in data
         else:
-            assert 'refs/tags/$MATCH_2' in data
+            assert 'refs/remotes/%s' % '$MATCH_2' in data
     EOF
-    python $DATADIR/check-includes-ref.py
+
+    IMPLEMENTS THEN the refs include a tag called "(.+)"
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        assert 'refs/tags/$MATCH_1' in data
+    EOF
+
+Check whether a specific local/remote branch or a tag has a given URL
+alias:
+
+    IMPLEMENTS THEN the (local|remote) branch "(.+)" has an alias "(.+)"
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        if '$MATCH_1' == 'local':
+            if '$MATCH_2' == 'HEAD':
+                assert '$MATCH_3' in data['HEAD']['url-aliases']
+            else:
+                assert '$MATCH_3' in data['refs/heads/$MATCH_2']['url-aliases']
+        else:
+            assert '$MATCH_3' in data['refs/remotes/$MATCH_2']['url-aliases']
+    EOF
+
+    IMPLEMENTS THEN the tag "(.+)" has an alias "(.+)"
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        assert '$MATCH_2' in data['refs/tags/$MATCH_1']['url-aliases']
+    EOF
+
+Check whether a field in the output dictionary is set to a specific
+value.
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        assert data['$MATCH_1'] == eval('$MATCH_2')
+    EOF
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'output')) as f:
+        data = yaml.load(f)
+        print data['$MATCH_1']
+        assert data['$MATCH_1']['$MATCH_2'] == eval('$MATCH_3')
+    EOF
+
+Check whether a given exception is thrown.
+
+    IMPLEMENTS THEN a (.+) is thrown
+    test "$(cat $DATADIR/output)" = "$MATCH_1"

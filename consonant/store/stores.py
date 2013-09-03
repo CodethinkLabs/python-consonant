@@ -77,3 +77,27 @@ class Store(object):  # pragma: no cover
     def sync(self):
         """Sync any changes made to the store back to its real repository."""
         raise NotImplementedError
+
+
+class RefNotFoundError(RuntimeError):
+
+    """Exception for when a Git ref is not found in a store."""
+
+    def __init__(self, ref, existing_refs):
+        self.ref = ref
+        self.existing_refs = existing_refs
+
+    def __str__(self):
+        return 'Ref "%s" not found. Possible values are: %s' % (
+            self.ref, ', '.join(sorted(self.existing_refs)))
+
+
+class CommitNotFoundError(RuntimeError):
+
+    """Exception for when a Git commit is not found in a store."""
+
+    def __init__(self, sha1):
+        self.sha1 = sha1
+
+    def __str__(self):
+        return 'Commit %s not found' % self.sha1

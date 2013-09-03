@@ -30,3 +30,6 @@ clone_test_store()
 {
     git clone "$TEST_REPO_BASE_URL"/"$1"
 }
+
+
+export PYTHONPATH="$SRCDIR"

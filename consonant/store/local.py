@@ -36,19 +36,7 @@ class LocalStore(stores.Store):
         refs = {}
         for ref in self._list_refs():
             commit = ref.get_object()
-
-            head = git.Commit(
-                commit.oid.hex,
-                str('%s <%s>' % (
-                    commit.author.name, commit.author.email)),
-                timestamps.Timestamp(commit.author.time,
-                                     commit.author.offset),
-                str('%s <%s>' % (
-                    commit.committer.name, commit.committer.email)),
-                timestamps.Timestamp(commit.committer.time,
-                                     commit.committer.offset),
-                str(commit.message),
-                [x.oid.hex for x in commit.parents])
+            head = self._parse_commit(commit)
 
             if ref.name.startswith('refs/tags'):
                 refs[ref.name] = git.Ref('tag', ref.name, head)
@@ -56,9 +44,47 @@ class LocalStore(stores.Store):
                 refs[ref.name] = git.Ref('branch', ref.name, head)
         return refs
 
+    def ref(self, name):
+        """Return the Ref object for a specific Git ref in the store."""
+
+        refs = self.refs()
+        if name in refs:
+            return refs[name]
+        else:
+            for ref in refs.itervalues():
+                if name in ref.aliases:
+                    return ref
+            names = set(refs.keys())
+            for ref in refs.itervalues():
+                names.update(ref.aliases)
+            raise stores.RefNotFoundError(name, names)
+
+    def commit(self, sha1):
+        """Return the Commit object for a specific commit in the store."""
+
+        try:
+            commit = self.repo[sha1]
+        except:
+            raise stores.CommitNotFoundError(sha1)
+        return self._parse_commit(commit)
+
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
         yield head
         for name in self.repo.listall_references():
             ref = self.repo.lookup_reference(name)
             yield ref
+
+    def _parse_commit(self, commit):
+        return git.Commit(
+            commit.oid.hex,
+            str('%s <%s>' % (
+                commit.author.name, commit.author.email)),
+            timestamps.Timestamp(commit.author.time,
+                                 commit.author.offset),
+            str('%s <%s>' % (
+                commit.committer.name, commit.committer.email)),
+            timestamps.Timestamp(commit.committer.time,
+                                 commit.committer.offset),
+            str(commit.message),
+            [x.oid.hex for x in commit.parents])
