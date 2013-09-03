@@ -76,7 +76,16 @@ class LocalStore(stores.Store):
         if 'name' in data:
             return data['name']
         else:
-            raise StoreNameUndefinedError(commit)
+            raise stores.StoreNameUndefinedError(commit)
+
+    def services(self, commit):
+        """Return the service aliases used in the store at the given commit."""
+
+        data = self._load_metadata(commit)
+        if 'services' in data:
+            return data['services']
+        else:
+            return {}
 
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
