@@ -12,10 +12,10 @@ Implementation section for making stores available
 Implementation section for using consonant.store
 ------------------------------------------------
 
-Fetch a list of all Git refs from a store.
+Fetch a list of all Git refs from a local store.
 
     IMPLEMENTS WHEN listing Git refs using consonant.store
-    python /dev/stdin > $DATADIR/output <<-EOF
+    python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
     import consonant
     import os
     import yaml
@@ -26,38 +26,44 @@ Fetch a list of all Git refs from a store.
     print yaml.dump(refs, default_flow_style=False)
     EOF
 
-Fetch a single ref from a store.
+Fetch a single ref from a local store.
 
     IMPLEMENTS WHEN fetching the ref "([a-zA-Z0-9:\-_/]+)" using consonant.store
-    python /dev/stdin > $DATADIR/output <<-EOF
+    python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
     import consonant
     import os
     import yaml
 
     pool = consonant.store.pools.StorePool()
     store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
-    try:
-        ref = store.ref('$MATCH_1')
-        print yaml.dump(ref, default_flow_style=False)
-    except Exception, e:
-        print e.__class__.__name__
+    ref = store.ref('$MATCH_1')
+    print yaml.dump(ref, default_flow_style=False)
     EOF
 
-Fetch a single commit from a store.
+Fetch a single commit from a local store.
 
-    IMPLEMENTS WHEN fetching the commit ([abcdefABCDEF0-9]{40}) using consonant.store
-    python /dev/stdin > $DATADIR/output <<-EOF
+    IMPLEMENTS WHEN fetching the commit ([abcdefABCDEF0-9]+) using consonant.store
+    python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
     import consonant
     import os
     import yaml
 
     pool = consonant.store.pools.StorePool()
     store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
-    try:
-        commit = store.commit('$MATCH_1')
-        print yaml.dump(commit, default_flow_style=False)
-    except Exception, e:
-        print e.__class__.__name__
+    commit = store.commit('$MATCH_1')
+    print yaml.dump(commit, default_flow_style=False)
+    EOF
+
+Obtain the store name from a commit in a local store.
+
+    IMPLEMENTS WHEN obtaining the store name from the commit ([abcdefABCDEF0-9]+) using consonant.store
+    python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
+    import consonant
+    import os
+    pool = consonant.store.pools.StorePool()
+    store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
+    commit = store.commit('$MATCH_1')
+    print store.name(commit)
     EOF
 
 Implementation section for checking the output of commands
@@ -71,7 +77,7 @@ list of refs.
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         if '$MATCH_1' == 'local':
             if '$MATCH_2' == 'HEAD':
@@ -87,7 +93,7 @@ list of refs.
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         assert 'refs/tags/$MATCH_1' in data
     EOF
@@ -100,7 +106,7 @@ alias:
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         if '$MATCH_1' == 'local':
             if '$MATCH_2' == 'HEAD':
@@ -116,7 +122,7 @@ alias:
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         assert '$MATCH_2' in data['refs/tags/$MATCH_1']['url-aliases']
     EOF
@@ -129,7 +135,7 @@ value.
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         assert data['$MATCH_1'] == eval('$MATCH_2')
     EOF
@@ -139,13 +145,19 @@ value.
     import os
     import yaml
 
-    with open(os.path.join('$DATADIR', 'output')) as f:
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
-        print data['$MATCH_1']
         assert data['$MATCH_1']['$MATCH_2'] == eval('$MATCH_3')
     EOF
 
 Check whether a given exception is thrown.
 
     IMPLEMENTS THEN a (.+) is thrown
-    test "$(cat $DATADIR/output)" = "$MATCH_1"
+    cat $DATADIR/stderr
+    grep "$MATCH_1" $DATADIR/stderr
+
+Check whether the store name is set to a given value.
+
+    IMPLEMENTS THEN the store name is "(.+)"
+    cat $DATADIR/stdout
+    test "$(cat $DATADIR/stdout)" = "$MATCH_1"

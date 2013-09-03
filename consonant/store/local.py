@@ -19,6 +19,7 @@
 
 
 import pygit2
+import yaml
 
 from consonant.store import git, stores, timestamps
 
@@ -68,6 +69,15 @@ class LocalStore(stores.Store):
             raise stores.CommitNotFoundError(sha1)
         return self._parse_commit(commit)
 
+    def name(self, commit):
+        """Return the name the store has in the given commit."""
+
+        data = self._load_metadata(commit)
+        if 'name' in data:
+            return data['name']
+        else:
+            raise StoreNameUndefinedError(commit)
+
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
         yield head
@@ -88,3 +98,21 @@ class LocalStore(stores.Store):
                                  commit.committer.offset),
             str(commit.message),
             [x.oid.hex for x in commit.parents])
+
+    def _load_metadata(self, commit):
+        commit_object = self.repo[commit.sha1]
+        if 'consonant.yaml' in commit_object.tree:
+            entry = commit_object.tree['consonant.yaml']
+            if entry.filemode == 0100644:
+                blob = self.repo[entry.oid]
+                try:
+                    return yaml.load(blob.data)
+                except:
+                    raise stores.MetadataError(
+                        commit, 'File "/consonant.yaml" cannot be parsed.')
+            else:
+                raise stores.MetadataError(
+                    commit, 'Meta data file "/consonant.yaml" is a directory.')
+        else:
+            raise stores.MetadataError(
+                commit, 'File "/consonant.yaml" does not exist.')

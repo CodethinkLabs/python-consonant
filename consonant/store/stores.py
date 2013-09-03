@@ -18,10 +18,6 @@
 """Classes and interfaces to implement local and remote stores."""
 
 
-import os
-import urlparse
-
-
 class Store(object):  # pragma: no cover
 
     """Abstract base class for store implementations."""
@@ -38,8 +34,8 @@ class Store(object):  # pragma: no cover
         """Return the Commit object for the Git commit with the given SHA1."""
         raise NotImplementedError
 
-    def uuid(self, commit):
-        """Return the store UUUID for the given commit."""
+    def name(self, commit):
+        """Return the store name for the given commit."""
         raise NotImplementedError
 
     def schema(self, commit):
@@ -101,3 +97,15 @@ class CommitNotFoundError(RuntimeError):
 
     def __str__(self):
         return 'Commit %s not found' % self.sha1
+
+
+class MetadataError(RuntimeError):
+
+    """Exception for when consonant.yaml is malformed or a directory."""
+
+    def __init__(self, commit, message):
+        self.commit = commit
+        self.message = message
+
+    def __str__(self):
+        return 'Commit %s: %s' % (self.commit.sha1, self.message)
