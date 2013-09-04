@@ -73,19 +73,13 @@ class LocalStore(stores.Store):
         """Return the name the store has in the given commit."""
 
         data = self._load_metadata(commit)
-        if 'name' in data:
-            return data['name']
-        else:
-            raise stores.StoreNameUndefinedError(commit)
+        return data['name']
 
     def services(self, commit):
         """Return the service aliases used in the store at the given commit."""
 
         data = self._load_metadata(commit)
-        if 'services' in data:
-            return data['services']
-        else:
-            return {}
+        return data.get('services', {})
 
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
@@ -110,18 +104,6 @@ class LocalStore(stores.Store):
 
     def _load_metadata(self, commit):
         commit_object = self.repo[commit.sha1]
-        if 'consonant.yaml' in commit_object.tree:
-            entry = commit_object.tree['consonant.yaml']
-            if entry.filemode == 0100644:
-                blob = self.repo[entry.oid]
-                try:
-                    return yaml.load(blob.data)
-                except:
-                    raise stores.MetadataError(
-                        commit, 'File "/consonant.yaml" cannot be parsed.')
-            else:
-                raise stores.MetadataError(
-                    commit, 'Meta data file "/consonant.yaml" is a directory.')
-        else:
-            raise stores.MetadataError(
-                commit, 'File "/consonant.yaml" does not exist.')
+        entry = commit_object.tree['consonant.yaml']
+        blob = self.repo[entry.oid]
+        return yaml.load(blob.data)

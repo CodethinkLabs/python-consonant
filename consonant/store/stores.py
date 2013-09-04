@@ -97,27 +97,3 @@ class CommitNotFoundError(RuntimeError):
 
     def __str__(self):
         return 'Commit %s not found' % self.sha1
-
-
-class StoreNameUndefinedError(RuntimeError):
-
-    """Exception for when consonant.yaml defines no store name."""
-
-    def __init__(self, commit):
-        self.commit = commit
-
-    def __str__(self):
-        return 'Commit %s: File "/consonant.yaml" defines no store name.' % \
-            self.commit.sha1
-
-
-class MetadataError(RuntimeError):
-
-    """Exception for when consonant.yaml is malformed or a directory."""
-
-    def __init__(self, commit, message):
-        self.commit = commit
-        self.message = message
-
-    def __str__(self):
-        return 'Commit %s: %s' % (self.commit.sha1, self.message)

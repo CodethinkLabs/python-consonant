@@ -308,26 +308,6 @@ Obtaining the store name
     WHEN     obtaining the store name from commit b7479fa9 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
-    SCENARIO obtain the store name from a commit in a local store using consonant.store where the store name is undefined
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the store name from commit 1abdfa49 using consonant.store
-    THEN     a StoreNameUndefinedError is thrown
-
-    SCENARIO obtain the store name from a commit in a local store using consonant.store where consonant.yaml is malformed
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the store name from commit b046aeb2 using consonant.store
-    THEN     a MetadataError is thrown
-
-    SCENARIO obtain the store name from a commit in a local store using consonant.store where consonant.yaml is a directory
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the store name from commit a2fe1c93 using consonant.store
-    THEN     a MetadataError is thrown
-
-    SCENARIO obtain the store name from a commit in a local store using consonant.store where consonant.yaml does not exist
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the store name from commit df3ec7dd using consonant.store
-    THEN     a MetadataError is thrown
-
 Obtaining the store schema
 --------------------------
 
@@ -336,44 +316,24 @@ TODO
 Obtaining the service aliases used in a commit
 ----------------------------------------------
 
-    SCENARIO obtain the service aliases from a commit in a local store using consonant.store
+    SCENARIO obtain service aliases from a commit in a local store using consonant.store
     GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit 34bf243e using consonant.store
-    THEN     the service aliases include "issues"
-    THEN     the service aliases do not include "reviews"
+    WHEN     obtaining service aliases from commit 34bf243e using consonant.store
+    THEN     the field "issues" is set to "the.service.name.of.an.issue.store"
+    THEN     the field "reviews" does not exist
 
-    SCENARIO obtain the service aliases from another commit in a local store using consonant.store
+    SCENARIO obtain service aliases from another commit in a local store using consonant.store
     GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit bb53dce using consonant.store
-    THEN     the service aliases include "issues"
-    THEN     the service aliases include "reviews"
+    WHEN     obtaining service aliases from commit bb53dce using consonant.store
+    THEN     the field "issues" is set to "the.service.name.of.an.issue.store"
+    THEN     the field "reviews" is set to "the.service.name.of.a.code.review.store"
 
-    SCENARIO obtain the service aliases from a non-existent commit in a local store using consonant.store
+    SCENARIO obtain service aliases from a non-existent commit in a local store using consonant.store
     GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit b7479fa9 using consonant.store
+    WHEN     obtaining service aliases from commit b7479fa9 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
-    SCENARIO obtain the service aliases from a commit in a local store using consonant.store where no aliases are defined
+    SCENARIO obtain service aliases from a commit in a local store using consonant.store where no aliases are defined
     GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit 45e0ee91 using consonant.store
+    WHEN     obtaining service aliases from commit 45e0ee91 using consonant.store
     THEN     the result is an empty mapping
-
-    SCENARIO obtain the service aliases from a commit in a local store using consonant.store where consonant.yaml is malformed
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit b046aeb2 using consonant.store
-    THEN     a MetadataError is thrown
-
-    SCENARIO obtain the service aliases from a commit in a local store using consonant.store where consonant.yaml is a directory
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit a2fe1c93 using consonant.store
-    THEN     a MetadataError is thrown
-
-    SCENARIO obtain the service aliases from a commit in a local store using consonant.store where consonant.yaml does not exist
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the service aliases from commit df3ec7dd using consonant.store
-    THEN     a MetadataError is thrown
-
-TODO:
-check for a malformed "services" field in consonant.yaml (e.g. not a
-dict or a dict that doesn't map strings to strings or that has invalid
-keys or values that don't conform with the spec).

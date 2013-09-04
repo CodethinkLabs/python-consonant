@@ -69,7 +69,7 @@ Obtain the store name from a commit in a local store.
 
 Obtain the schema from a commit in a local store.
 
-    IMPLEMENTS WHEN obtaining the service aliases from commit ([abcdefABCDEF0-9]+) using consonant.store
+    IMPLEMENTS WHEN obtaining service aliases from commit ([abcdefABCDEF0-9]+) using consonant.store
     python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
     import consonant
     import os
@@ -145,6 +145,16 @@ alias:
 
 Check whether a field in the output dictionary is set to a specific
 value.
+
+    IMPLEMENTS THEN the field "(.+)" does not exist
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
+        data = yaml.load(f)
+        assert '$MATCH_1' not in data
+    EOF
 
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
     python /dev/stdin <<-EOF
