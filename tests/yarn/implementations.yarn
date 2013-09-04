@@ -67,7 +67,7 @@ Obtain the store name from a commit in a local store.
     print store.name(commit)
     EOF
 
-Obtain the schema from a commit in a local store.
+Obtain service aliases from a commit in a local store.
 
     IMPLEMENTS WHEN obtaining service aliases from commit ([abcdefABCDEF0-9]+) using consonant.store
     python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
@@ -80,7 +80,19 @@ Obtain the schema from a commit in a local store.
     print store.services(commit)
     EOF
 
-Obtain the service aliases from a commit in a local store.
+Obtain the schema name from a commit in a local store.
+
+    IMPLEMENTS WHEN obtaining the schema name from commit ([abcdefABCDEF0-9]+) using consonant.store
+    python /dev/stdin > $DATADIR/stdout 2> $DATADIR/stderr <<-EOF || true
+    import consonant
+    import os
+
+    pool = consonant.store.pools.StorePool()
+    store = pool.store(os.path.join('$DATADIR', 'consonant-test-store-01'))
+    commit = store.commit('$MATCH_1')
+    print store.schema(commit)
+    EOF
+
 
 Implementation section for checking the output of commands
 ----------------------------------------------------------
@@ -182,11 +194,22 @@ Check whether a given exception is thrown.
     cat $DATADIR/stderr
     grep "^[a-zA-Z0-9_\.]*$MATCH_1" $DATADIR/stderr
 
-Check whether the store name is set to a given value.
+Check whether the result is set to a given value.
 
-    IMPLEMENTS THEN the store name is "(.+)"
-    cat $DATADIR/stdout
-    test "$(cat $DATADIR/stdout)" = "$MATCH_1"
+    IMPLEMENTS THEN the result is "(.+)"
+    test "$(cat $DATADIR/stdout | xargs echo -n)" = "$MATCH_1"
+
+Check whether the result is an empty mapping.
+
+    IMPLEMENTS THEN the result is an empty mapping
+    python /dev/stdin <<-EOF
+    import os
+    import yaml
+
+    with open(os.path.join('$DATADIR', 'stdout')) as f:
+        data = yaml.load(f)
+        assert data == {}
+    EOF
 
 Check whether a mapping of service aliases includes a given alias.
 
@@ -211,17 +234,4 @@ alias.
     with open(os.path.join('$DATADIR', 'stdout')) as f:
         data = yaml.load(f)
         assert '$MATCH_1' not in data
-    EOF
-
-Check whether the YAML ouput is an empty mapping.
-
-    IMPLEMENTS THEN the result is an empty mapping
-    python /dev/stdin <<-EOF
-    import os
-    import yaml
-
-    with open(os.path.join('$DATADIR', 'stdout')) as f:
-        data = yaml.load(f)
-        assert isinstance(data, dict)
-        assert len(data) == 0
     EOF

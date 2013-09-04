@@ -75,6 +75,12 @@ class LocalStore(stores.Store):
         data = self._load_metadata(commit)
         return data['name']
 
+    def schema(self, commit):
+        """Return the schema name the store uses in the given commit."""
+
+        data = self._load_metadata(commit)
+        return data['schema']
+
     def services(self, commit):
         """Return the service aliases used in the store at the given commit."""
 

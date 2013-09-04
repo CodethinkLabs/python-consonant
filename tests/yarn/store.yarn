@@ -296,12 +296,12 @@ Obtaining the store name
     SCENARIO obtain the store name from a commit in a local store using consonant.store
     GIVEN    a local simple kanban store
     WHEN     obtaining the store name from commit 8cb43885 using consonant.store
-    THEN     the store name is "com.github.consonant.consonant-test-store-01"
+    THEN     the result is "com.github.consonant.consonant-test-store-01"
 
     SCENARIO obtain the store name from another commit in a local store using consonant.store
     GIVEN    a local simple kanban store
     WHEN     obtaining the store name from commit 45e0ee91 using consonant.store
-    THEN     the store name is "com.github.consonant.consonant-test-store-01"
+    THEN     the result is "com.github.consonant.consonant-test-store-01"
 
     SCENARIO obtain the store name from a non-existent commit in a local store using consonant.store
     GIVEN    a local simple kanban store
@@ -311,7 +311,20 @@ Obtaining the store name
 Obtaining the store schema
 --------------------------
 
-TODO
+    SCENARIO obtain the schema name from a commit in a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     obtaining the schema name from commit 8cb43885 using consonant.store
+    THEN     the result is "com.github.consonant.consonant-test-schemas-01"
+
+    SCENARIO obtain the schema name from another commit in a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     obtaining the schema name from commit 45e0ee91 using consonant.store
+    THEN     the result is "com.github.consonant.consonant-test-schemas-01"
+
+    SCENARIO obtain the schema name from a non-existent commit in a local store using consonant.store
+    GIVEN    a local simple kanban store
+    WHEN     obtaining the schema name from commit 950f9d21 using consonant.store
+    THEN     a CommitNotFoundError is thrown
 
 Obtaining the service aliases used in a commit
 ----------------------------------------------
