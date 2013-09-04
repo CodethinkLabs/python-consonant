@@ -45,14 +45,15 @@ dump_output()
 
 run_python()
 {
+    trap dump_output 0
     cd $DATADIR
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr
-    dump_output
 }
 
 
 run_python_with_store()
 {
+    trap dump_output 0
     cd $DATADIR
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
 import consonant
@@ -65,7 +66,6 @@ store = pool.store(store_location)
 
 $(cat </dev/stdin)
 EOF
-    dump_output
 }
 
 
