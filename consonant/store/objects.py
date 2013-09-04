@@ -48,9 +48,11 @@ class ObjectClass(yaml.YAMLObject):
                 })
 
 
-class Object(object):
+class Object(yaml.YAMLObject):
 
     """An object with a UUID, a parent class and a set of properties."""
+
+    yaml_tag = u'!Object'
 
     def __init__(self, uuid, klass, properties):
         self.uuid = uuid
@@ -66,3 +68,18 @@ class Object(object):
         return self.uuid == other.uuid \
             and self.klass == other.klass \
             and self.properties == other.properties
+
+    @classmethod
+    def to_yaml(cls, dumper, object):  # pragma: no cover
+        """Return a YAML representation for an Object."""
+
+        properties_mapping = {}
+        for name, prop in sorted(object.properties.iteritems()):
+            properties_mapping[name] = prop.value
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', {
+                'uuid': object.uuid,
+                'class': object.klass.name,
+                'properties': properties_mapping,
+                })

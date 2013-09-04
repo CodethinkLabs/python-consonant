@@ -21,7 +21,8 @@
 import pygit2
 import yaml
 
-from consonant.store import git, objects, references, stores, timestamps
+from consonant.store import git, objects, properties
+from consonant.store import references, stores, timestamps
 
 
 class LocalStore(stores.Store):
@@ -30,6 +31,7 @@ class LocalStore(stores.Store):
 
     def __init__(self, url):
         self.repo = pygit2.Repository(url)
+        self.cache = None
 
     def refs(self):
         """Return a set of Ref objects for all Git refs in the store."""
@@ -107,6 +109,41 @@ class LocalStore(stores.Store):
             classes[klass.name] = klass
         return classes
 
+    def objects(self, commit):
+        """Return the objects present in the given commit of the store."""
+
+        classes = self.classes(commit)
+        objects = {}
+        for klass in classes.itervalues():
+            objects[klass.name] = sorted(self.class_objects(commit, klass))
+        return objects
+
+    def class_objects(self, commit, klass):
+        """Return the objects of a class in the given commit of the store."""
+
+        commit_object = self.repo[commit.sha1]
+        class_tree_entry = commit_object.tree[klass.name]
+        class_tree = self.repo[class_tree_entry.oid]
+        objects = set()
+        for object_entry in class_tree:
+            if object_entry.filemode != 040000:
+                continue
+
+            object_tree = self.repo[object_entry.oid]
+            properties_entry = object_tree['properties.yaml']
+            properties_sha1 = properties_entry.oid.hex
+
+            obj = None
+            if self.cache:
+                obj = self.cache.read_object(properties_sha1)
+            if not obj:
+                obj = self._parse_object(
+                    commit, klass, object_entry, properties_entry)
+            if self.cache:
+                self.cache.write_object(properties_sha1, obj)
+            objects.add(obj)
+        return objects
+
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
         yield head
@@ -133,3 +170,11 @@ class LocalStore(stores.Store):
         entry = commit_object.tree['consonant.yaml']
         blob = self.repo[entry.oid]
         return yaml.load(blob.data)
+
+    def _parse_object(self, commit, klass, object_entry, properties_entry):
+        blob = self.repo[properties_entry.oid]
+        properties_data = yaml.load(blob.data)
+        return objects.Object(
+            object_entry.name, klass,
+            [properties.Property(k, v)
+             for (k, v) in properties_data.iteritems()])

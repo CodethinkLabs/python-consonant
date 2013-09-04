@@ -90,6 +90,13 @@ Obain the classes from a commit in a local store.
     print yaml.dump(store.classes(store.commit('$MATCH_1')))
     EOF
 
+Fetch objects from a commit in a local store.
+
+    IMPLEMENTS WHEN fetching objects from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF
+    print yaml.dump(store.objects(store.commit('$MATCH_1')))
+    EOF
+
 Implementation section for checking the output of commands
 ----------------------------------------------------------
 
@@ -133,18 +140,27 @@ alias:
     assert '$MATCH_2' in output_yaml['refs/tags/$MATCH_1']['url-aliases']
     EOF
 
-Check whether a field in the output dictionary is set to a specific
-value.
+Check whether a field in the output dictionary is present or not.
 
-    IMPLEMENTS THEN the field "(.+)" exists
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is present
     run_python_test <<-EOF
     assert '$MATCH_1' in output_yaml
     EOF
 
-    IMPLEMENTS THEN the field "(.+)" does not exist
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is not present
     run_python_test <<-EOF
     assert '$MATCH_1' not in output_yaml
     EOF
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" is present
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert '$MATCH_1' in object
+    EOF
+
+Check whether a field in the output dictionary is set to a specific
+value.
 
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
     run_python_test <<-EOF
@@ -156,6 +172,20 @@ value.
     assert output_yaml['$MATCH_1']['$MATCH_2'] == eval('$MATCH_3')
     EOF
 
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" is set to (.+)
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert object['$MATCH_1'] == eval('$MATCH_4')
+    EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" is set to (.+)
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert object['properties']['$MATCH_1'] == eval('$MATCH_4')
+    EOF
+
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
     run_python_test <<-EOF
     assert {'uuid': '$MATCH_3'} in output_yaml['$MATCH_1']['$MATCH_2']
@@ -164,6 +194,43 @@ value.
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" does not include the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
     run_python_test <<-EOF
     assert {'uuid': '$MATCH_3'} not in output_yaml['$MATCH_1']['$MATCH_2']
+    EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" includes the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert {'uuid': '$MATCH_4'} in object['properties']['$MATCH_1']
+    EOF
+
+Check whether a field in the output dictionary includes a specific
+object (not just a reference).
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    def object_matches_uuid(obj):
+        return obj['uuid'] == '$MATCH_2'
+    assert any([object_matches_uuid(x) for x in output_yaml['$MATCH_1']])
+    EOF
+
+Check whether a field in the output dictionary has a specific
+size/length.
+
+    IMPLEMENTS THEN the size of field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is ([0-9]+)
+    run_python_test <<-EOF
+    assert len(output_yaml['$MATCH_1']) == $MATCH_2
+    EOF
+
+    IMPLEMENTS THEN the size of field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is ([0-9]+)
+    run_python_test <<-EOF
+    assert len(output_yaml['$MATCH_1']['$MATCH_2']) == $MATCH_3
+    EOF
+
+    IMPLEMENTS THEN the size of property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" is ([0-9]+)
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert len(object['properties']['$MATCH_1']) == $MATCH_4
     EOF
 
 Check whether a given exception is thrown.
