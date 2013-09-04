@@ -15,7 +15,7 @@ Listing all Git refs in a store
 -------------------------------
 
     SCENARIO list Git refs in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     listing Git refs using consonant.store
 
 Make sure all the expected local branches are present:
@@ -48,7 +48,7 @@ Fetching individual refs from a store
 -------------------------------------
 
     SCENARIO fetch the Git ref "HEAD" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "HEAD" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["HEAD"]
@@ -61,7 +61,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs/heads/master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs/heads/master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
@@ -74,7 +74,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
@@ -87,7 +87,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs:heads:master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs:heads:master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["master", "refs:heads:master"]
@@ -100,7 +100,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs/remotes/origin/HEAD" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs/remotes/origin/HEAD" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
@@ -113,7 +113,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "origin:HEAD" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "origin:HEAD" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
@@ -126,7 +126,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs:remotes:origin:HEAD" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs:remotes:origin:HEAD" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:HEAD", "refs:remotes:origin:HEAD"]
@@ -139,7 +139,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs/remotes/origin/master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs/remotes/origin/master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
@@ -152,7 +152,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "origin:master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "origin:master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
@@ -165,7 +165,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs:remotes:origin:master" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs:remotes:origin:master" using consonant.store
     THEN     the field "type" is set to "branch"
     AND      the field "url-aliases" is set to ["origin:master", "refs:remotes:origin:master"]
@@ -178,7 +178,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs/tags/initial-data-set" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs/tags/initial-data-set" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
@@ -191,7 +191,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to []
 
     SCENARIO fetch the Git ref "refs:tags:initial-data-set" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs:tags:initial-data-set" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
@@ -204,7 +204,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to []
 
     SCENARIO fetch the Git ref "initial-data-set" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "initial-data-set" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["initial-data-set", "refs:tags:initial-data-set"]
@@ -217,7 +217,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to []
 
     SCENARIO fetch the Git ref "refs/tags/second-commit" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs/tags/second-commit" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
@@ -230,7 +230,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "second-commit" from a local store using
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "second-commit" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
@@ -243,7 +243,7 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch the Git ref "refs:tags:second-commit" from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the ref "refs:tags:second-commit" using consonant.store
     THEN     the field "type" is set to "tag"
     AND      the field "url-aliases" is set to ["second-commit", "refs:tags:second-commit"]
@@ -256,15 +256,15 @@ Fetching individual refs from a store
     AND      the field "head" > "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
 
     SCENARIO fetch a non-existent Git ref from a local store using consonant.store
-    GIVEN    a local simple kanban store
-    WHEN     fetching the ref "non-existent-ref" using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent ref "non-existent-ref" using consonant.store
     THEN     a RefNotFoundError is thrown
 
 Fetching individual commits from a store
 ----------------------------------------
 
     SCENARIO fetch a commit from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the commit 8cb43885 using consonant.store
     THEN     the field "sha1" is set to "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
     AND      the field "parents" is set to []
@@ -275,7 +275,7 @@ Fetching individual commits from a store
     AND      the field "subject" is set to "Add initial set of cards and lanes"
 
     SCENARIO fetch another commit from a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the commit 45e0ee91 using consonant.store
     THEN     the field "sha1" is set to "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
     AND      the field "parents" is set to ["8cb438859cc3bdbfe6b2f685187b2a3b60331447"]
@@ -286,67 +286,67 @@ Fetching individual commits from a store
     AND      the field "subject" is set to "Add another card to the doing lane"
 
     SCENARIO fetch a non-existent from a local store using consonant.store
-    GIVEN    a local simple kanban store
-    WHEN     fetching the commit b7479fa9 using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent commit b7479fa9 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
 Obtaining the store name
 ------------------------
 
     SCENARIO obtain the store name from a commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining the store name from commit 8cb43885 using consonant.store
     THEN     the result is "com.github.consonant.consonant-test-store-01"
 
     SCENARIO obtain the store name from another commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining the store name from commit 45e0ee91 using consonant.store
     THEN     the result is "com.github.consonant.consonant-test-store-01"
 
     SCENARIO obtain the store name from a non-existent commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the store name from commit b7479fa9 using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining the store name from the non-existent commit b7479fa9 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
 Obtaining the store schema
 --------------------------
 
     SCENARIO obtain the schema name from a commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining the schema name from commit 8cb43885 using consonant.store
     THEN     the result is "com.github.consonant.consonant-test-schemas-01"
 
     SCENARIO obtain the schema name from another commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining the schema name from commit 45e0ee91 using consonant.store
     THEN     the result is "com.github.consonant.consonant-test-schemas-01"
 
     SCENARIO obtain the schema name from a non-existent commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
-    WHEN     obtaining the schema name from commit 950f9d21 using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining the schema name from the non-existent commit 950f9d21 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
 Obtaining the service aliases used in a commit
 ----------------------------------------------
 
     SCENARIO obtain service aliases from a commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining service aliases from commit 34bf243e using consonant.store
     THEN     the field "issues" is set to "the.service.name.of.an.issue.store"
     THEN     the field "reviews" does not exist
 
     SCENARIO obtain service aliases from another commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining service aliases from commit bb53dce using consonant.store
     THEN     the field "issues" is set to "the.service.name.of.an.issue.store"
     THEN     the field "reviews" is set to "the.service.name.of.a.code.review.store"
 
     SCENARIO obtain service aliases from a non-existent commit in a local store using consonant.store
-    GIVEN    a local simple kanban store
-    WHEN     obtaining service aliases from commit b7479fa9 using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining service aliases from the non-existent commit b7479fa9 using consonant.store
     THEN     a CommitNotFoundError is thrown
 
     SCENARIO obtain service aliases from a commit in a local store using consonant.store where no aliases are defined
-    GIVEN    a local simple kanban store
+    GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining service aliases from commit 45e0ee91 using consonant.store
     THEN     the result is an empty mapping

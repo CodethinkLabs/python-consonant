@@ -17,19 +17,85 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-# Shell library for python-consonant yarns.
+# Helper library for python-consonant scenario tests.
 
 
 clone_test_schemas()
 {
-    git clone "$TEST_REPO_BASE_URL"/consonant-test-schemas
+    git clone "$TEST_REPO_BASE_URL"/consonant-test-schemas \
+        $DATADIR/consonant-test-schemas
 }
 
 
 clone_test_store()
 {
-    git clone "$TEST_REPO_BASE_URL"/"$1"
+    git clone "$TEST_REPO_BASE_URL"/"$1" $DATADIR/"$1"
+    echo $DATADIR/$1 > $DATADIR/store-location
 }
 
 
-export PYTHONPATH="$SRCDIR"
+dump_output()
+{
+    echo "stdout:"
+    cat $DATADIR/stdout
+    echo "stderr:"
+    cat $DATADIR/stderr
+}
+
+
+run_python()
+{
+    cd $DATADIR
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr
+    dump_output
+}
+
+
+run_python_with_store()
+{
+    cd $DATADIR
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+import consonant
+import os
+import yaml
+
+store_location = open(os.path.join('store-location')).read().strip()
+pool = consonant.store.pools.StorePool()
+store = pool.store(store_location)
+
+$(cat </dev/stdin)
+EOF
+    dump_output
+}
+
+
+run_python_test()
+{
+    cd $DATADIR
+    python /dev/stdin <<-EOF
+import scenario
+import yaml
+
+output_raw = scenario.output_raw()
+
+print 'raw output:'
+print output_raw
+
+output_yaml = scenario.output_yaml()
+
+print 'yaml output:'
+print output_yaml
+    
+$(cat </dev/stdin)
+EOF
+}
+
+
+test_for_exception()
+{
+    cat $DATADIR/stderr
+    grep "^[a-zA-Z0-9_\.]*$1" $DATADIR/stderr
+}
+
+
+export PYTHONPATH="$SRCDIR/tests/yarn/:$SRCDIR"
