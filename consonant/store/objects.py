@@ -18,9 +18,14 @@
 """Classes to represent object classes and objects."""
 
 
-class ObjectClass(object):
+import yaml
+
+
+class ObjectClass(yaml.YAMLObject):
 
     """An object class with a name and a set of object references."""
+
+    yaml_tag = u'!ObjectClass'
 
     def __init__(self, name, objects):
         self.name = name
@@ -31,6 +36,16 @@ class ObjectClass(object):
             return False
         return self.name == other.name \
             and self.objects == other.objects
+
+    @classmethod
+    def to_yaml(cls, dumper, klass):
+        """Return a YAML representation of the object class."""
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', {
+                'name': klass.name,
+                'objects': list(sorted(klass.objects)),
+                })
 
 
 class Object(object):

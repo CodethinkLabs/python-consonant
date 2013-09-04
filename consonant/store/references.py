@@ -18,9 +18,14 @@
 """Class to represent references between objects in or across stores."""
 
 
-class Reference(object):
+import yaml
+
+
+class Reference(yaml.YAMLObject):
 
     """Class to represent references between objects in or across stores."""
+
+    yaml_tag = u'!Reference'
 
     def __init__(self, uuid, service, ref):
         self.uuid = uuid
@@ -33,3 +38,16 @@ class Reference(object):
         return self.uuid == other.uuid \
             and self.service == other.service \
             and self.ref == other.ref
+
+    @classmethod
+    def to_yaml(cls, dumper, reference):
+        """Return a YAML reprensentation of the given Reference."""
+
+        mapping = {}
+        mapping['uuid'] = reference.uuid
+        if reference.service:
+            mapping['service'] = reference.service
+        if reference.ref:
+            mapping['ref'] = reference.ref
+
+        return dumper.represent_mapping(u'tag:yaml.org,2002:map', mapping)

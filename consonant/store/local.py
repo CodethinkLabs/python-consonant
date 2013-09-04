@@ -21,7 +21,7 @@
 import pygit2
 import yaml
 
-from consonant.store import git, stores, timestamps
+from consonant.store import git, objects, references, stores, timestamps
 
 
 class LocalStore(stores.Store):
@@ -86,6 +86,26 @@ class LocalStore(stores.Store):
 
         data = self._load_metadata(commit)
         return data.get('services', {})
+
+    def classes(self, commit):
+        """Return the classes present in the given commit of the store."""
+
+        commit_object = self.repo[commit.sha1]
+        classes = {}
+        for class_entry in commit_object.tree:
+            if class_entry.filemode != 040000:
+                continue
+            class_name = class_entry.name
+            object_references = set()
+            object_entries = self.repo[class_entry.oid]
+            for object_entry in object_entries:
+                if object_entry.filemode != 040000:
+                    continue
+                reference = references.Reference(object_entry.name, None, None)
+                object_references.add(reference)
+            klass = objects.ObjectClass(class_name, object_references)
+            classes[klass.name] = klass
+        return classes
 
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')

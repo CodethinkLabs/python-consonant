@@ -350,3 +350,39 @@ Obtaining the service aliases used in a commit
     GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     obtaining service aliases from commit 45e0ee91 using consonant.store
     THEN     the result is an empty mapping
+
+Obtaining the classes present in a commit
+-----------------------------------------
+
+    SCENARIO obtain classes from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining the classes from commit 8cb43885 using consonant.store
+    THEN     the field "lane" exists
+    THEN     the field "lane" > "objects" includes the reference "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    THEN     the field "lane" > "objects" includes the reference "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    THEN     the field "card" exists
+    THEN     the field "card" > "objects" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    THEN     the field "card" > "objects" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    THEN     the field "card" > "objects" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    THEN     the field "card" > "objects" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    THEN     the field "card" > "objects" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    THEN     the field "card" > "objects" does not include the reference "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+
+    SCENARIO obtain classes from another commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining the classes from commit 45e0ee91 using consonant.store
+    THEN     the field "lane" exists
+    THEN     the field "lane" > "objects" includes the reference "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    THEN     the field "lane" > "objects" includes the reference "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    THEN     the field "card" exists
+    THEN     the field "card" > "objects" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    THEN     the field "card" > "objects" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    THEN     the field "card" > "objects" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    THEN     the field "card" > "objects" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    THEN     the field "card" > "objects" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    THEN     the field "card" > "objects" includes the reference "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+
+    SCENARIO obtain classes from a non-existent commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     obtaining the classes from the non-existent commit 12345678 using consonant.store
+    THEN     a CommitNotFoundError is thrown

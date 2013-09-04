@@ -78,6 +78,18 @@ Obtain the schema name from a commit in a local store.
     print store.schema(store.commit('$MATCH_1'))
     EOF
 
+Obain the classes from a commit in a local store.
+
+    IMPLEMENTS WHEN obtaining the classes from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF
+    print yaml.dump(store.classes(store.commit('$MATCH_1')))
+    EOF
+
+    IMPLEMENTS WHEN obtaining the classes from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    print yaml.dump(store.classes(store.commit('$MATCH_1')))
+    EOF
+
 Implementation section for checking the output of commands
 ----------------------------------------------------------
 
@@ -124,6 +136,11 @@ alias:
 Check whether a field in the output dictionary is set to a specific
 value.
 
+    IMPLEMENTS THEN the field "(.+)" exists
+    run_python_test <<-EOF
+    assert '$MATCH_1' in output_yaml
+    EOF
+
     IMPLEMENTS THEN the field "(.+)" does not exist
     run_python_test <<-EOF
     assert '$MATCH_1' not in output_yaml
@@ -137,6 +154,16 @@ value.
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
     run_python_test <<-EOF
     assert output_yaml['$MATCH_1']['$MATCH_2'] == eval('$MATCH_3')
+    EOF
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    assert {'uuid': '$MATCH_3'} in output_yaml['$MATCH_1']['$MATCH_2']
+    EOF
+
+    IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" does not include the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    assert {'uuid': '$MATCH_3'} not in output_yaml['$MATCH_1']['$MATCH_2']
     EOF
 
 Check whether a given exception is thrown.

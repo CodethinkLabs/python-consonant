@@ -20,6 +20,7 @@
 
 import itertools
 import unittest
+import yaml
 
 from consonant.store import references
 
@@ -70,3 +71,40 @@ class ReferenceTests(unittest.TestCase):
             self.references[0])
         self.assertFalse(
             references.Reference(*self.references[0]) == self.references[0])
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of Reference objects is ok."""
+
+        string = yaml.dump(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', None, None))
+        data = yaml.load(string)
+        self.assertEqual(
+            data, {'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3'})
+
+        string = yaml.dump(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', 'issues', None))
+        data = yaml.load(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'service': 'issues'
+                })
+
+        string = yaml.dump(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', None, 'master'))
+        data = yaml.load(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'ref': 'master'
+                })
+
+        string = yaml.dump(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', 'issues', 'master'))
+        data = yaml.load(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'service': 'issues',
+                'ref': 'master'
+                })

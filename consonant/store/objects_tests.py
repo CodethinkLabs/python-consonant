@@ -20,6 +20,7 @@
 
 import itertools
 import unittest
+import yaml
 
 from consonant.store import objects, properties, references
 
@@ -87,6 +88,30 @@ class ObjectClassTests(unittest.TestCase):
                             self.test_input[0])
         self.assertFalse(
             objects.ObjectClass(*self.test_input[0]) == self.test_input[0])
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of ObjectClass objects is ok."""
+
+        for class_name, raw_references in self.test_input:
+            object_references = \
+                set(references.Reference(*x) for x in raw_references)
+            klass = objects.ObjectClass(class_name, object_references)
+            string = yaml.dump(klass)
+            yaml_data = yaml.load(string)
+
+            reference_list = []
+            for reference in sorted(object_references):
+                d = {'uuid': reference.uuid}
+                if reference.service:
+                    d['service'] = reference.service
+                if reference.ref:
+                    d['ref'] = reference.ref
+                reference_list.append(d)
+
+            self.assertEqual(yaml_data, {
+                'name': class_name,
+                'objects': reference_list,
+                })
 
 
 class ObjectTests(unittest.TestCase):
