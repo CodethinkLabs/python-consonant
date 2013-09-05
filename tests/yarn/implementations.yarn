@@ -97,6 +97,11 @@ Fetch objects from a commit in a local store.
     print yaml.dump(store.objects(store.commit('$MATCH_1')))
     EOF
 
+    IMPLEMENTS WHEN fetching objects from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    print yaml.dump(store.objects(store.commit('$MATCH_1')))
+    EOF
+
 Implementation section for checking the output of commands
 ----------------------------------------------------------
 
@@ -201,6 +206,13 @@ value.
     objects = output_yaml['$MATCH_3']
     object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
     assert {'uuid': '$MATCH_4'} in object['properties']['$MATCH_1']
+    EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" in "(.+)" references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    objects = output_yaml['$MATCH_3']
+    object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
+    assert object['properties']['$MATCH_1'] == {'uuid': '$MATCH_4'}
     EOF
 
 Check whether a field in the output dictionary includes a specific

@@ -425,5 +425,101 @@ Fetching objects from a commit
     AND      the field "card" is present
     AND      the size of field "card" is 5
 
-TODO Check whether all the expected cards are there and write the same
-test again for the other commit.
+    AND      the field "card" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the field "class" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "card"
+    AND      the field "properties" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is present
+    AND      the property "title" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "Implement feature A"
+    AND      the property "lane" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the field "class" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "card"
+    AND      the field "properties" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is present
+    AND      the property "title" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "Write tests for feature A"
+    AND      the property "lane" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the field "card" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the field "class" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "card"
+    AND      the field "properties" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is present
+    AND      the property "title" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "Implement feature B"
+    AND      the property "lane" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the field "class" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "card"
+    AND      the field "properties" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is present
+    AND      the property "title" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "Implement feature C"
+    AND      the property "lane" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the field "class" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "card"
+    AND      the field "properties" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is present
+    AND      the property "title" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "Write tests for feature B"
+    AND      the property "lane" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    SCENARIO fetch objects from another commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching objects from commit 45e0ee91 using consonant.store
+
+    THEN     the field "lane" is present
+    AND      the size of field "lane" is 2
+
+    AND      the field "lane" includes the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the field "class" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "lane"
+    AND      the field "properties" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is present
+    AND      the property "title" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "Backlog"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the size of property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is 3
+
+    AND      the field "lane" includes the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the field "class" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "lane"
+    AND      the field "properties" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is present
+    AND      the property "title" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "Doing"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      the size of property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is 3
+
+    AND      the field "card" is present
+    AND      the size of field "card" is 6
+
+    AND      the field "card" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the field "class" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "card"
+    AND      the field "properties" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is present
+    AND      the property "title" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "Implement feature A"
+    AND      the property "lane" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the field "class" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "card"
+    AND      the field "properties" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is present
+    AND      the property "title" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "Write tests for feature A"
+    AND      the property "lane" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the field "card" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the field "class" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "card"
+    AND      the field "properties" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is present
+    AND      the property "title" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "Implement feature B"
+    AND      the property "lane" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the field "class" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "card"
+    AND      the field "properties" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is present
+    AND      the property "title" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "Implement feature C"
+    AND      the property "lane" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the field "class" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "card"
+    AND      the field "properties" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is present
+    AND      the property "title" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "Write tests for feature B"
+    AND      the property "lane" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the field "card" includes the object "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      the field "class" of object "633715b8-70ea-4b06-94c6-43ee83a8df9e" in "card" is set to "card"
+    AND      the field "properties" of object "633715b8-70ea-4b06-94c6-43ee83a8df9e" in "card" is present
+    AND      the property "title" of object "633715b8-70ea-4b06-94c6-43ee83a8df9e" in "card" is set to "Write tests for feature C"
+    AND      the property "lane" of object "633715b8-70ea-4b06-94c6-43ee83a8df9e" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    SCENARIO fetch objects from a non-existent commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching objects from the non-existent commit 12345678 using consonant.store
+    THEN     a CommitNotFoundError is thrown
