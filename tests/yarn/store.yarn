@@ -523,3 +523,36 @@ Fetching objects from a commit
     GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching objects from the non-existent commit 12345678 using consonant.store
     THEN     a CommitNotFoundError is thrown
+
+Fetching objects of a given class from a commit
+-----------------------------------------------
+
+    SCENARIO fetch objects for a given class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching objects of class "lane" from commit 8cb43885 using consonant.store
+
+    THEN     the result is a list of size 2
+
+    AND      the result includes the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the field "class" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "lane"
+    AND      the field "properties" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" is present
+    AND      the property "title" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Backlog"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the size of property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" is 3
+
+    AND      the result includes the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the field "class" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "lane"
+    AND      the field "properties" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is present
+    AND      the property "title" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "Doing"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the size of property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is 2
+
+    AND      the field "card" is not present
+
+    SCENARIO fetch objects for a given class from a non-existent commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching objects of class "lane" from the non-existent commit 12345678 using consonant.store
+    THEN     a CommitNotFoundError is thrown
