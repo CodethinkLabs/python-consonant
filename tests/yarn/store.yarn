@@ -556,3 +556,72 @@ Fetching objects of a given class from a commit
     GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching objects of class "lane" from the non-existent commit 12345678 using consonant.store
     THEN     a CommitNotFoundError is thrown
+
+    SCENARIO fetch objects for a non-existent class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching objects of non-existent class "non-existent-class" from commit 8cb43885 using consonant.store
+    THEN     a ClassNotFoundError is thrown
+
+Fetching individual objects from a commit
+-----------------------------------------
+
+    SCENARIO fetch an object from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "633715b8-70ea-4b06-94c6-43ee83a8df9e" from commit 45e0ee91 using consonant.store
+    THEN     the field "class" is set to "card"
+    AND      the field "properties" is present
+    AND      the property "title" is set to "Write tests for feature C"
+    AND      the property "lane" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    SCENARIO fetch another object from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" from commit 8cb43885 using consonant.store
+    THEN     the field "class" is set to "lane"
+    AND      the field "properties" is present
+    AND      the property "title" is set to "Doing"
+    AND      the property "cards" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the size of property "cards" is 2
+
+    SCENARIO fetch an object from a non-existent commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" from the non-existent commit 12345678 using consonant.store
+    THEN     a CommitNotFoundError is thrown
+
+    SCENARIO fetch a non-existent object from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent object "081fa96f-0285-4b68-add4-c0039d4535f4" from commit 8cb43885 using consonant.store
+    THEN     an ObjectNotFoundError is thrown
+
+    SCENARIO fetch an object for a given class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "633715b8-70ea-4b06-94c6-43ee83a8df9e" of class "card" from commit 45e0ee91 using consonant.store
+    THEN     the field "class" is set to "card"
+    AND      the field "properties" is present
+    AND      the property "title" is set to "Write tests for feature C"
+    AND      the property "lane" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    SCENARIO fetch another object for a given class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of class "lane" from commit 8cb43885 using consonant.store
+    THEN     the field "class" is set to "lane"
+    AND      the field "properties" is present
+    AND      the property "title" is set to "Doing"
+    AND      the property "cards" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the size of property "cards" is 2
+
+    SCENARIO fetch an object for a given class from a non-existent commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of class "lane" from the non-existent commit 12345678 using consonant.store
+    THEN     a CommitNotFoundError is thrown
+
+    SCENARIO fetch a non-existent object for a given class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent object "081fa96f-0285-4b68-add4-c0039d4535f4" of class "card" from commit 8cb43885 using consonant.store
+    THEN     an ObjectNotFoundError is thrown
+
+    SCENARIO fetch a existent object for the wrong class from a commit in a local store using consonant.store
+    GIVEN    a local standard test store "consonant-test-store-01"
+    WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of the wrong class "card" from commit 8cb43885 using consonant.store
+    THEN     an ObjectNotFoundError is thrown

@@ -50,6 +50,10 @@ class Store(object):  # pragma: no cover
         """Return object classes for the given commit."""
         raise NotImplementedError
 
+    def klass(self, commit, name):
+        """Return object class for a given class name and commit."""
+        raise NotImplementedError
+
     def objects(self, commit, klass=None):
         """Return all objects in the given commit and, optionally, class."""
         raise NotImplementedError
@@ -93,3 +97,33 @@ class CommitNotFoundError(RuntimeError):
 
     def __str__(self):
         return 'Commit %s not found' % self.sha1
+
+
+class ClassNotFoundError(RuntimeError):
+
+    """Exception for when a class is not found in a commit."""
+
+    def __init__(self, commit, name):
+        self.commit = commit
+        self.name = name
+
+    def __str__(self):
+        return 'Commit %s: class %s not found' % (self.commit.sha1, self.name)
+
+
+class ObjectNotFoundError(RuntimeError):
+
+    """Exception for when an object is not found in a commit/klass."""
+
+    def __init__(self, commit, uuid, klass=None):
+        self.commit = commit
+        self.uuid = uuid
+        self.klass = klass
+
+    def __str__(self):
+        if self.klass:
+            return 'Commit %s: object %s not found in class "%s"' % (
+                self.commit.sha1, self.uuid, self.klass.name)
+        else:
+            return 'Commit %s: object %s not found' % (
+                self.commit.sha1, self.uuid)

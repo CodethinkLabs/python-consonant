@@ -95,19 +95,23 @@ class LocalStore(stores.Store):
         commit_object = self.repo[commit.sha1]
         classes = {}
         for class_entry in commit_object.tree:
-            if class_entry.filemode != 040000:
+            if class_entry.name == 'consonant.yaml':
                 continue
-            class_name = class_entry.name
-            object_references = set()
-            object_entries = self.repo[class_entry.oid]
-            for object_entry in object_entries:
-                if object_entry.filemode != 040000:
-                    continue
-                reference = references.Reference(object_entry.name, None, None)
-                object_references.add(reference)
-            klass = objects.ObjectClass(class_name, object_references)
-            classes[klass.name] = klass
+            object_references = self._class_object_references(class_entry)
+            klass = objects.ObjectClass(class_entry.name, object_references)
+            classes[class_entry.name] = klass
         return classes
+
+    def klass(self, commit, name):
+        """Return the class for the given name and commit of the store."""
+
+        commit_object = self.repo[commit.sha1]
+        if name != 'consonant.yaml' and name in commit_object.tree:
+            class_entry = commit_object.tree[name]
+            object_references = self._class_object_references(class_entry)
+            return objects.ObjectClass(class_entry.name, object_references)
+        else:
+            raise stores.ClassNotFoundError(commit, name)
 
     def objects(self, commit, klass=None):
         """Return the objects present in the given commit of the store."""
@@ -122,6 +126,44 @@ class LocalStore(stores.Store):
                     self._class_objects(commit, klass))
             return objects
 
+    def object(self, commit, uuid, klass=None):
+        """Return the object with the given UUID from a commit of the store."""
+
+        if klass:
+            object = self._class_object(commit, uuid, klass)
+            if object:
+                return object
+            else:
+                raise stores.ObjectNotFoundError(commit, uuid, klass)
+        else:
+            classes = self.classes(commit)
+            for klass in classes.itervalues():
+                object = self._class_object(commit, uuid, klass)
+                if object:
+                    return object
+            raise stores.ObjectNotFoundError(commit, uuid)
+
+    def _class_object(self, commit, uuid, klass):
+        objects = [x for x in klass.objects if x.uuid == uuid]
+        if objects:
+            commit_object = self.repo[commit.sha1]
+            class_entry = commit_object.tree[klass.name]
+            class_tree = self.repo[class_entry.oid]
+            object_entry = class_tree[uuid]
+            return self._load_object(commit, klass, object_entry)
+        else:
+            return None
+
+    def _class_object_references(self, class_entry):
+        """Return references to all objects of a class in a commit."""
+
+        object_references = set()
+        object_entries = self.repo[class_entry.oid]
+        for object_entry in object_entries:
+            reference = references.Reference(object_entry.name, None, None)
+            object_references.add(reference)
+        return object_references
+
     def _class_objects(self, commit, klass):
         """Return the objects of a class in the given commit of the store."""
 
@@ -130,22 +172,8 @@ class LocalStore(stores.Store):
         class_tree = self.repo[class_tree_entry.oid]
         objects = set()
         for object_entry in class_tree:
-            if object_entry.filemode != 040000:
-                continue
-
-            object_tree = self.repo[object_entry.oid]
-            properties_entry = object_tree['properties.yaml']
-            properties_sha1 = properties_entry.oid.hex
-
-            obj = None
-            if self.cache:
-                obj = self.cache.read_object(properties_sha1)
-            if not obj:
-                obj = self._parse_object(
-                    commit, klass, object_entry, properties_entry)
-            if self.cache:
-                self.cache.write_object(properties_sha1, obj)
-            objects.add(obj)
+            object = self._load_object(commit, klass, object_entry)
+            objects.add(object)
         return objects
 
     def _list_refs(self):
@@ -174,6 +202,20 @@ class LocalStore(stores.Store):
         entry = commit_object.tree['consonant.yaml']
         blob = self.repo[entry.oid]
         return yaml.load(blob.data)
+
+    def _load_object(self, commit, klass, object_entry):
+        object_tree = self.repo[object_entry.oid]
+        properties_entry = object_tree['properties.yaml']
+        properties_sha1 = properties_entry.oid.hex
+        object = None
+        if self.cache:
+            object = self.cache.read_object(properties_sha1)
+        if not object:
+            object = self._parse_object(
+                commit, klass, object_entry, properties_entry)
+        if self.cache:
+            self.cache.write_object(properties_sha1, object)
+        return object
 
     def _parse_object(self, commit, klass, object_entry, properties_entry):
         blob = self.repo[properties_entry.oid]

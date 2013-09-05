@@ -105,15 +105,65 @@ Fetch objects from a commit in a local store.
     IMPLEMENTS WHEN fetching objects of class "(.+)" from commit ([abcdefABCDEF0-9]+) using consonant.store
     run_python_with_store <<-EOF
     commit = store.commit('$MATCH_2')
-    klass = store.classes(commit)['$MATCH_1']
+    klass = store.klass(commit, '$MATCH_1')
+    print yaml.dump(list(store.objects(commit, klass)))
+    EOF
+
+    IMPLEMENTS WHEN fetching objects of non-existent class "(.+)" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    commit = store.commit('$MATCH_2')
+    klass = store.klass(commit, '$MATCH_1')
     print yaml.dump(list(store.objects(commit, klass)))
     EOF
 
     IMPLEMENTS WHEN fetching objects of class "(.+)" from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
     run_python_with_store <<-EOF || true
     commit = store.commit('$MATCH_2')
-    klass = store.classes(commit)['$MATCH_1']
+    klass = store.klass(commit, '$MATCH_1')
     print yaml.dump(list(store.objects(commit, klass)))
+    EOF
+
+    IMPLEMENTS WHEN fetching the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF
+    print yaml.dump(store.object(store.commit('$MATCH_2'), '$MATCH_1'))
+    EOF
+
+    IMPLEMENTS WHEN fetching the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF
+    commit = store.commit('$MATCH_3')
+    klass = store.klass(commit, '$MATCH_2')
+    print yaml.dump(store.object(commit, '$MATCH_1', klass))
+    EOF
+
+    IMPLEMENTS WHEN fetching the non-existent object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    print yaml.dump(store.object(store.commit('$MATCH_2'), '$MATCH_1'))
+    EOF
+
+    IMPLEMENTS WHEN fetching the non-existent object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    commit = store.commit('$MATCH_3')
+    klass = store.klass(commit, '$MATCH_2')
+    print yaml.dump(store.object(commit, '$MATCH_1', klass))
+    EOF
+
+    IMPLEMENTS WHEN fetching the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    print yaml.dump(store.object(store.commit('$MATCH_2'), '$MATCH_1'))
+    EOF
+
+    IMPLEMENTS WHEN fetching the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    commit = store.commit('$MATCH_3')
+    klass = store.klass(commit, '$MATCH_2')
+    print yaml.dump(store.object(commit, '$MATCH_1', klass))
+    EOF
+
+    IMPLEMENTS WHEN fetching the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of the wrong class "(.+)" from commit ([abcdefABCDEF0-9]+) using consonant.store
+    run_python_with_store <<-EOF || true
+    commit = store.commit('$MATCH_3')
+    klass = store.klass(commit, '$MATCH_2')
+    print yaml.dump(store.object(commit, '$MATCH_1', klass))
     EOF
 
 Implementation section for checking the output of commands
@@ -223,6 +273,11 @@ value.
     assert object['properties']['$MATCH_1'] == eval('$MATCH_3')
     EOF
 
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
+    run_python_test <<-EOF
+    assert output_yaml['properties']['$MATCH_1'] == eval('$MATCH_2')
+    EOF
+
     IMPLEMENTS THEN the field "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" > "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
     run_python_test <<-EOF
     assert {'uuid': '$MATCH_3'} in output_yaml['$MATCH_1']['$MATCH_2']
@@ -251,6 +306,16 @@ value.
     objects = output_yaml['$MATCH_3']
     object = [x for x in objects if x['uuid'] == '$MATCH_2'][0]
     assert object['properties']['$MATCH_1'] == {'uuid': '$MATCH_4'}
+    EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the reference "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    assert {'uuid': '$MATCH_2'} in output_yaml['properties']['$MATCH_1']
+    EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    assert output_yaml['properties']['$MATCH_1'] == {'uuid': '$MATCH_2'}
     EOF
 
 Check whether a field in the output dictionary includes a specific
@@ -289,9 +354,14 @@ size/length.
     assert len(object['properties']['$MATCH_1']) == $MATCH_3
     EOF
 
+    IMPLEMENTS THEN the size of property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is ([0-9]+)
+    run_python_test <<-EOF
+    assert len(output_yaml['properties']['$MATCH_1']) == $MATCH_2
+    EOF
+
 Check whether a given exception is thrown.
 
-    IMPLEMENTS THEN a (.+) is thrown
+    IMPLEMENTS THEN an? (.+) is thrown
     test_for_exception "$MATCH_1"
 
 Check whether the result is set to a given value.
