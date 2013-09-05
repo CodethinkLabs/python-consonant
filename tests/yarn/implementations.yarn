@@ -106,14 +106,14 @@ Fetch objects from a commit in a local store.
     run_python_with_store <<-EOF
     commit = store.commit('$MATCH_2')
     klass = store.classes(commit)['$MATCH_1']
-    print yaml.dump(list(store.class_objects(commit, klass)))
+    print yaml.dump(list(store.objects(commit, klass)))
     EOF
 
     IMPLEMENTS WHEN fetching objects of class "(.+)" from the non-existent commit ([abcdefABCDEF0-9]+) using consonant.store
     run_python_with_store <<-EOF || true
     commit = store.commit('$MATCH_2')
     klass = store.classes(commit)['$MATCH_1']
-    print yaml.dump(list(store.class_objects(commit, klass)))
+    print yaml.dump(list(store.objects(commit, klass)))
     EOF
 
 Implementation section for checking the output of commands

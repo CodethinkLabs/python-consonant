@@ -50,10 +50,6 @@ class Store(object):  # pragma: no cover
         """Return object classes for the given commit."""
         raise NotImplementedError
 
-    def klass(self, commit, name):
-        """Return the object classes for the given commit and class name."""
-        raise NotImplementedError
-
     def objects(self, commit, klass=None):
         """Return all objects in the given commit and, optionally, class."""
         raise NotImplementedError

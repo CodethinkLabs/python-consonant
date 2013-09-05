@@ -109,16 +109,20 @@ class LocalStore(stores.Store):
             classes[klass.name] = klass
         return classes
 
-    def objects(self, commit):
+    def objects(self, commit, klass=None):
         """Return the objects present in the given commit of the store."""
 
-        classes = self.classes(commit)
-        objects = {}
-        for klass in classes.itervalues():
-            objects[klass.name] = sorted(self.class_objects(commit, klass))
-        return objects
+        if klass:
+            return sorted(self._class_objects(commit, klass))
+        else:
+            classes = self.classes(commit)
+            objects = {}
+            for klass in classes.itervalues():
+                objects[klass.name] = sorted(
+                    self._class_objects(commit, klass))
+            return objects
 
-    def class_objects(self, commit, klass):
+    def _class_objects(self, commit, klass):
         """Return the objects of a class in the given commit of the store."""
 
         commit_object = self.repo[commit.sha1]
