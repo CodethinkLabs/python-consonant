@@ -93,7 +93,9 @@ class MemcachedObjectCacheTests(unittest.TestCase):
         """Verify that reading objects before writing them returns nothing."""
 
         for sha1, original_object in self.test_objects.iteritems():
-            self.assertEqual(self.cache.read_object(sha1), None)
+            self.assertEqual(
+                self.cache.read_object(original_object.uuid, sha1),
+                None)
 
     def test_writing_an_object_without_properties_and_reading_it_works(self):
         """Verify that writing/reading an object with no properties works."""
@@ -103,8 +105,8 @@ class MemcachedObjectCacheTests(unittest.TestCase):
         original_object = objects.Object(
             '9b31fd51-9f4d-4ab0-b73d-a0b1d8542289', klass, [])
 
-        self.cache.write_object(sha1, original_object)
-        cached_object = self.cache.read_object(sha1)
+        self.cache.write_object(original_object.uuid, sha1, original_object)
+        cached_object = self.cache.read_object(original_object.uuid, sha1)
 
         self.assertEqual(original_object, cached_object)
 
@@ -112,18 +114,20 @@ class MemcachedObjectCacheTests(unittest.TestCase):
         """Verify that writing/reading many object with properties works."""
 
         for sha1, original_object in self.test_objects.iteritems():
-            self.cache.write_object(sha1, original_object)
-            cached_object = self.cache.read_object(sha1)
+            self.cache.write_object(
+                original_object.uuid, sha1, original_object)
+            cached_object = self.cache.read_object(original_object.uuid, sha1)
             self.assertEqual(original_object, cached_object)
 
     def test_writing_multiple_objects_before_reading_them_works(self):
         """Verify that writing objects in a batch before reading them works."""
 
         for sha1, original_object in self.test_objects.iteritems():
-            self.cache.write_object(sha1, original_object)
+            self.cache.write_object(
+                original_object.uuid, sha1, original_object)
 
         for sha1, original_object in self.test_objects.iteritems():
-            cached_object = self.cache.read_object(sha1)
+            cached_object = self.cache.read_object(original_object.uuid, sha1)
             self.assertEqual(original_object, cached_object)
 
     def test_overwriting_leads_to_fetching_a_different_object(self):
@@ -135,9 +139,11 @@ class MemcachedObjectCacheTests(unittest.TestCase):
             [])
 
         for sha1, original_object in self.test_objects.iteritems():
-            self.cache.write_object(sha1, original_object)
-            self.cache.write_object(sha1, overwriting_object)
-            cached_object = self.cache.read_object(sha1)
+            self.cache.write_object(
+                original_object.uuid, sha1, original_object)
+            self.cache.write_object(
+                original_object.uuid, sha1, overwriting_object)
+            cached_object = self.cache.read_object(original_object.uuid, sha1)
             self.assertNotEqual(original_object, cached_object)
             self.assertFalse(original_object == cached_object)
             self.assertEqual(overwriting_object, cached_object)

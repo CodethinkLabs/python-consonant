@@ -695,13 +695,13 @@ Fetch objects once:
     AND      memcached has 0 hits
     AND      memcached has 7 misses
 
-    AND      the memcached item 62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
-    AND      the memcached item e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
-    AND      the memcached item e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
-    AND      the memcached item 7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
-    AND      the memcached item 315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
-    AND      the memcached item 41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
-    AND      the memcached item fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the memcached item 27519b8d-8ad8-4558-8ea2-f128404e6f58,62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the memcached item 71bd32d7-f02c-4cdd-9f91-1e73ba9a9527,e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the memcached item 04be5c1b-0192-4e31-b4f8-39a084659738,e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the memcached item 7501f1f4-e357-4af4-b5ff-546fae3f25f4,7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the memcached item 86ab9538-3926-42ff-9fc7-e122a006cd4d,315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the memcached item dd7ff995-eba8-46e0-93d4-7297a691919e,41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the memcached item efb3c4e5-3ee0-4171-bddd-a56e9b0765cd,fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
 
     FINALLY  stop the local Memcached instance
 
@@ -772,12 +772,12 @@ Fetch objects twice:
     AND      memcached has 7 hits
     AND      memcached has 7 misses
 
-    AND      the memcached item 62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
-    AND      the memcached item e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
-    AND      the memcached item e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
-    AND      the memcached item 7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
-    AND      the memcached item 315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
-    AND      the memcached item 41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
-    AND      the memcached item fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the memcached item 27519b8d-8ad8-4558-8ea2-f128404e6f58,62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the memcached item 71bd32d7-f02c-4cdd-9f91-1e73ba9a9527,e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the memcached item 04be5c1b-0192-4e31-b4f8-39a084659738,e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the memcached item 7501f1f4-e357-4af4-b5ff-546fae3f25f4,7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the memcached item 86ab9538-3926-42ff-9fc7-e122a006cd4d,315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the memcached item dd7ff995-eba8-46e0-93d4-7297a691919e,41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the memcached item efb3c4e5-3ee0-4171-bddd-a56e9b0765cd,fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
 
     FINALLY  stop the local Memcached instance

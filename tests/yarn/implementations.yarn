@@ -419,7 +419,7 @@ alias.
 
 Check whether a memcached item holds an object with a specific UUID.
 
-    IMPLEMENTS THEN the memcached item ([abcdef0-9]{40}) holds the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    IMPLEMENTS THEN the memcached item ([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9],[abcdef0-9]{40}) holds the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
     run_python_test <<-EOF
     import pylibmc
     mc = pylibmc.Client(['127.0.0.1'])

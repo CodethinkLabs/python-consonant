@@ -209,12 +209,12 @@ class LocalStore(stores.Store):
         properties_sha1 = properties_entry.oid.hex
         object = None
         if self.cache:
-            object = self.cache.read_object(properties_sha1)
+            object = self.cache.read_object(object_entry.name, properties_sha1)
         if not object:
             object = self._parse_object(
                 commit, klass, object_entry, properties_entry)
         if self.cache:
-            self.cache.write_object(properties_sha1, object)
+            self.cache.write_object(object_entry.name, properties_sha1, object)
         return object
 
     def _parse_object(self, commit, klass, object_entry, properties_entry):
