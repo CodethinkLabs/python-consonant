@@ -58,7 +58,7 @@ class Store(object):  # pragma: no cover
         """Return all objects in the given commit and, optionally, class."""
         raise NotImplementedError
 
-    def object(self, commit, uuid):
+    def object(self, commit, uuid, klass=None):
         """Return the object with the given UUID in the given commit."""
         raise NotImplementedError
 

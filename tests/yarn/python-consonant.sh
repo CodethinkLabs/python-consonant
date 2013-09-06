@@ -64,6 +64,9 @@ store_location = open(os.path.join('store-location')).read().strip()
 pool = consonant.store.pools.StorePool()
 store = pool.store(store_location)
 
+if os.path.exists('use-memcached'):
+    store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
+
 $(cat </dev/stdin)
 EOF
 }

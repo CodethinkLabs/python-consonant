@@ -625,3 +625,159 @@ Fetching individual objects from a commit
     GIVEN    a local standard test store "consonant-test-store-01"
     WHEN     fetching the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of the wrong class "card" from commit 8cb43885 using consonant.store
     THEN     an ObjectNotFoundError is thrown
+
+Fetching objects from a commit using consonant.store with an object cache
+-------------------------------------------------------------------------
+
+Fetch objects once:
+
+    SCENARIO fetch objects from a commit in a local store using consonant.store with an object cache once
+    GIVEN    a local standard test store "consonant-test-store-01"
+    AND      a local Memcached instance
+    WHEN     fetching objects from commit 8cb43885 using consonant.store
+
+    THEN     the field "lane" is present
+    AND      the size of field "lane" is 2
+
+    AND      the field "lane" includes the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the field "class" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "lane"
+    AND      the field "properties" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is present
+    AND      the property "title" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "Backlog"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the size of property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is 3
+
+    AND      the field "lane" includes the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the field "class" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "lane"
+    AND      the field "properties" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is present
+    AND      the property "title" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "Doing"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the size of property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is 2
+
+    AND      the field "card" is present
+    AND      the size of field "card" is 5
+
+    AND      the field "card" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the field "class" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "card"
+    AND      the field "properties" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is present
+    AND      the property "title" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "Implement feature A"
+    AND      the property "lane" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the field "class" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "card"
+    AND      the field "properties" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is present
+    AND      the property "title" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "Write tests for feature A"
+    AND      the property "lane" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the field "card" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the field "class" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "card"
+    AND      the field "properties" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is present
+    AND      the property "title" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "Implement feature B"
+    AND      the property "lane" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the field "class" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "card"
+    AND      the field "properties" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is present
+    AND      the property "title" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "Implement feature C"
+    AND      the property "lane" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the field "class" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "card"
+    AND      the field "properties" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is present
+    AND      the property "title" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "Write tests for feature B"
+    AND      the property "lane" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      memcached has processed 7 get commands
+    AND      memcached has processed 7 set commands
+    AND      memcached holds 7 items
+    AND      memcached has 0 hits
+    AND      memcached has 7 misses
+
+    AND      the memcached item 62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the memcached item e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the memcached item e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the memcached item 7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the memcached item 315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the memcached item 41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the memcached item fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    FINALLY  stop the local Memcached instance
+
+Fetch objects twice:
+
+    SCENARIO fetch objects from a commit in a local store using consonant.store with an object cache twice
+    GIVEN    a local standard test store "consonant-test-store-01"
+    AND      a local Memcached instance
+    WHEN     fetching objects from commit 8cb43885 using consonant.store
+    AND      fetching objects from commit 8cb43885 using consonant.store
+
+    THEN     the field "lane" is present
+    AND      the size of field "lane" is 2
+
+    AND      the field "lane" includes the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the field "class" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "lane"
+    AND      the field "properties" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is present
+    AND      the property "title" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is set to "Backlog"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" includes the reference "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the size of property "cards" of object "27519b8d-8ad8-4558-8ea2-f128404e6f58" in "lane" is 3
+
+    AND      the field "lane" includes the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the field "class" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "lane"
+    AND      the field "properties" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is present
+    AND      the property "title" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is set to "Doing"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" includes the reference "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the size of property "cards" of object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" in "lane" is 2
+
+    AND      the field "card" is present
+    AND      the size of field "card" is 5
+
+    AND      the field "card" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the field "class" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "card"
+    AND      the field "properties" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is present
+    AND      the property "title" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" is set to "Implement feature A"
+    AND      the property "lane" of object "04be5c1b-0192-4e31-b4f8-39a084659738" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the field "class" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "card"
+    AND      the field "properties" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is present
+    AND      the property "title" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" is set to "Write tests for feature A"
+    AND      the property "lane" of object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the field "card" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the field "class" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "card"
+    AND      the field "properties" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is present
+    AND      the property "title" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" is set to "Implement feature B"
+    AND      the property "lane" of object "86ab9538-3926-42ff-9fc7-e122a006cd4d" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the field "class" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "card"
+    AND      the field "properties" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is present
+    AND      the property "title" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" is set to "Implement feature C"
+    AND      the property "lane" of object "dd7ff995-eba8-46e0-93d4-7297a691919e" in "card" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the field "card" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the field "class" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "card"
+    AND      the field "properties" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is present
+    AND      the property "title" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" is set to "Write tests for feature B"
+    AND      the property "lane" of object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" in "card" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      memcached has processed 14 get commands
+    AND      memcached has processed 14 set commands
+    AND      memcached holds 7 items
+    AND      memcached has 7 hits
+    AND      memcached has 7 misses
+
+    AND      the memcached item 62cd229d8ce0ae10f85605f80c798449d36903e8 holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the memcached item e30f2602a81c0a6fecd8d73c48dde41bf46792eb holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the memcached item e78c8bb92dffee1745d24833b3a54a394f6292e7 holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the memcached item 7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3 holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the memcached item 315e0fb04fc23b973f66333645547b29887aa89e holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the memcached item 41a0314e986ee6487dea06763b5da95b7aaf9832 holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the memcached item fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1 holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    FINALLY  stop the local Memcached instance

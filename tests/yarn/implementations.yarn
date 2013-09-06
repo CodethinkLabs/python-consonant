@@ -8,6 +8,15 @@ Implementation section for making stores available
     clone_test_schemas
     clone_test_store "$MATCH_1"
 
+    IMPLEMENTS GIVEN a local Memcached instance
+    memcached -d
+    touch $DATADIR/use-memcached
+    sleep 1
+
+    IMPLEMENTS FINALLY stop the local Memcached instance
+    skill -SIGKILL memcached
+    sleep 1
+
 Implementation section for using consonant.store
 ------------------------------------------------
 
@@ -406,4 +415,45 @@ alias.
     IMPLEMENTS THEN the service aliases do not include "(.+)"
     run_python_test <<-EOF
     assert '$MATCH_1' not in output_yaml
+    EOF
+
+Check whether a memcached item holds an object with a specific UUID.
+
+    IMPLEMENTS THEN the memcached item ([abcdef0-9]{40}) holds the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    object = mc.get('$MATCH_1')
+    assert object.uuid == '$MATCH_2'
+    EOF
+
+Check whether memcached has processed a specific number of get or set
+commands.
+
+    IMPLEMENTS THEN memcached has processed ([0-9]+) (get|set) commands
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['cmd_$MATCH_2'] == str($MATCH_1), stats
+    EOF
+
+Check whether memcached holds a specific number of items.
+
+    IMPLEMENTS THEN memcached holds ([0-9]+) items
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['curr_items'] == str($MATCH_1), stats
+    EOF
+
+Check whether memcached has a specific amount of hits or misses.
+
+    IMPLEMENTS THEN memcached has ([0-9]+) (hits|misses)
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['get_$MATCH_2'] == str($MATCH_1), stats
     EOF
