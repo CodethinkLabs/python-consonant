@@ -18,6 +18,8 @@ Fetch a ref from a store
     print yaml.dump(store.ref("$MATCH_1"))
     EOF
 
+    fail_unknown_api
+
 Verify that the result is a branch/tag
 --------------------------------------
 
@@ -59,7 +61,7 @@ Verify that the ref has a head commit
 Verify that the head commit has a given SHA1
 --------------------------------------------
 
-    IMPLEMENTS THEN the SHA1 of the head commit is "([abcdefABCDEF0-9]{40})"
+    IMPLEMENTS THEN the head commit SHA1 is "([abcdef0-9]{40})"
 
     run_python_test <<-EOF
     assert 'sha1' in output_yaml['head']
@@ -69,28 +71,28 @@ Verify that the head commit has a given SHA1
 Verify that the head commit has a given author/committer
 --------------------------------------------------------
 
-    IMPLEMENTS THEN the author of the head commit is "(.+)"
+    IMPLEMENTS THEN the head commit author is "(.+)"
 
     run_python_test <<-EOF
     assert 'author' in output_yaml['head']
     assert output_yaml['head']['author'] == "$MATCH_1"
     EOF
 
-    IMPLEMENTS THEN the author date of the head commit is "(.+)"
+    IMPLEMENTS THEN the head commit author date is "(.+)"
 
     run_python_test <<-EOF
     assert 'author-date' in output_yaml['head']
     assert output_yaml['head']['author-date'] == "$MATCH_1"
     EOF
 
-    IMPLEMENTS THEN the committer of the head commit is "(.+)"
+    IMPLEMENTS THEN the head commit committer is "(.+)"
 
     run_python_test <<-EOF
     assert 'committer' in output_yaml['head']
     assert output_yaml['head']['committer'] == "$MATCH_1"
     EOF
 
-    IMPLEMENTS THEN the committer date of the head commit is "(.+)"
+    IMPLEMENTS THEN the head commit committer date is "(.+)"
 
     run_python_test <<-EOF
     assert 'committer-date' in output_yaml['head']
@@ -100,7 +102,7 @@ Verify that the head commit has a given author/committer
 Verify that the head commit has a given subject
 -----------------------------------------------
 
-    IMPLEMENTS THEN the subject of the head commit is "(.+)"
+    IMPLEMENTS THEN the head commit subject is "(.+)"
 
     run_python_test <<-EOF
     assert 'subject' in output_yaml['head']
@@ -120,7 +122,7 @@ Verify that the head commit has a given number of parents
 Verify that the head commit has a given parent
 ----------------------------------------------
 
-    IMPLEMENTS THEN the head commit has a left parent "([abcdefABCDEF0-9]{40})"
+    IMPLEMENTS THEN the head commit has a left parent "([abcdef0-9]{40})"
 
     run_python_test <<-EOF
     assert output_yaml['head']['parents'][0] == "$MATCH_1"

@@ -1,0 +1,100 @@
+Fetch a commit and check the result
+===================================
+
+Fetch a commit from a store
+---------------------------
+
+    IMPLEMENTS WHEN fetching the commit ([abcdef0-9]{8}) from the store
+
+    run_consonant_store <<-EOF
+    print yaml.dump(store.commit("$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the non-existent commit ([abcdef0-9]{8}) from the store
+
+    run_consonant_store <<-EOF || true
+    print yaml.dump(store.commit("$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
+Verify that the result is a commit
+----------------------------------
+
+    IMPLEMENTS THEN the result is a commit
+
+    run_python_test <<-EOF
+    assert 'sha1' in output_yaml
+    EOF
+
+Verify that the commit has a given SHA1
+---------------------------------------
+
+    IMPLEMENTS THEN the commit SHA1 is ([abcdef0-9]{40})
+
+    run_python_test <<-EOF
+    assert 'sha1' in output_yaml
+    assert output_yaml['sha1'] == "$MATCH_1"
+    EOF
+
+Verify that the commit has a given author/committer
+---------------------------------------------------
+
+    IMPLEMENTS THEN the commit author is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'author' in output_yaml
+    assert output_yaml['author'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the commit author date is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'author-date' in output_yaml
+    assert output_yaml['author-date'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the commit committer is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'committer' in output_yaml
+    assert output_yaml['committer'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the commit committer date is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'committer-date' in output_yaml
+    assert output_yaml['committer-date'] == "$MATCH_1"
+    EOF
+
+Verify that the commit has a given subject
+-----------------------------------------------
+
+    IMPLEMENTS THEN the commit subject is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'subject' in output_yaml
+    assert output_yaml['subject'] == "$MATCH_1"
+    EOF
+
+Verify that the commit has a given number of parents
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the commit has exactly ([0-9]+) parent(s)?
+
+    run_python_test <<-EOF
+    assert 'parents' in output_yaml
+    assert len(output_yaml['parents']) == $MATCH_1
+    EOF
+
+Verify that the commit has a given parent
+----------------------------------------------
+
+    IMPLEMENTS THEN the commit has a left parent "([abcdefABCDEF0-9]{40})"
+
+    run_python_test <<-EOF
+    assert output_yaml['parents'][0] == "$MATCH_1"
+    EOF

@@ -54,12 +54,12 @@ Fetch the branch "HEAD" from a store:
     AND      the ref has an alias "HEAD"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378139687 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378226671 +0100"
-    AND      the subject of the head commit is "Add another card to the doing lane"
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
 
@@ -76,12 +76,12 @@ Fetch the branch "master" from a store:
     AND      the ref has an alias "refs:heads:master"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378139687 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378226671 +0100"
-    AND      the subject of the head commit is "Add another card to the doing lane"
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
 
@@ -98,12 +98,12 @@ Fetch the branch "refs:heads:master" from a store:
     AND      the ref has an alias "refs:heads:master"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378139687 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378226671 +0100"
-    AND      the subject of the head commit is "Add another card to the doing lane"
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
 
@@ -123,12 +123,12 @@ Fetch the tag "initial-data-set" from a store:
     AND      the ref has an alias "refs:tags:initial-data-set"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378118698 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378118698 +0100"
-    AND      the subject of the head commit is "Add initial set of cards and lanes"
+    AND      the head commit SHA1 is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378118698 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378118698 +0100"
+    AND      the head commit subject is "Add initial set of cards and lanes"
     AND      the head commit has exactly 0 parents
 
 Fetch the tag "refs:tags:initial-data-set" from a store:
@@ -144,12 +144,12 @@ Fetch the tag "refs:tags:initial-data-set" from a store:
     AND      the ref has an alias "refs:tags:initial-data-set"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378118698 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378118698 +0100"
-    AND      the subject of the head commit is "Add initial set of cards and lanes"
+    AND      the head commit SHA1 is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378118698 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378118698 +0100"
+    AND      the head commit subject is "Add initial set of cards and lanes"
     AND      the head commit has exactly 0 parents
 
 Fetch the tag "second-commit" from a store:
@@ -165,12 +165,12 @@ Fetch the tag "second-commit" from a store:
     AND      the ref has an alias "refs:tags:second-commit"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378139687 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378226671 +0100"
-    AND      the subject of the head commit is "Add another card to the doing lane"
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
 
@@ -185,12 +185,12 @@ Fetch the tag "second-commit" from a store:
     AND      the ref has an alias "refs:tags:second-commit"
 
     AND      the ref has a head commit
-    AND      the SHA1 of the head commit is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
-    AND      the author of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the author date of the head commit is "1378139687 +0100"
-    AND      the committer of the head commit is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the committer date of the head commit is "1378226671 +0100"
-    AND      the subject of the head commit is "Add another card to the doing lane"
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
 
