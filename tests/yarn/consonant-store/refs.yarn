@@ -1,0 +1,10 @@
+Fetching information about refs from a store using consonant.store
+==================================================================
+
+Fetch non-existent individual refs from a store using consonant.store
+---------------------------------------------------------------------
+
+    SCENARIO fetch a non-existent ref from a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent ref "non-existent-ref" from the store
+    THEN     a RefNotFoundError is thrown

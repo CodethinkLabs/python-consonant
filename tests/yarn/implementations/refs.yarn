@@ -1,0 +1,79 @@
+Fetch refs and check results
+============================
+
+Fetch all refs from a store
+---------------------------
+
+    IMPLEMENTS WHEN fetching all refs from the store
+
+    run_consonant_store <<-EOF
+    print yaml.dump(store.refs())
+    EOF
+
+    fail_unknown_api
+
+Verify that there are as many refs as expected
+----------------------------------------------
+
+    IMPLEMENTS THEN the result contains exactly ([0-9]+) refs
+
+    run_python_test <<-EOF
+    assert len(output_yaml) == 4
+    EOF
+
+Verify that a given branch/tag is included in the result
+--------------------------------------------------------
+
+    IMPLEMENTS THEN the result includes a branch called "(.+)"
+
+    run_python_test <<-EOF
+    name = 'HEAD' if "$MATCH_1" == 'HEAD' else "refs/heads/$MATCH_1"
+    assert name in output_yaml
+    assert 'type' in output_yaml[name]
+    assert output_yaml[name]['type'] == 'branch'
+    EOF
+
+    IMPLEMENTS THEN the result includes a tag called "(.+)"
+
+    run_python_test <<-EOF
+    name = "refs/tags/$MATCH_1"
+    assert name in output_yaml
+    assert 'type' in output_yaml[name]
+    assert output_yaml[name]['type'] == 'tag'
+    EOF
+
+Verify that a given branch/tag has a certain number of aliases
+--------------------------------------------------------------
+
+    IMPLEMENTS THEN the branch "(.+)" has exactly ([0-9]+) alias(es)?
+
+    run_python_test <<-EOF
+    name = 'HEAD' if "$MATCH_1" == 'HEAD' else "refs/heads/$MATCH_1"
+    ref = output_yaml[name]
+    assert len(ref['url-aliases']) == $MATCH_2
+    EOF
+
+    IMPLEMENTS THEN the tag "(.+)" has exactly ([0-9]+) alias(es)?
+
+    run_python_test <<-EOF
+    ref = output_yaml["refs/tags/$MATCH_1"]
+    assert len(ref['url-aliases']) == $MATCH_2
+    EOF
+
+Verify that a given branch/tag has a certain alias
+--------------------------------------------------
+
+    IMPLEMENTS THEN the branch "(.+)" has an alias "(.+)"
+
+    run_python_test <<-EOF
+    name = 'HEAD' if "$MATCH_1" == 'HEAD' else "refs/heads/$MATCH_1"
+    ref = output_yaml[name]
+    assert "$MATCH_2" in ref['url-aliases']
+    EOF
+
+    IMPLEMENTS THEN the tag "(.+)" has an alias "(.+)"
+
+    run_python_test <<-EOF
+    ref = output_yaml["refs/tags/$MATCH_1"]
+    assert "$MATCH_2" in ref['url-aliases']
+    EOF

@@ -1,0 +1,127 @@
+Fetch a ref and check the result
+================================
+
+Fetch a ref from a store
+------------------------
+
+    IMPLEMENTS WHEN fetching the ref "(.+)" from the store
+
+    run_consonant_store <<-EOF
+    print yaml.dump(store.ref("$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the non-existent ref "(.+)" from the store
+
+    run_consonant_store <<-EOF || true
+    print yaml.dump(store.ref("$MATCH_1"))
+    EOF
+
+Verify that the result is a branch/tag
+--------------------------------------
+
+    IMPLEMENTS THEN the result is a ref of type "(branch|tag)"
+
+    run_python_test <<-EOF
+    assert 'type' in output_yaml
+    assert output_yaml['type'] == "$MATCH_1"
+    EOF
+
+Verify that the ref has a given number of aliases
+-------------------------------------------------
+
+    IMPLEMENTS THEN the ref has exactly ([0-9]+) alias(es)?
+
+    run_python_test <<-EOF
+    assert len(output_yaml['url-aliases']) == $MATCH_1
+    EOF
+
+Verify that the ref has a given alias
+-------------------------------------
+
+    IMPLEMENTS THEN the ref has an alias "(.+)"
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml['url-aliases']
+    EOF
+
+Verify that the ref has a head commit
+-------------------------------------
+
+    IMPLEMENTS THEN the ref has a head commit
+
+    run_python_test <<-EOF
+    assert 'head' in output_yaml
+    assert output_yaml['head'] != None
+    EOF
+
+Verify that the head commit has a given SHA1
+--------------------------------------------
+
+    IMPLEMENTS THEN the SHA1 of the head commit is "([abcdefABCDEF0-9]{40})"
+
+    run_python_test <<-EOF
+    assert 'sha1' in output_yaml['head']
+    assert output_yaml['head']['sha1'] == "$MATCH_1"
+    EOF
+
+Verify that the head commit has a given author/committer
+--------------------------------------------------------
+
+    IMPLEMENTS THEN the author of the head commit is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'author' in output_yaml['head']
+    assert output_yaml['head']['author'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the author date of the head commit is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'author-date' in output_yaml['head']
+    assert output_yaml['head']['author-date'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the committer of the head commit is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'committer' in output_yaml['head']
+    assert output_yaml['head']['committer'] == "$MATCH_1"
+    EOF
+
+    IMPLEMENTS THEN the committer date of the head commit is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'committer-date' in output_yaml['head']
+    assert output_yaml['head']['committer-date'] == "$MATCH_1"
+    EOF
+
+Verify that the head commit has a given subject
+-----------------------------------------------
+
+    IMPLEMENTS THEN the subject of the head commit is "(.+)"
+
+    run_python_test <<-EOF
+    assert 'subject' in output_yaml['head']
+    assert output_yaml['head']['subject'] == "$MATCH_1"
+    EOF
+
+Verify that the head commit has a given number of parents
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the head commit has exactly ([0-9]+) parent(s)?
+
+    run_python_test <<-EOF
+    assert 'parents' in output_yaml['head']
+    assert len(output_yaml['head']['parents']) == $MATCH_1
+    EOF
+
+Verify that the head commit has a given parent
+----------------------------------------------
+
+    IMPLEMENTS THEN the head commit has a left parent "([abcdefABCDEF0-9]{40})"
+
+    run_python_test <<-EOF
+    assert output_yaml['head']['parents'][0] == "$MATCH_1"
+    EOF
