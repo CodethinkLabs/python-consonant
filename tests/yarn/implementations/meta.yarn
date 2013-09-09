@@ -1,0 +1,23 @@
+Fetch meta information and check the result
+===========================================
+
+Fetch the schema name from a store
+----------------------------------
+
+    IMPLEMENTS WHEN fetching the schema name from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print store.schema(commit)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the schema name from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print store.schema(commit)
+    EOF
+
+    fail_unknown_api

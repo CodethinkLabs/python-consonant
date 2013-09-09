@@ -1,0 +1,22 @@
+Fetching store meta data from a store
+=====================================
+
+Fetch the schema name from a store
+----------------------------------
+
+    SCENARIO fetch the schema name from a commit in the store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the schema name from commit 8cb43885
+    THEN     the result is "com.github.consonant.consonant-test-schemas-01"
+
+    SCENARIO fetch the schema name from a different commit in the store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the schema name from commit 45e0ee91
+    THEN     the result is "com.github.consonant.consonant-test-schemas-01"
+
+    SCENARIO fetch the schema name from a non-existent commit in the store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the schema name from the non-existent commit 950f9d21
+    THEN     this fails
+//    THEN     a CommitNotFoundError is thrown
+

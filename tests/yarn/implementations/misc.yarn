@@ -12,3 +12,10 @@ Test for a Python exception
 
     IMPLEMENTS THEN a (.+Error) is thrown
     test_for_exception $MATCH_1
+
+Test for the result value
+
+    IMPLEMENTS THEN the result is "(.+)"
+    run_python_test <<-EOF
+    assert output_stripped == "$MATCH_1"
+    EOF
