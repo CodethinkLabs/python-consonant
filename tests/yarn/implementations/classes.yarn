@@ -1,0 +1,62 @@
+Fetch classes and check the results
+===================================
+
+Fetch classes from a commit in a store
+--------------------------------------
+
+    IMPLEMENTS WHEN fetching classes from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print yaml.dump(store.classes(commit))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching classes from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print yaml.dump(store.classes(commit))
+    EOF
+
+    fail_unknown_api
+
+Verify that the result includes a given number of classes
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the result contains exactly ([0-9]+) classes
+
+    run_python_test <<-EOF
+    assert len(output_yaml) == $MATCH_1
+    EOF
+
+Verify that the result includes a given class
+---------------------------------------------
+
+    IMPLEMENTS THEN the result includes a class "(.+)"
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml
+    assert 'name' in output_yaml["$MATCH_1"]
+    assert output_yaml["$MATCH_1"]['name'] == "$MATCH_1"
+    EOF
+
+Verify that a given class has a certain number of objects
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the class "(.+)" has exactly ([0-9]+) objects
+
+    run_python_test <<-EOF
+    assert 'objects' in output_yaml["$MATCH_1"]
+    assert len(output_yaml["$MATCH_1"]['objects']) == $MATCH_2
+    EOF
+
+Verify that a given class includes a certain object
+---------------------------------------------------
+
+    IMPLEMENTS THEN the class "(.+)" includes the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert {'uuid': "$MATCH_2"} in output_yaml["$MATCH_1"]['objects']
+    EOF
