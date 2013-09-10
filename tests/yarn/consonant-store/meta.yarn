@@ -4,7 +4,15 @@ Fetching store meta data from a store using consonant.store
 Fetch the schema name from a store using consonant.store
 --------------------------------------------------------
 
-    SCENARIO fetch the schema name from a non-existent commit in the store using consonant.store
+    SCENARIO fetch the schema name from a non-existent commit in a store using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     fetching the schema name from the non-existent commit 950f9d21
+    THEN     a CommitNotFoundError is thrown
+
+Fetch service aliases from a store using consonant.store
+--------------------------------------------------------
+
+    SCENARIO fetch service aliases from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the service aliases from the non-existent commit 12345678
     THEN     a CommitNotFoundError is thrown
