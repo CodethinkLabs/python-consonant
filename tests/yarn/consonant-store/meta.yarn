@@ -16,3 +16,11 @@ Fetch service aliases from a store using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     fetching the service aliases from the non-existent commit 12345678
     THEN     a CommitNotFoundError is thrown
+
+Fetch the store name from a store using consonant.store
+-------------------------------------------------------
+
+    SCENARIO fetch the store name from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the store name from the non-existent commit b7479fa9
+    THEN     a CommitNotFoundError is thrown

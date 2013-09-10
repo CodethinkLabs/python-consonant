@@ -43,6 +43,27 @@ Fetch service aliases from a store
 
     fail_unknown_api
 
+Fetch the store name from a store
+---------------------------------
+
+    IMPLEMENTS WHEN fetching the store name from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print store.name(commit)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the store name from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print store.name(commit)
+    EOF
+
+    fail_unknown_api
+
 Verify that the result contains a given number of service aliases
 -----------------------------------------------------------------
 

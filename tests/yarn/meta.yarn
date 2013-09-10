@@ -1,6 +1,24 @@
 Fetching store meta data from a store
 =====================================
 
+Fetch the store name from a store
+---------------------------------
+
+    SCENARIO fetch the store name from a commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the store name from commit 8cb43885
+    THEN     the result is "com.github.consonant.consonant-test-store-01"
+
+    SCENARIO fetch the store name from another commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the store name from commit 45e0ee91
+    THEN     the result is "com.github.consonant.consonant-test-store-01"
+
+    SCENARIO fetch the store name from a non-existent commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the store name from the non-existent commit b7479fa9
+    THEN     this fails
+
 Fetch the schema name from a store
 ----------------------------------
 
