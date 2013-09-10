@@ -22,6 +22,36 @@ Fetch classes from a commit in a store
 
     fail_unknown_api
 
+Fetch invidiual clases from a commit in a store
+-----------------------------------------------
+
+    IMPLEMENTS WHEN fetching the class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_2")
+    print yaml.dump(store.klass(commit, "$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the class "(.+)" from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    print yaml.dump(store.klass(commit, "$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the non-existent class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    print yaml.dump(store.klass(commit, "$MATCH_1"))
+    EOF
+
+    fail_unknown_api
+
 Verify that the result includes a given number of classes
 ---------------------------------------------------------
 
@@ -60,3 +90,33 @@ Verify that a given class includes a certain object
     run_python_test <<-EOF
     assert {'uuid': "$MATCH_2"} in output_yaml["$MATCH_1"]['objects']
     EOF
+
+Verify that the result is a class with a given name
+---------------------------------------------------
+
+    IMPLEMENTS THEN the result is a class with the name "(.+)"
+    
+    run_python_test <<-EOF
+    assert 'name' in output_yaml
+    assert output_yaml['name'] == "$MATCH_1"
+    EOF
+
+Verify that the class has a certain number of objects
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the class has exactly ([0-9]+) objects
+
+    run_python_test <<-EOF
+    assert 'objects' in output_yaml
+    assert len(output_yaml['objects']) == $MATCH_1
+    EOF
+
+Verify that the class includes a certain object
+-----------------------------------------------
+
+    IMPLEMENTS THEN the class includes the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert {'uuid': "$MATCH_1"} in output_yaml['objects']
+    EOF
+
