@@ -1,0 +1,31 @@
+Fetching objects of a class from a store
+========================================
+
+    SCENARIO fetch objects of a given class from a commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching objects of class "lane" from commit 8cb43885
+
+    THEN     the result contains exactly 2 objects
+
+    AND      the result includes the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+
+    AND      the result includes the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the property "title" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "Doing"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" contains exactly 2 elements
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+
+    SCENARIO fetch objects of a class from a non-existent commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching objects of class "lane" from the non-existent commit 12345678
+    THEN     this fails
+
+    SCENARIO fetch objects of a non-existent class from a commit in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching objects of non-existent class "non-existent-class" from commit 8cb43885
+    THEN     this fails

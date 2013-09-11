@@ -1,0 +1,54 @@
+Fetch objects of a class and check the results
+==============================================
+
+Fetch objects of a given class from a store
+-------------------------------------------
+
+    IMPLEMENTS WHEN fetching objects of class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_2")
+    klass = store.klass(commit, "$MATCH_1")
+    print yaml.dump(store.objects(commit, klass))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching objects of class "(.+)" from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    klass = store.klass(commit, "$MATCH_1")
+    print yaml.dump(store.objects(commit, klass))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching objects of non-existent class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    klass = store.klass(commit, "$MATCH_1")
+    print yaml.dump(store.objects(commit, klass))
+    EOF
+
+    fail_unknown_api
+
+Verify that the result contains a given number of objects
+---------------------------------------------------------
+
+    IMPLEMENTS THEN the result contains exactly ([0-9]+) objects
+
+    run_python_test <<-EOF
+    assert len(output_yaml) == $MATCH_1
+    assert len([x for x in output_yaml if 'uuid' in x]) == $MATCH_1
+    EOF
+
+Verify that the result includes a given object
+----------------------------------------------
+
+    IMPLEMENTS THEN the result includes the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert len([x for x in output_yaml if x['uuid'] == "$MATCH_1"]) > 0
+    EOF
