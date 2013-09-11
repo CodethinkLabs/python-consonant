@@ -17,28 +17,17 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-# Helper library for python-consonant scenario tests.
+# Helper functions for scenario tests.
 
 
-clone_test_schemas()
-{
-    git clone "$TEST_REPO_BASE_URL"/consonant-test-schemas \
-        $DATADIR/consonant-test-schemas
-}
-
-
-clone_test_store()
-{
-    git clone "$TEST_REPO_BASE_URL"/"$1" $DATADIR/"$1"
-    echo $DATADIR/$1 > $DATADIR/store-location
-}
+export PYTHONPATH="$SRCDIR"
 
 
 dump_output()
 {
-    echo "stdout:"
+    echo "STDOUT:"
     cat $DATADIR/stdout
-    echo "stderr:"
+    echo "STDERR:"
     cat $DATADIR/stderr
 }
 
@@ -47,58 +36,71 @@ run_python()
 {
     trap dump_output 0
     cd $DATADIR
-    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr
+    CODE=$(cat)
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+$CODE
+EOF
+    echo $? > $DATADIR/exit-code
+    exit 0
 }
 
 
-run_python_with_store()
+run_consonant_store()
 {
     trap dump_output 0
     cd $DATADIR
+    CODE=$(cat)
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
 import consonant
 import os
 import yaml
 
-store_location = open(os.path.join('store-location')).read().strip()
 pool = consonant.store.pools.StorePool()
+
+store_location = os.path.abspath(os.path.join('test-store'))
 store = pool.store(store_location)
 
 if os.path.exists('use-memcached'):
     store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
 
-$(cat </dev/stdin)
+$CODE
 EOF
+    echo $? > $DATADIR/exit-code
+    exit 0
+}
+
+
+fail_unknown_api()
+{
+    echo "Not implemented for API \"$API\" yet"
+    exit 1
 }
 
 
 run_python_test()
 {
+    trap dump_output 0
     cd $DATADIR
-    python /dev/stdin <<-EOF
-import scenario
+    CODE=$(cat)
+    cat > test.py <<-EOF
 import yaml
 
-output_raw = scenario.output_raw()
+output_raw = open('stdout').read()
+output_stripped = open('stdout').read().strip()
+output_yaml = yaml.load(open('stdout'))
 
-print 'raw output:'
-print output_raw
-
-output_yaml = scenario.output_yaml()
-
-print 'yaml output:'
 print output_yaml
-    
-$(cat </dev/stdin)
+
+$CODE
 EOF
+    if ! python test.py 2>&1 >/dev/null; then
+        py.test -q test.py
+    fi
 }
 
 
 test_for_exception()
 {
     cat $DATADIR/stderr
-    grep "^[a-zA-Z0-9_\.]*$1" $DATADIR/stderr
+    grep "^[a-zA-Z0-9_\.]*$MATCH_1" $DATADIR/stderr
 }
-
-
-export PYTHONPATH="$SRCDIR/tests/yarn/:$SRCDIR"

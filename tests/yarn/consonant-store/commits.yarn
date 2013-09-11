@@ -1,0 +1,10 @@
+Fetching information about commits from a store using consonant.store
+=====================================================================
+
+Fetch a non-existent commit from a store using consonant.store
+--------------------------------------------------------------
+
+    SCENARIO fetch a non-existent from a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent commit 12345678 from the store
+    THEN     a CommitNotFoundError is thrown

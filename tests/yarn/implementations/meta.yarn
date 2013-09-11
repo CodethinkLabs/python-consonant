@@ -1,0 +1,84 @@
+Fetch meta information and check the result
+===========================================
+
+Fetch the schema name from a store
+----------------------------------
+
+    IMPLEMENTS WHEN fetching the schema name from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print store.schema(commit)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the schema name from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print store.schema(commit)
+    EOF
+
+    fail_unknown_api
+
+Fetch service aliases from a store
+----------------------------------
+
+    IMPLEMENTS WHEN fetching the service aliases from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print yaml.dump(store.services(commit))
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the service aliases from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print yaml.dump(store.services(commit))
+    EOF
+
+    fail_unknown_api
+
+Fetch the store name from a store
+---------------------------------
+
+    IMPLEMENTS WHEN fetching the store name from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_1")
+    print store.name(commit)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the store name from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_1")
+    print store.name(commit)
+    EOF
+
+    fail_unknown_api
+
+Verify that the result contains a given number of service aliases
+-----------------------------------------------------------------
+
+    IMPLEMENTS THEN the result contains exactly ([0-9]+) alias(es)?
+
+    run_python_test <<-EOF
+    assert len(output_yaml) == $MATCH_1
+    EOF
+
+Verify that a given alias is mapped to a certain value
+------------------------------------------------------
+
+    IMPLEMENTS THEN the alias "(.+)" is mapped to "(.+)"
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml
+    assert output_yaml["$MATCH_1"] == "$MATCH_2"
+    EOF

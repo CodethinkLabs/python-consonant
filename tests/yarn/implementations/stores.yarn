@@ -1,0 +1,9 @@
+Prepare access to test stores
+=============================
+
+
+    IMPLEMENTS GIVEN the standard test store "(.+)"
+    git clone ../consonant-test-schemas \
+        $DATADIR/test-schemas
+    git clone ../$MATCH_1 \
+        $DATADIR/test-store

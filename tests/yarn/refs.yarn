@@ -1,0 +1,203 @@
+Fetching information about refs from a store
+============================================
+
+List all refs in a store
+------------------------
+
+Fetch a list of all refs in a store:
+
+    SCENARIO fetch all refs in a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching all refs from the store
+
+Make sure the number of refs is as expected (2 branches, 2 tags):
+
+    THEN     the result contains exactly 4 refs
+
+Make sure all the expected branches are present:
+
+    AND      the result includes a branch called "HEAD"
+    AND      the result includes a branch called "master"
+
+    AND      the branch "HEAD" has exactly 1 alias
+    AND      the branch "HEAD" has an alias "HEAD"
+
+    AND      the branch "master" has exactly 2 aliases
+    AND      the branch "master" has an alias "master"
+    AND      the branch "master" has an alias "refs:heads:master"
+
+Make sure all the expected tags are present:
+
+    AND      the result includes a tag called "initial-data-set"
+    AND      the result includes a tag called "second-commit"
+
+    AND      the tag "initial-data-set" has exactly 2 aliases
+    AND      the tag "initial-data-set" has an alias "initial-data-set"
+    AND      the tag "initial-data-set" has an alias "refs:tags:initial-data-set"
+
+    AND      the tag "second-commit" has exactly 2 aliases
+    AND      the tag "second-commit" has an alias "second-commit"
+    AND      the tag "second-commit" has an alias "refs:tags:second-commit"
+
+Fetch individual branches from a store
+--------------------------------------
+
+Fetch the branch "HEAD" from a store:
+
+    SCENARIO fetch the ref "HEAD" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "HEAD" from the store
+
+    THEN     the result is a ref of type "branch"
+
+    AND      the ref has exactly 1 alias
+    AND      the ref has an alias "HEAD"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+
+Fetch the branch "master" from a store:
+
+    SCENARIO fetch the ref "master" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "master" from the store
+
+    THEN     the result is a ref of type "branch"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "master"
+    AND      the ref has an alias "refs:heads:master"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+
+Fetch the branch "refs:heads:master" from a store:
+
+    SCENARIO fetch the ref "refs:heads:master" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "refs:heads:master" from the store
+
+    THEN     the result is a ref of type "branch"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "master"
+    AND      the ref has an alias "refs:heads:master"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+
+Fetch individual tags from a store
+----------------------------------
+
+Fetch the tag "initial-data-set" from a store:
+
+    SCENARIO fetch the ref "initial-data-set" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "initial-data-set" from the store
+
+    THEN     the result is a ref of type "tag"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "initial-data-set"
+    AND      the ref has an alias "refs:tags:initial-data-set"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378118698 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378118698 +0100"
+    AND      the head commit subject is "Add initial set of cards and lanes"
+    AND      the head commit has exactly 0 parents
+
+Fetch the tag "refs:tags:initial-data-set" from a store:
+
+    SCENARIO fetch the ref "refs:tags:initial-data-set" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "refs:tags:initial-data-set" from the store
+
+    THEN     the result is a ref of type "tag"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "initial-data-set"
+    AND      the ref has an alias "refs:tags:initial-data-set"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378118698 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378118698 +0100"
+    AND      the head commit subject is "Add initial set of cards and lanes"
+    AND      the head commit has exactly 0 parents
+
+Fetch the tag "second-commit" from a store:
+
+    SCENARIO fetch the ref "second-commit" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "second-commit" from the store
+
+    THEN     the result is a ref of type "tag"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "second-commit"
+    AND      the ref has an alias "refs:tags:second-commit"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+
+    SCENARIO fetch the ref "refs:tags:second-commit" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "refs:tags:second-commit" from the store
+
+    THEN     the result is a ref of type "tag"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "second-commit"
+    AND      the ref has an alias "refs:tags:second-commit"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1378139687 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1378226671 +0100"
+    AND      the head commit subject is "Add another card to the doing lane"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+
+Fetch non-existent individual refs from a store
+-----------------------------------------------
+
+    SCENARIO fetch a non-existent ref from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent ref "non-existent-ref" from the store
+    THEN     this fails

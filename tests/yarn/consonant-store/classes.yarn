@@ -1,0 +1,26 @@
+Fetching classes from a store using consonant.store
+===================================================
+
+Fetch classes from a non-existent commit in a store using consonant.store
+-------------------------------------------------------------------------
+
+    SCENARIO fetch classes from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching classes from the non-existent commit 12345678
+    THEN     a CommitNotFoundError is thrown
+
+Fetching a class from a non-existent commit in a store using consonant.store
+----------------------------------------------------------------------------
+
+    SCENARIO fetch a class from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the class "lane" from the non-existent commit 12345678
+    THEN     a CommitNotFoundError is thrown
+
+Fetching a non-existent class from a commit in a store using consonant.store
+----------------------------------------------------------------------------
+
+    SCENARIO fetch a non-existent class from a commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent class "does-not-exists" from commit 8cb43885
+    THEN     a ClassNotFoundError is thrown

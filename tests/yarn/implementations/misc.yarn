@@ -1,0 +1,21 @@
+Miscellaneous implementations
+=============================
+
+Test for a general failure
+--------------------------
+
+    IMPLEMENTS THEN this fails
+    test "$(cat $DATADIR/exit-code | xargs echo -n)" = "1"
+
+Test for a Python exception
+---------------------------
+
+    IMPLEMENTS THEN an? (.+Error) is thrown
+    test_for_exception $MATCH_1
+
+Test for the result value
+
+    IMPLEMENTS THEN the result is "(.+)"
+    run_python_test <<-EOF
+    assert output_stripped == "$MATCH_1"
+    EOF

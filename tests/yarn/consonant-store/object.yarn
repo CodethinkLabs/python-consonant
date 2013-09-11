@@ -1,0 +1,50 @@
+Fetching individual objects from a store using consonant.store
+==============================================================
+
+Fetch an object from a non-existent commit in a store using consonant.store
+---------------------------------------------------------------------------
+
+    SCENARIO fetch an object from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" from the non-existent commit 12345678
+    THEN     a CommitNotFoundError is thrown
+
+Fetch a non-existent object from a commit in a store using consonant.store
+--------------------------------------------------------------------------
+
+    SCENARIO fetch a non-existent object from a commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent object "081fa96f-0285-4b68-add4-c0039d4535f4" from commit 8cb43885
+    THEN     an ObjectNotFoundError is thrown
+
+Fetch an object of a class from a non-existent commit in a store using consonant.store
+--------------------------------------------------------------------------------------
+
+    SCENARIO fetch an object of a given class from a non-existent commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of class "lane" from the non-existent commit 12345678
+    THEN     a CommitNotFoundError is thrown
+
+Fetch a non-existent object of a class from a commit in a store using consonant.store
+-------------------------------------------------------------------------------------
+
+    SCENARIO fetch a non-existent object of a given class from a commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the non-existent object "081fa96f-0285-4b68-add4-c0039d4535f4" of class "card" from commit 8cb43885
+    THEN     an ObjectNotFoundError is thrown
+
+Fetch an object of a non-existent class from a commit in a store using consonant.store
+--------------------------------------------------------------------------------------
+
+    SCENARIO fetch an object of a non-existent class from a commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of the non-existent class "does-not-exist" from commit 8cb43885
+    THEN     a ClassNotFoundError is thrown
+
+Fetch an object of the wrong class from a commit in a store using consonant.store
+---------------------------------------------------------------------------------
+
+    SCENARIO fetch an object of the wrong class from a commit in a store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" of the wrong class "card" from commit 8cb43885
+    THEN     an ObjectNotFoundError is thrown

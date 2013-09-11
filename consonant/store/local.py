@@ -180,8 +180,9 @@ class LocalStore(stores.Store):
         head = self.repo.lookup_reference('HEAD')
         yield head
         for name in self.repo.listall_references():
-            ref = self.repo.lookup_reference(name)
-            yield ref
+            if not name.startswith('refs/remotes'):
+                ref = self.repo.lookup_reference(name)
+                yield ref
 
     def _parse_commit(self, commit):
         return git.Commit(

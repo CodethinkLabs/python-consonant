@@ -52,13 +52,26 @@ class Check(Command):
         if os.path.exists('.coverage'):
             os.remove('.coverage')
         sys.stdout.write('Running scenario tests\n')
-        subprocess.check_call(
-            ['yarn',  # '--verbose',
-             '--env=TEST_REPO_BASE_URL=%s' %
-                os.environ.get('TEST_REPO_BASE_URL', os.path.abspath(
-                    os.path.join(os.path.dirname(__file__), '..'))),
-             '-s', os.path.join('tests', 'yarn', 'python-consonant.sh')]
-            + glob.glob(os.path.join('tests', 'yarn', '*.yarn')))
+        test_repo_base_url = os.environ.get(
+            'TEST_REPO_BASE_URL',
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+        yarn_dir = os.path.join('tests', 'yarn')
+        scenario_combinations = [
+            ('local', 'consonant.store'),
+            ]
+        for location, api in scenario_combinations:
+            api_dir = os.path.join(yarn_dir, api.replace('.', '-'))
+            sys.stdout.write('Running scenario tests using %s stores '
+                             'and the %s API\n' % (location, api))
+            subprocess.check_call(
+                ['yarn',
+                 '--env=TEST_REPO_BASE_URL=%s' % test_repo_base_url,
+                 '--env=LOCATION=%s' % location,
+                 '--env=API=%s' % api,
+                 '-s', os.path.join(yarn_dir, 'implementations', 'helpers.sh')]
+                + glob.glob(os.path.join(yarn_dir, '*.yarn'))
+                + glob.glob(os.path.join(api_dir, '*.yarn'))
+                + glob.glob(os.path.join(yarn_dir, 'implementations/*.yarn')))
         if os.path.isdir('.git'):
             sys.stdout.write('Collecting versioned files\n')
             files = subprocess.check_output(['git', 'ls-files']).splitlines()
