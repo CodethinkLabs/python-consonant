@@ -1,0 +1,145 @@
+Fetching objects from a store using an object cache
+===================================================
+
+Fetch objects once:
+
+    SCENARIO fetch objects from a commit in a store once using an object cache cache
+    GIVEN    the standard test store "consonant-test-store-01"
+    AND      an object cache
+    WHEN     fetching objects from commit 8cb43885
+
+    THEN     the result contains objects of exactly 2 classes
+
+    AND      the result contains exactly 2 objects of class "lane"
+
+    AND      the objects of class "lane" include "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the objects of class "lane" include "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the result contains exactly 5 objects of class "card"
+
+    AND      the objects of class "card" include "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the objects of class "card" include "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the objects of class "card" include "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the objects of class "card" include "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the objects of class "card" include "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    AND      the object "27519b8d-8ad8-4558-8ea2-f128404e6f58" has exactly 2 properties set
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+
+    AND      the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" has exactly 2 properties set
+    AND      the property "title" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "Doing"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" contains exactly 2 elements
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 2 properties set
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" has exactly 2 properties set
+    AND      the property "title" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" is set to "Write tests for feature A"
+    AND      the property "lane" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object "86ab9538-3926-42ff-9fc7-e122a006cd4d" has exactly 2 properties set
+    AND      the property "title" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" is set to "Implement feature B"
+    AND      the property "lane" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "dd7ff995-eba8-46e0-93d4-7297a691919e" is set to "Implement feature C"
+    AND      the property "lane" of "dd7ff995-eba8-46e0-93d4-7297a691919e" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" is set to "Write tests for feature B"
+    AND      the property "lane" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object cache has processed 7 get commands
+    AND      the object cache has processed 7 set commands
+    AND      the object cache holds 7 items
+    AND      the object cache has 0 hits
+    AND      the object cache has 7 misses
+
+    AND      the object cache item "27519b8d-8ad8-4558-8ea2-f128404e6f58,62cd229d8ce0ae10f85605f80c798449d36903e8" holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the object cache item "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527,e30f2602a81c0a6fecd8d73c48dde41bf46792eb" holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the object cache item "04be5c1b-0192-4e31-b4f8-39a084659738,e78c8bb92dffee1745d24833b3a54a394f6292e7" holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the object cache item "7501f1f4-e357-4af4-b5ff-546fae3f25f4,7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3" holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the object cache item "86ab9538-3926-42ff-9fc7-e122a006cd4d,315e0fb04fc23b973f66333645547b29887aa89e" holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the object cache item "dd7ff995-eba8-46e0-93d4-7297a691919e,41a0314e986ee6487dea06763b5da95b7aaf9832" holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the object cache item "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd,fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1" holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    FINALLY  stop the object cache
+
+Fetch objects twice:
+
+    SCENARIO fetch objects from a commit in a store twice using an object cache cache
+    GIVEN    the standard test store "consonant-test-store-01"
+    AND      an object cache
+    WHEN     fetching objects from commit 8cb43885
+    AND      fetching objects from commit 8cb43885
+
+    THEN     the result contains objects of exactly 2 classes
+
+    AND      the result contains exactly 2 objects of class "lane"
+
+    AND      the objects of class "lane" include "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the objects of class "lane" include "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the result contains exactly 5 objects of class "card"
+
+    AND      the objects of class "card" include "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the objects of class "card" include "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the objects of class "card" include "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the objects of class "card" include "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the objects of class "card" include "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    AND      the object "27519b8d-8ad8-4558-8ea2-f128404e6f58" has exactly 2 properties set
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+
+    AND      the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" has exactly 2 properties set
+    AND      the property "title" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "Doing"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" contains exactly 2 elements
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 2 properties set
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" has exactly 2 properties set
+    AND      the property "title" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" is set to "Write tests for feature A"
+    AND      the property "lane" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object "86ab9538-3926-42ff-9fc7-e122a006cd4d" has exactly 2 properties set
+    AND      the property "title" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" is set to "Implement feature B"
+    AND      the property "lane" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "dd7ff995-eba8-46e0-93d4-7297a691919e" is set to "Implement feature C"
+    AND      the property "lane" of "dd7ff995-eba8-46e0-93d4-7297a691919e" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" is set to "Write tests for feature B"
+    AND      the property "lane" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object cache has processed 14 get commands
+    AND      the object cache has processed 14 set commands
+    AND      the object cache holds 7 items
+    AND      the object cache has 7 hits
+    AND      the object cache has 7 misses
+
+    AND      the object cache item "27519b8d-8ad8-4558-8ea2-f128404e6f58,62cd229d8ce0ae10f85605f80c798449d36903e8" holds the object "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the object cache item "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527,e30f2602a81c0a6fecd8d73c48dde41bf46792eb" holds the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      the object cache item "04be5c1b-0192-4e31-b4f8-39a084659738,e78c8bb92dffee1745d24833b3a54a394f6292e7" holds the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the object cache item "7501f1f4-e357-4af4-b5ff-546fae3f25f4,7b71a39ab7a33ea43e391e1e984dbc440b0ff3d3" holds the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the object cache item "86ab9538-3926-42ff-9fc7-e122a006cd4d,315e0fb04fc23b973f66333645547b29887aa89e" holds the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the object cache item "dd7ff995-eba8-46e0-93d4-7297a691919e,41a0314e986ee6487dea06763b5da95b7aaf9832" holds the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the object cache item "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd,fbc6bd6caca73ded23e89cb01e3b89ddb37a7bc1" holds the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+
+    FINALLY  stop the object cache

@@ -32,10 +32,24 @@ dump_output()
 }
 
 
+run_python()
+{
+    trap dump_output 0
+    cd $DATADIR
+    CODE=$(cat)
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+$CODE
+EOF
+    echo $? > $DATADIR/exit-code
+    exit 0
+}
+
+
 run_consonant_store()
 {
     trap dump_output 0
     cd $DATADIR
+    CODE=$(cat)
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
 import consonant
 import os
@@ -49,7 +63,7 @@ store = pool.store(store_location)
 if os.path.exists('use-memcached'):
     store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
 
-$(cat </dev/stdin)
+$CODE
 EOF
     echo $? > $DATADIR/exit-code
     exit 0
@@ -67,16 +81,21 @@ run_python_test()
 {
     trap dump_output 0
     cd $DATADIR
-    cat /dev/stdin | cat > test.py <<-EOF
+    CODE=$(cat)
+    cat > test.py <<-EOF
 import yaml
 
 output_raw = open('stdout').read()
 output_stripped = open('stdout').read().strip()
 output_yaml = yaml.load(open('stdout'))
 
-$(cat /dev/stdin)
+print output_yaml
+
+$CODE
 EOF
-    py.test -q test.py
+    if ! python test.py 2>&1 >/dev/null; then
+        py.test -q test.py
+    fi
 }
 
 

@@ -1,0 +1,173 @@
+Fetch individual objects and check the result
+=============================================
+
+Fetch an object from a commit
+-----------------------------
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_2")
+    object = store.object(commit, "$MATCH_1")
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    object = store.object(commit, "$MATCH_1")
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the non-existent object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_2")
+    object = store.object(commit, "$MATCH_1")
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+Fetch an object of a class from a commit
+----------------------------------------
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF
+    commit = store.commit("$MATCH_3")
+    klass = store.klass(commit, "$MATCH_2")
+    object = store.object(commit, "$MATCH_1", klass)
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from the non-existent commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_3")
+    klass = store.klass(commit, "$MATCH_2")
+    object = store.object(commit, "$MATCH_1", klass)
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching the non-existent object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_3")
+    klass = store.klass(commit, "$MATCH_2")
+    object = store.object(commit, "$MATCH_1", klass)
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of the non-existent class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_3")
+    klass = store.klass(commit, "$MATCH_2")
+    object = store.object(commit, "$MATCH_1", klass)
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+    IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of the wrong class "(.+)" from commit ([abcdef0-9]{8})
+
+    run_consonant_store <<-EOF || true
+    commit = store.commit("$MATCH_3")
+    klass = store.klass(commit, "$MATCH_2")
+    object = store.object(commit, "$MATCH_1", klass)
+    print yaml.dump(object)
+    EOF
+
+    fail_unknown_api
+
+Verify that the result is a single object
+-----------------------------------------
+
+    IMPLEMENTS THEN the result is a single object
+
+    run_python_test <<-EOF
+    assert isinstance(output_yaml, dict)
+    assert 'uuid' in output_yaml
+    EOF
+
+Verify that the resulting object has a given UUID
+-------------------------------------------------
+
+    IMPLEMENTS THEN the object has the UUID "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert 'uuid' in output_yaml
+    assert output_yaml['uuid'] == "$MATCH_1"
+    EOF
+
+Verify that the resulting object is of a given class
+----------------------------------------------------
+
+    IMPLEMENTS THEN the object has the class "(.+)"
+
+    run_python_test <<-EOF
+    assert 'class' in output_yaml
+    assert output_yaml['class'] == "$MATCH_1"
+    EOF
+
+Verify that the resulting object has a certain number of properties set
+-----------------------------------------------------------------------
+
+    IMPLEMENTS THEN the object has exactly ([0-9]+) properties set
+
+    run_python_test <<-EOF
+    assert 'properties' in output_yaml
+    assert len(output_yaml['properties']) == $MATCH_1
+    EOF
+
+Verify that a given property of the resulting object is set to a certain value
+------------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is set to (.+)
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml['properties']
+    assert output_yaml['properties']["$MATCH_1"] == eval('$MATCH_2')
+    EOF
+
+Verify that a given property of the resulting object has a certain number of elements
+-------------------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" contains exactly ([0-9]+) elements
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml['properties']
+    assert len(output_yaml['properties']["$MATCH_1"]) == $MATCH_2
+    EOF
+
+Verify that a given property of the resulting object includes a reference to a certain object
+---------------------------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml['properties']
+    assert {'uuid': "$MATCH_2"} in output_yaml['properties']["$MATCH_1"]
+    EOF
+
+Verify that a given property of the resulting object includes references a certain object
+-----------------------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert "$MATCH_1" in output_yaml['properties']
+    assert {'uuid': "$MATCH_2"} == output_yaml['properties']["$MATCH_1"]
+    EOF

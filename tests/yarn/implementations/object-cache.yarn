@@ -1,0 +1,68 @@
+Fetch objects using an object cache and check the results
+=========================================================
+
+Provide and stop an object cache
+--------------------------------
+
+    IMPLEMENTS GIVEN an object cache
+    memcached -d
+    touch $DATADIR/use-memcached
+    run_python <<-EOF
+    import pylibmc
+    import sys
+
+    tries = 0
+    while not pylibmc.Client(['127.0.0.1']).get_stats():
+        tries += 1
+        if tries >= 5:
+            raise Exception('Failed to connect to the started memcached instance')
+        time.sleep(0.1)
+    EOF
+
+    IMPLEMENTS FINALLY stop the object cache
+    skill -SIGKILL memcached
+
+
+Verify that an object cache item holds an object with a specific UUID
+---------------------------------------------------------------------
+
+    IMPLEMENTS THEN the object cache item "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9],[abcdef0-9]{40})" holds the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    object = mc.get("$MATCH_1")
+    assert object.uuid == "$MATCH_2"
+    EOF
+
+Verify that the object cache has processed a specific number of get or set commands
+-----------------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the object cache has processed ([0-9]+) (get|set) commands
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['cmd_$MATCH_2'] == str($MATCH_1), stats
+    EOF
+
+Verify that the object cache holds a specific number of items
+-------------------------------------------------------------
+
+    IMPLEMENTS THEN the object cache holds ([0-9]+) items
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['curr_items'] == str($MATCH_1), stats
+    EOF
+
+Verify that the object cache has a specific amount of hits or misses
+--------------------------------------------------------------------
+
+    IMPLEMENTS THEN the object cache has ([0-9]+) (hits|misses)
+    run_python_test <<-EOF
+    import pylibmc
+    mc = pylibmc.Client(['127.0.0.1'])
+    stats = mc.get_stats()
+    assert stats[0][1]['get_$MATCH_2'] == str($MATCH_1), stats
+    EOF

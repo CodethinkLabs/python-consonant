@@ -10,7 +10,7 @@ Test for a general failure
 Test for a Python exception
 ---------------------------
 
-    IMPLEMENTS THEN a (.+Error) is thrown
+    IMPLEMENTS THEN an? (.+Error) is thrown
     test_for_exception $MATCH_1
 
 Test for the result value
