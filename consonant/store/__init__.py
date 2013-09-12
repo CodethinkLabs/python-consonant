@@ -22,9 +22,7 @@ import caches
 import git
 import objects
 import local
-import pools
 import properties
 import references
 import remote
-import stores
 import timestamps

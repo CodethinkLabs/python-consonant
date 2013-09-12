@@ -15,12 +15,45 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes and interfaces to implement local and remote stores."""
+"""Classes to access and implement local and remote Consonant services."""
 
 
-class Store(object):  # pragma: no cover
+import urlparse
 
-    """Abstract base class for store implementations."""
+
+class ServicePool(object):
+
+    """Manages a collection of services and allows to load them on demand."""
+
+    def __init__(self):
+        self.services = {}
+
+    def service(self, url):
+        """Obtain a service based on a repository or HTTP/HTTPS URL.
+
+        Returns a Service if the store or service at the given URL can be
+        loaded. Raises an Exception otherwise.
+
+        """
+
+        if not url in self.services:
+            self.stores[url] = self._load_service(url)
+        return self.stores[url]
+
+    def _load_service(self, url):
+        protocol = urlparse.urlparse(url).scheme
+
+        if protocol in ('http', 'https'):
+            raise NotImplementedError
+        elif protocol and protocol != 'file':
+            self.stores[url] = local.RemoteStore(url)
+        else:
+            self.stores[url] = remote.LocalStore(url)
+
+
+class Service(object):  # pragma: no cover
+
+    """Abstract base class for implementations of local and reomte services."""
 
     def refs(self):
         """Return a set of Ref objects for all Git refs in the store."""

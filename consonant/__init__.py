@@ -18,4 +18,5 @@
 """An implement of Consonant written in Python."""
 
 
+import service
 import store

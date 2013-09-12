@@ -55,10 +55,8 @@ import consonant
 import os
 import yaml
 
-pool = consonant.store.pools.StorePool()
-
 store_location = os.path.abspath(os.path.join('test-store'))
-store = pool.store(store_location)
+store = consonant.store.local.LocalStore(store_location)
 
 if os.path.exists('use-memcached'):
     store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
