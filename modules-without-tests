@@ -3,3 +3,4 @@ consonant/store/__init__.py
 consonant/store/local.py
 consonant/store/remote.py
 consonant/service/__init__.py
+consonant/util/__init__.py
