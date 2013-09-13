@@ -21,6 +21,7 @@
 
 
 import glob
+import itertools
 import os
 import subprocess
 import sys
@@ -39,11 +40,20 @@ class Check(Command):
     def finalize_options(self):
         pass
 
-    def run(self):
+    def _test_repo_base_url(self):
+        script_dir = os.path.dirname(__file__)
+        default_url = os.path.abspath(os.path.join(script_dir, '..'))
+        return os.environ.get('TEST_REPO_BASE_URL', default_url)
+
+    def _check_coding_style(self):
         sys.stdout.write('Checking coding style against PEP 8\n')
         subprocess.check_call(['pep8', '--statistics', '.'])
+
+    def _check_docstrings(self):
         sys.stdout.write('Checking coding style against PEP 257\n')
         subprocess.check_call(['pep257', '.'])
+
+    def _run_unit_tests(self):
         sys.stdout.write('Running unit tests\n')
         subprocess.check_call(
             ['python', '-m', 'CoverageTestRunner',
@@ -51,27 +61,53 @@ class Check(Command):
              'consonant'])
         if os.path.exists('.coverage'):
             os.remove('.coverage')
+
+    def _run_scenario_tests(self):
         sys.stdout.write('Running scenario tests\n')
-        test_repo_base_url = os.environ.get(
-            'TEST_REPO_BASE_URL',
-            os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+        suites = {
+            'consonant.register': (),
+            'consonant.store': ('local',),
+        }
+
+        for suite, locations in suites.iteritems():
+            self._run_scenario_test_suite(suite, locations)
+
+    def _run_scenario_test_suite(self, suite, locations):
+        sys.stdout.write('Running scenario tests for %s\n' % suite)
+
         yarn_dir = os.path.join('tests', 'yarn')
-        scenario_combinations = [
-            ('local', 'consonant.store'),
+        if not locations:
+            patterns = [
+                os.path.join(yarn_dir, suite.replace('.', '-'), '*.yarn'),
+                os.path.join(yarn_dir, 'implementations', '*.yarn')
             ]
-        for location, api in scenario_combinations:
-            api_dir = os.path.join(yarn_dir, api.replace('.', '-'))
-            sys.stdout.write('Running scenario tests using %s stores '
-                             'and the %s API\n' % (location, api))
+        else:
+            patterns = [
+                os.path.join(yarn_dir, '*.yarn'),
+                os.path.join(yarn_dir, suite.replace('.', '-'), '*.yarn'),
+                os.path.join(yarn_dir, 'implementations', '*.yarn')
+            ]
+
+        globs = [glob.glob(x) for x in patterns]
+        filenames = list(itertools.chain.from_iterable(globs))
+
+        locations = locations if locations else ('',)
+
+        for location in locations:
+            if location:
+                sys.stdout.write(
+                    'Running scenario tests for %s against a %s store\n' %
+                    (suite, location))
             subprocess.check_call(
                 ['yarn',
-                 '--env=TEST_REPO_BASE_URL=%s' % test_repo_base_url,
+                 '--env=TEST_REPO_BASE_URL=%s' % self._test_repo_base_url(),
                  '--env=LOCATION=%s' % location,
-                 '--env=API=%s' % api,
+                 '--env=API=%s' % suite,
                  '-s', os.path.join(yarn_dir, 'implementations', 'helpers.sh')]
-                + glob.glob(os.path.join(yarn_dir, '*.yarn'))
-                + glob.glob(os.path.join(api_dir, '*.yarn'))
-                + glob.glob(os.path.join(yarn_dir, 'implementations/*.yarn')))
+                + filenames)
+
+    def _check_copyright_years_and_license_headers(self):
         if os.path.isdir('.git'):
             sys.stdout.write('Collecting versioned files\n')
             files = subprocess.check_output(['git', 'ls-files']).splitlines()
@@ -88,6 +124,13 @@ class Check(Command):
                 subprocess.check_call(
                     [os.path.join('scripts', 'check-license-header'),
                      '-v', filename])
+
+    def run(self):
+        self._check_coding_style()
+        self._check_docstrings()
+        self._run_unit_tests()
+        self._run_scenario_tests()
+        self._check_copyright_years_and_license_headers()
 
 
 class Clean(Command):

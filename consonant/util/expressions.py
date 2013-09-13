@@ -15,10 +15,15 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""An implement of Consonant written in Python."""
+"""Regular expressions taken from the Consonant specification."""
 
 
-import register
-import service
-import store
-import util
+import re
+
+
+schema_name = \
+    re.compile('^[a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*\.[0-9]+$')
+
+
+service_name = \
+    re.compile('^[a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*$')

@@ -15,10 +15,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""An implement of Consonant written in Python."""
+"""Miscellaneous utility classes."""
 
 
-import register
-import service
-import store
-import util
+import expressions
+import phase

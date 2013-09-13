@@ -1,0 +1,106 @@
+Load the Consonant register and check the result
+================================================
+
+    SCENARIO load a system register with schemas and services
+    GIVEN    a system register with schemas and services
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a system register with only schemas
+    GIVEN    a system register with only schemas
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 0 services
+
+    SCENARIO load a system register with only services
+    GIVEN    a system register with only services
+    WHEN     loading the register
+    THEN     the register contains exactly 0 schemas
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a user register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a user register with only schemas
+    GIVEN    a user register with only schemas
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 0 services
+
+    SCENARIO load a user register with only services
+    GIVEN    a user register with only services
+    WHEN     loading the register
+    THEN     the register contains exactly 0 schemas
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a system and user register with schemas and services
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a system and user register with only schemas
+    GIVEN    a system register with only schemas
+    GIVEN    a user register with only schemas
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 0 services
+
+    SCENARIO load a system and user register with only services
+    GIVEN    a system register with only services
+    GIVEN    a user register with only services
+    WHEN     loading the register
+    THEN     the register contains exactly 0 schemas
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a system register with only schemas and user register with only services
+    GIVEN    a system register with only schemas
+    GIVEN    a user register with only services
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "file:///path/to/test/schema/2"
+    THEN     the register contains exactly 2 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "/path/to/the/second/test/service"
+
+    SCENARIO load a system and user register with different values
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with different schemas and services
+    WHEN     loading the register
+    THEN     the register contains exactly 2 schemas
+    THEN     the register maps the schema "tests.schema.1" to "http://url.of.test.schema/1"
+    THEN     the register maps the schema "tests.schema.2" to "http://url.from.the.user.register/"
+    THEN     the register contains exactly 3 services
+    THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
+    THEN     the register maps the service "second.test.service" to "http://url.from.the.user.register/"
+    THEN     the register maps the service "test.service" to "file:///new/entry/from/the/user/register"

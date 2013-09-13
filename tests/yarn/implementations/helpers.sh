@@ -21,6 +21,10 @@
 
 
 export PYTHONPATH="$SRCDIR"
+export XDG_CONFIG_DIRS="$DATADIR/system-config-dir"
+export XDG_CONFIG_HOME="$DATADIR/user-config-dir"
+export XDG_DATA_DIRS="$DATADIR/system-data-dir"
+export XDG_DATA_HOME="$DATADIR/user-data-dir"
 
 
 dump_output()
@@ -47,6 +51,10 @@ EOF
 
 run_consonant_store()
 {
+    if [ "$API" != "consonant.store" ]; then
+        return
+    fi
+
     trap dump_output 0
     cd $DATADIR
     CODE=$(cat)
@@ -60,6 +68,27 @@ store = consonant.store.local.LocalStore(store_location)
 
 if os.path.exists('use-memcached'):
     store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
+
+$CODE
+EOF
+    echo $? > $DATADIR/exit-code
+    exit 0
+}
+
+
+run_consonant_register()
+{
+    if [ "$API" != "consonant.register" ]; then
+        return
+    fi
+
+    trap dump_output 0
+    cd $DATADIR
+    CODE=$(cat)
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+import consonant.register
+import os
+import yaml
 
 $CODE
 EOF

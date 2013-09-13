@@ -1,0 +1,100 @@
+Load the Consonant register and check the result
+================================================
+
+Prepare a system register
+-------------------------
+
+    IMPLEMENTS GIVEN a (system|user) register with schemas and services
+
+    mkdir -p $DATADIR/$MATCH_1-config-dir/consonant
+    cat > $DATADIR/$MATCH_1-config-dir/consonant/register.yaml <<-EOF
+    schemas:
+        tests.schema.1: http://url.of.test.schema/1
+        tests.schema.2: file:///path/to/test/schema/2
+    services:
+        first.test.service: http://url.of/test.service/1
+        second.test.service: /path/to/the/second/test/service
+    EOF
+
+    IMPLEMENTS GIVEN a (system|user) register with only schemas
+
+    mkdir -p $DATADIR/$MATCH_1-config-dir/consonant
+    cat > $DATADIR/$MATCH_1-config-dir/consonant/register.yaml <<-EOF
+    schemas:
+        tests.schema.1: http://url.of.test.schema/1
+        tests.schema.2: file:///path/to/test/schema/2
+    EOF
+
+    IMPLEMENTS GIVEN a (system|user) register with only services
+
+    mkdir -p $DATADIR/$MATCH_1-config-dir/consonant
+    cat > $DATADIR/$MATCH_1-config-dir/consonant/register.yaml <<-EOF
+    services:
+        first.test.service: http://url.of/test.service/1
+        second.test.service: /path/to/the/second/test/service
+    EOF
+
+    IMPLEMENTS GIVEN a user register with different schemas and services
+
+    mkdir -p $DATADIR/user-config-dir/consonant
+    cat > $DATADIR/user-config-dir/consonant/register.yaml <<-EOF
+    schemas:
+        tests.schema.2: http://url.from.the.user.register/
+    services:
+        second.test.service: http://url.from.the.user.register/
+        test.service: file:///new/entry/from/the/user/register
+    EOF
+
+Load the Consonant register
+---------------------------
+
+    IMPLEMENTS WHEN loading the register
+
+    run_consonant_register <<-EOF
+    register = consonant.register.Register()
+    print yaml.dump(register)
+    EOF
+
+    fail_unknown_api
+
+Verify that the register contains a given number of schemas
+-----------------------------------------------------------
+
+    IMPLEMENTS THEN the register contains exactly ([0-9]+) schemas
+
+    run_python_test <<-EOF
+    assert 'schemas' in output_yaml
+    assert len(output_yaml['schemas']) == $MATCH_1
+    EOF
+
+Verify that the register maps a given schema name to a certain URI
+------------------------------------------------------------------
+
+    IMPLEMENTS THEN the register maps the schema "([a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*\.[0-9]+)" to "(.+)"
+
+    run_python_test <<-EOF
+    assert 'schemas' in output_yaml
+    assert "$MATCH_1" in output_yaml['schemas']
+    assert output_yaml['schemas']["$MATCH_1"] == "$MATCH_2"
+    EOF
+
+Verify that the register contains a given number of services
+------------------------------------------------------------
+
+    IMPLEMENTS THEN the register contains exactly ([0-9]+) services
+
+    run_python_test <<-EOF
+    assert 'services' in output_yaml
+    assert len(output_yaml['services']) == $MATCH_1
+    EOF
+
+Verify that the register maps a given service name to a certain URI
+-------------------------------------------------------------------
+
+    IMPLEMENTS THEN the register maps the service "([a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*)" to "(.+)"
+
+    run_python_test <<-EOF
+    assert 'services' in output_yaml
+    assert "$MATCH_1" in output_yaml['services']
+    assert output_yaml['services']["$MATCH_1"] == "$MATCH_2"
+    EOF
