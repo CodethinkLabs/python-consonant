@@ -4,5 +4,7 @@ consonant/store/__init__.py
 consonant/store/local.py
 consonant/store/remote.py
 consonant/service/__init__.py
+consonant/service/services.py
+consonant/service/factories.py
 consonant/util/__init__.py
 consonant/util/expressions.py

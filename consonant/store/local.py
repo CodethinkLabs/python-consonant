@@ -15,21 +15,22 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to load from and write to local service."""
+"""Classes to load from and write to local services."""
 
 
 import pygit2
 import yaml
 
-from consonant import service
+from consonant.service import services
 from consonant.store import git, objects, properties, references, timestamps
 
 
-class LocalStore(service.Service):
+class LocalStore(services.Service):
 
-    """Store implementation for local service."""
+    """Store implementation for local services."""
 
     def __init__(self, url):
+        services.Service.__init__(self)
         self.repo = pygit2.Repository(url)
         self.cache = None
 
@@ -60,7 +61,7 @@ class LocalStore(service.Service):
             names = set(refs.keys())
             for ref in refs.itervalues():
                 names.update(ref.aliases)
-            raise service.RefNotFoundError(name, names)
+            raise services.RefNotFoundError(name, names)
 
     def commit(self, sha1):
         """Return the Commit object for a specific commit in the store."""
@@ -68,7 +69,7 @@ class LocalStore(service.Service):
         try:
             commit = self.repo[sha1]
         except:
-            raise service.CommitNotFoundError(sha1)
+            raise services.CommitNotFoundError(sha1)
         return self._parse_commit(commit)
 
     def name(self, commit):
@@ -111,7 +112,7 @@ class LocalStore(service.Service):
             object_references = self._class_object_references(class_entry)
             return objects.ObjectClass(class_entry.name, object_references)
         else:
-            raise service.ClassNotFoundError(commit, name)
+            raise services.ClassNotFoundError(commit, name)
 
     def objects(self, commit, klass=None):
         """Return the objects present in the given commit of the store."""
@@ -134,14 +135,14 @@ class LocalStore(service.Service):
             if object:
                 return object
             else:
-                raise service.ObjectNotFoundError(commit, uuid, klass)
+                raise services.ObjectNotFoundError(commit, uuid, klass)
         else:
             classes = self.classes(commit)
             for klass in classes.itervalues():
                 object = self._class_object(commit, uuid, klass)
                 if object:
                     return object
-            raise service.ObjectNotFoundError(commit, uuid)
+            raise services.ObjectNotFoundError(commit, uuid)
 
     def _class_object(self, commit, uuid, klass):
         objects = [x for x in klass.objects if x.uuid == uuid]

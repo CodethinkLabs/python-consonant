@@ -18,10 +18,10 @@
 """Classes to load from and write to remote stores."""
 
 
-import consonant
+from consonant.service import services
 
 
-class LocalStore(consonant.service.Service):
+class RemoteStore(services.Service):
 
     """Store implementation for remote stores."""
 
