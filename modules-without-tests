@@ -1,10 +1,11 @@
 consonant/__init__.py
 consonant/register/__init__.py
-consonant/store/__init__.py
-consonant/store/local.py
-consonant/store/remote.py
+consonant/schema/__init__.py
 consonant/service/__init__.py
 consonant/service/services.py
 consonant/service/factories.py
+consonant/store/__init__.py
+consonant/store/local.py
+consonant/store/remote.py
 consonant/util/__init__.py
 consonant/util/expressions.py

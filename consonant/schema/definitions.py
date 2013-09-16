@@ -15,11 +15,13 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""An implement of Consonant written in Python."""
+"""Classes to represent property definitions in Consonant schemas."""
 
 
-import register
-import schema
-import service
-import store
-import util
+class PropertyDefinition(object):
+
+    """Class to represent object property definitions in schemas."""
+
+    def __init__(self, name, optional):
+        self.name = name
+        self.optional = optional
