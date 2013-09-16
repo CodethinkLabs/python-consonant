@@ -18,6 +18,9 @@
 """Classes to represent property definitions in Consonant schemas."""
 
 
+import re
+
+
 class PropertyDefinition(object):
 
     """Class to represent object property definitions in schemas."""
@@ -25,3 +28,82 @@ class PropertyDefinition(object):
     def __init__(self, name, optional):
         self.name = name
         self.optional = optional
+
+
+class BooleanPropertyDefinition(PropertyDefinition):
+
+    """Class to represent boolean object property definitions in schemas."""
+
+    pass
+
+
+class IntPropertyDefinition(PropertyDefinition):
+
+    """Class to represent int object property definitions in schemas."""
+
+    pass
+
+
+class FloatPropertyDefinition(PropertyDefinition):
+
+    """Class to represent float object property definitions in schemas."""
+
+    pass
+
+
+class TimestampPropertyDefinition(PropertyDefinition):
+
+    """Class to represent timestamp object property definitions in schemas."""
+
+    pass
+
+
+class TextPropertyDefinition(PropertyDefinition):
+
+    """Class to represent text object property definitions in schemas."""
+
+    def __init__(self, name, optional, expressions):
+        PropertyDefinition.__init__(self, name, optional)
+        self.expressions = [re.compile(x) for x in expressions]
+
+
+class RawPropertyDefinition(PropertyDefinition):
+
+    """Class to represent raw object property definitions in schemas."""
+
+    def __init__(self, name, optional, expressions):
+        PropertyDefinition.__init__(self, name, optional)
+        self.expressions = [re.compile(x) for x in expressions]
+
+
+class ReferencePropertyDefinition(PropertyDefinition):
+
+    """Class to represent reference object property definitions in schemas."""
+
+    def __init__(self, name, optional, klass, schema, service, bidirectional):
+        PropertyDefinition.__init__(self, name, optional)
+
+        self.klass = klass
+        self.schema = schema
+        self.service = service
+        self.bidirectional = bidirectional
+
+
+class ListPropertyDefinition(PropertyDefinition):
+
+    """Class to represent list object property definitions in schemas."""
+
+    def __init__(self, name, optional, elements):
+        PropertyDefinition.__init__(self, name, optional)
+        self.elements = elements
+
+
+class ClassDefinition(object):
+
+    """Class to represent class definitions in schemas."""
+
+    def __init__(self, name, properties):
+        self.name = name
+        self.properties = {}
+        for prop in properties:
+            self.properties[prop.name] = prop
