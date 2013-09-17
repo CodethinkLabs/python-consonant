@@ -18,6 +18,7 @@
 """Schema parsers."""
 
 
+import re
 import yaml
 
 from consonant.schema import definitions, schemas
@@ -49,14 +50,16 @@ class SchemaNotADictionaryError(Exception):
 
     """Error raised when the schema data is not a dictionary."""
 
-    pass
+    def __str__(self):
+        return 'Schema is not defined as a dictionary'
 
 
 class SchemaNameUndefinedError(Exception):
 
     """Error raised when a schema is missing a name."""
 
-    pass
+    def __str__(self):
+        return 'Schema name is undefined'
 
 
 class SchemaNameNotAStringError(Exception):
@@ -67,7 +70,7 @@ class SchemaNameNotAStringError(Exception):
         self.name = name
 
     def __str__(self):
-        return '%s' % self.name
+        return 'Schema name is not a string: %s' % self.name
 
 
 class SchemaNameInvalidError(Exception):
@@ -85,7 +88,8 @@ class SchemaClassesUndefinedError(Exception):
 
     """Error raised when there are no classes defined in a schema."""
 
-    pass
+    def __str__(self):
+        return 'No classes defined in the schema'
 
 
 class SchemaClassesNotADictionaryError(Exception):
@@ -94,6 +98,9 @@ class SchemaClassesNotADictionaryError(Exception):
 
     def __init__(self, classes):
         self.classes = classes
+
+    def __str__(self):
+        return 'Classes in the schema are not defined as a dictionary'''
 
 
 class SchemaClassNameNotAStringError(Exception):
@@ -104,7 +111,152 @@ class SchemaClassNameNotAStringError(Exception):
         self.name = name
 
     def __str__(self):
-        return '%s' % self.name
+        return 'Class name is not a string: %s' % self.name
+
+
+class SchemaClassNotADictionaryError(Exception):
+
+    """Error raised when a class in the schema is not a dictionary."""
+
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+
+    def __str__(self):
+        return 'Class "%s" is not defined as a dictionary' % self.name
+
+
+class SchemaPropertiesUndefinedError(Exception):
+
+    """Error raised when a class in a schema has no properties defined."""
+
+    def __init__(self, class_name):
+        self.class_name = class_name
+
+    def __str__(self):
+        return 'No properties defined for class "%s"' % self.class_name
+
+
+class SchemaPropertiesNotADictionaryError(Exception):
+
+    """Error raised when the properties of a class are not a dictionary."""
+
+    def __init__(self, class_name, properties):
+        self.class_name = class_name
+        self.properties = properties
+
+    def __str__(self):
+        return 'Properties of class "%s" are not defined as a dictionary' % \
+            self.class_name
+
+
+class SchemaPropertyNameNotAStringError(Exception):
+
+    """Error raised when a property name in a class is not a string."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Property name in class "%s" is not a string: %s' % \
+            (self.class_name, self.property_name)
+
+
+class SchemaPropertyNameInvalidError(Exception):
+
+    """Error raised when a property name in a class is invalid."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Property name in class "%s" is invalid: %s' % \
+            (self.class_name, self.property_name)
+
+
+class SchemaPropertyNotADictionaryError(Exception):
+
+    """Error raised when a property is not defined as a dictionary."""
+
+    def __init__(self, class_name, property_name, property_data):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.property_data = property_data
+
+    def __str__(self):
+        return 'Property "%s" in class "%s" is not defined as a dictionary' % \
+            (self.property_name, self.class_name)
+
+
+class SchemaPropertyTypeUndefinedError(Exception):
+
+    """Error raised when a property type is missing."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Type of property "%s" in class "%s" is undefined' % \
+            (self.property_name, self.class_name)
+
+
+class SchemaPropertyTypeUnsupportedError(Exception):
+
+    """Error raised when a property type is missing."""
+
+    def __init__(self, class_name, property_name, property_type):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.property_type = property_type
+
+    def __str__(self):
+        return 'Type of property "%s" in class "%s" is unsupported: %s' % \
+            (self.property_name, self.class_name, self.property_type)
+
+
+class SchemaPropertyOptionalHintError(Exception):
+
+    """Error raised when the optional hint of a property is invalid."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Optional hint of property "%s" in class "%s" is invalid' % \
+               (self.property_name, self.class_name)
+
+
+class SchemaPropertyExpressionsNotAListError(Exception):
+
+    """Error raised when the expressions of a property are not a list."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Regular expressions of property "%s" in class "%s" ' \
+               'are not defined as a list' % \
+               (self.property_name, self.class_name)
+
+
+class SchemaPropertyExpressionParseError(Exception):
+
+    """Error raised when a property expressions cannot be parsed."""
+
+    def __init__(self, class_name, property_name, expression):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.expression = expression
+
+    def __str__(self):
+        return 'Regular expression of property "%s" in class "%s" ' \
+               'cannot be parsed: %s' % \
+               (self.property_name, self.class_name, self.expression)
 
 
 class SchemaParser(object):
@@ -121,20 +273,21 @@ class SchemaParser(object):
             except Exception, e:
                 phase.error(e)
 
-        # phase 2: load the schema
+        # phase 2: validate the schema
         with ParserPhase(stream) as phase:
             if not isinstance(data, dict):
                 phase.error(SchemaNotADictionaryError())
 
-            # validate and load the schema name
+            self._validate_schema_name(phase, data)
+            self._validate_class_definitions(phase, data)
+
+        # phase 3: load the schema
+        with ParserPhase(stream) as phase:
             name = self._load_schema_name(phase, data)
-
-            # validate and load the class definitions
             classes = self._load_class_definitions(phase, data)
-
             return schemas.Schema(name, classes)
 
-    def _load_schema_name(self, phase, data):
+    def _validate_schema_name(self, phase, data):
         if not 'name' in data:
             phase.error(SchemaNameUndefinedError())
 
@@ -144,27 +297,121 @@ class SchemaParser(object):
         if not expressions.schema_name.match(data['name']):
             phase.error(SchemaNameInvalidError(data['name']))
 
+    def _load_schema_name(self, phase, data):
         return data['name']
 
-    def _load_class_definitions(self, phase, data):
-        classes = []
-
+    def _validate_class_definitions(self, phase, data):
         if not 'classes' in data:
             phase.error(SchemaClassesUndefinedError())
 
         if not isinstance(data['classes'], dict):
             phase.error(SchemaClassesNotADictionaryError(data['classes']))
+        else:
+            for class_name, class_data in data['classes'].iteritems():
+                self._validate_class_definition(phase, class_name, class_data)
 
+    def _load_class_definitions(self, phase, data):
+        classes = []
         for class_name, class_data in data['classes'].iteritems():
             klass = self._load_class_definition(phase, class_name, class_data)
             classes.append(klass)
-
         return classes
 
-    def _load_class_definition(self, phase, class_name, class_data):
+    def _validate_class_definition(self, phase, class_name, class_data):
         if not isinstance(class_name, basestring):
             phase.error(SchemaClassNameNotAStringError(class_name))
 
-        properties = []
+        if not isinstance(class_data, dict):
+            phase.error(SchemaClassNotADictionaryError(class_name, class_data))
 
-        return definitions.ClassDefinition(class_name, properties)
+        self._validate_property_definitions(phase, class_name, class_data)
+
+    def _load_class_definition(self, phase, class_name, class_data):
+        props = self._load_property_definitions(phase, class_name, class_data)
+        return definitions.ClassDefinition(class_name, props)
+
+    def _validate_property_definitions(self, phase, class_name, data):
+        if not 'properties' in data:
+            phase.error(SchemaPropertiesUndefinedError(class_name))
+
+        if not isinstance(data['properties'], dict):
+            phase.error(SchemaPropertiesNotADictionaryError(
+                class_name, data['properties']))
+        else:
+            for prop_name, prop_data in data['properties'].iteritems():
+                self._validate_property_definition(
+                    phase, class_name, prop_name, prop_data)
+
+    def _load_property_definitions(self, phase, class_name, data):
+        properties = []
+        for prop_name, prop_data in data['properties'].iteritems():
+            prop = self._load_property_definition(
+                phase, class_name, prop_name, prop_data)
+            properties.append(prop)
+        return properties
+
+    def _validate_property_definition(
+            self, phase, class_name, prop_name, data):
+        if not isinstance(prop_name, basestring):
+            phase.error(SchemaPropertyNameNotAStringError(
+                class_name, prop_name))
+
+        if not expressions.property_name.match(prop_name):
+            phase.error(SchemaPropertyNameInvalidError(class_name, prop_name))
+
+        if not isinstance(data, dict):
+            phase.error(SchemaPropertyNotADictionaryError(
+                class_name, prop_name, data))
+
+        if 'optional' in data:
+            if not data['optional'] in (True, False):
+                phase.error(SchemaPropertyOptionalHintError(
+                    class_name, prop_name))
+
+        if not 'type' in data:
+            phase.error(SchemaPropertyTypeUndefinedError(
+                class_name, prop_name))
+
+        prop_type = str(data['type'])
+        normalised_type = re.sub(r'[^a-zA-Z0-9]+', '', prop_type)
+        prop_func = '_validate_%s_property_definition' % normalised_type
+
+        if not hasattr(self, prop_func):
+            phase.error(SchemaPropertyTypeUnsupportedError(
+                class_name, prop_name, prop_type))
+        else:
+            getattr(self, prop_func)(phase, class_name, prop_name, data)
+
+    def _load_property_definition(
+            self, phase, class_name, prop_name, data):
+        prop_type = str(data['type'])
+        normalised_type = re.sub(r'[^a-zA-Z0-9]+', '', prop_type)
+        prop_func = '_load_%s_property_definition' % normalised_type
+
+        optional = bool(data.get('optional', False))
+
+        return getattr(self, prop_func)(
+            phase, class_name, prop_name, optional, data)
+
+    def _validate_text_property_definition(
+            self, phase, class_name, prop_name, data):
+        if 'expressions' in data:
+            if not isinstance(data['expressions'], list):
+                phase.error(SchemaPropertyExpressionsNotAListError(
+                    class_name, prop_name))
+            else:
+                for expression in data['expressions']:
+                    try:
+                        re.compile(expression)
+                    except Exception:
+                        phase.error(SchemaPropertyExpressionParseError(
+                            class_name, prop_name, expression))
+
+    def _load_text_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        expressions = []
+        if 'expressions' in data:
+            expressions[:] = [str(x) for x in data['expressions']]
+
+        return definitions.TextPropertyDefinition(
+            prop_name, optional, expressions)
