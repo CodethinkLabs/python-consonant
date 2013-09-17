@@ -29,6 +29,12 @@ class PropertyDefinition(object):
         self.name = name
         self.optional = optional
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.name == other.name \
+            and self.optional == other.optional
+
 
 class BooleanPropertyDefinition(PropertyDefinition):
 
@@ -66,6 +72,13 @@ class TextPropertyDefinition(PropertyDefinition):
         PropertyDefinition.__init__(self, name, optional)
         self.expressions = [re.compile(x) for x in expressions]
 
+    def __eq__(self, other):
+        if not isinstance(other, TextPropertyDefinition):
+            return False
+        return self.name == other.name \
+            and self.optional == other.optional \
+            and self.expressions == other.expressions
+
 
 class RawPropertyDefinition(PropertyDefinition):
 
@@ -74,6 +87,13 @@ class RawPropertyDefinition(PropertyDefinition):
     def __init__(self, name, optional, expressions):
         PropertyDefinition.__init__(self, name, optional)
         self.expressions = [re.compile(x) for x in expressions]
+
+    def __eq__(self, other):
+        if not isinstance(other, RawPropertyDefinition):
+            return False
+        return self.name == other.name \
+            and self.optional == other.optional \
+            and self.expressions == other.expressions
 
 
 class ReferencePropertyDefinition(PropertyDefinition):
@@ -88,6 +108,16 @@ class ReferencePropertyDefinition(PropertyDefinition):
         self.service = service
         self.bidirectional = bidirectional
 
+    def __eq__(self, other):
+        if not isinstance(other, ReferencePropertyDefinition):
+            return False
+        return self.name == other.name \
+            and self.optional == other.optional \
+            and self.klass == other.klass \
+            and self.schema == other.schema \
+            and self.service == other.service \
+            and self.bidirectional == other.bidirectional
+
 
 class ListPropertyDefinition(PropertyDefinition):
 
@@ -96,6 +126,13 @@ class ListPropertyDefinition(PropertyDefinition):
     def __init__(self, name, optional, elements):
         PropertyDefinition.__init__(self, name, optional)
         self.elements = elements
+
+    def __eq__(self, other):
+        if not isinstance(other, ListPropertyDefinition):
+            return False
+        return self.name == other.name \
+            and self.optional == other.optional \
+            and self.elements == other.elements
 
 
 class ClassDefinition(object):
@@ -107,3 +144,8 @@ class ClassDefinition(object):
         self.properties = {}
         for prop in properties:
             self.properties[prop.name] = prop
+
+    def __eq__(self, other):
+        if not isinstance(other, ClassDefinition):
+            return False
+        return self.name == other.name and self.properties == other.properties

@@ -19,4 +19,5 @@
 
 
 import definitions
+import parsers
 import schemas

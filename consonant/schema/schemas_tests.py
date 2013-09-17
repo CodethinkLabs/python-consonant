@@ -70,3 +70,44 @@ class SchemaTest(unittest.TestCase):
         for klass in classes:
             self.assertTrue(klass.name in sch.classes)
             self.assertEqual(sch.classes[klass.name], klass)
+
+    def test_schemas_and_non_schemas_are_not_equal(self):
+        """Verify that schemas and non-schema objects are not equal."""
+
+        self.assertFalse(schemas.Schema('schema.1', []) == 'schema.1')
+
+    def test_schemas_with_the_same_name_and_classes_are_equal(self):
+        """Verify that schemas with the same name and classes are equal."""
+
+        classes = [
+            definitions.ClassDefinition('requirement', [
+                definitions.TextPropertyDefinition('title', False, []),
+                definitions.IntPropertyDefinition('priority', True)
+                ]),
+            ]
+
+        schema1 = schemas.Schema('schema.1', classes)
+        schema2 = schemas.Schema('schema.1', classes)
+
+        self.assertEqual(schema1, schema2)
+
+    def test_schemas_with_a_different_name_are_not_equal(self):
+        """Verify that schemas with a different name are not equal."""
+
+        schema1 = schemas.Schema('schema.1', [])
+        schema2 = schemas.Schema('schema.2', [])
+
+        self.assertFalse(schema1 == schema2)
+
+    def test_schemas_with_different_classes_are_not_equal(self):
+        """Verify that schemas with different classes are not equal."""
+
+        schema1 = schemas.Schema('schema.1', [
+            definitions.ClassDefinition('card', []),
+            definitions.ClassDefinition('lane', [])
+            ])
+        schema2 = schemas.Schema('schema.2', [
+            definitions.ClassDefinition('card', [])
+            ])
+
+        self.assertFalse(schema1 == schema2)

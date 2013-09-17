@@ -34,8 +34,12 @@ class Phase(Exception):
     def __str__(self):
         """Return an error message that includes all the errors collected."""
 
-        return '\n'.join(
-            ['%s: %s' % (x.__class__.__name__, str(x)) for x in self.errors])
+        error_strings = [
+            '%s: %s' % (x.__class__.__name__, str(x))
+            if str(x) else '%s' % x.__class__.__name__
+            for x in self.errors]
+
+        return '\n'.join(error_strings)
 
     def __enter__(self):
         """Start an execution phase, reset the collected errors and return."""

@@ -27,3 +27,8 @@ class Schema(object):
         self.classes = {}
         for klass in classes:
             self.classes[klass.name] = klass
+
+    def __eq__(self, other):
+        if not isinstance(other, Schema):
+            return False
+        return self.name == other.name and self.classes == other.classes
