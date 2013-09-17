@@ -15,8 +15,15 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to parse and represent Consonant schemas."""
+"""Classes to represent Consonant schemas."""
 
 
-import definitions
-import schemas
+class Schema(object):
+
+    """Class to represent a Consonant schema."""
+
+    def __init__(self, name, classes):
+        self.name = name
+        self.classes = {}
+        for klass in classes:
+            self.classes[klass.name] = klass

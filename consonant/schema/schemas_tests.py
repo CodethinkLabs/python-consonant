@@ -1,0 +1,72 @@
+# Copyright (C) 2013 Codethink Limited.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+
+"""Unit tests for classes representing schemas."""
+
+
+import unittest
+
+from consonant.schema import definitions, schemas
+
+
+class SchemaTest(unittest.TestCase):
+
+    """Unit tests for the Schema class."""
+
+    def test_constructor_sets_schema_name(self):
+        """Verify that the constructor sets the schema name."""
+
+        sch = schemas.Schema('org.a.schemas.1', [])
+        self.assertEqual(sch.name, 'org.a.schemas.1')
+
+        sch = schemas.Schema('another.schemas.name.500', [])
+        self.assertEqual(sch.name, 'another.schemas.name.500')
+
+    def test_constructor_sets_classes(self):
+        """Verify that the constructor initialises the classes mapping."""
+
+        classes = [
+            definitions.ClassDefinition('card', []),
+            definitions.ClassDefinition('lane', [
+                definitions.TextPropertyDefinition('title', False, []),
+                definitions.ListPropertyDefinition(
+                    'cards', False, definitions.ReferencePropertyDefinition(
+                        'cards', False, 'card', None, None, False)
+                    )]
+                ),
+            ]
+        sch = schemas.Schema('org.a.schemas.1', classes)
+
+        self.assertEqual(len(sch.classes), len(classes))
+
+        for klass in classes:
+            self.assertTrue(klass.name in sch.classes)
+            self.assertEqual(sch.classes[klass.name], klass)
+
+        classes = [
+            definitions.ClassDefinition('requirement', [
+                definitions.TextPropertyDefinition('title', False, []),
+                definitions.IntPropertyDefinition('priority', True)
+                ]),
+            ]
+        sch = schemas.Schema('org.another.schemas.2', classes)
+
+        self.assertEqual(len(sch.classes), len(classes))
+
+        for klass in classes:
+            self.assertTrue(klass.name in sch.classes)
+            self.assertEqual(sch.classes[klass.name], klass)
