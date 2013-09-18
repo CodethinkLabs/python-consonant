@@ -415,3 +415,27 @@ class SchemaParser(object):
 
         return definitions.TextPropertyDefinition(
             prop_name, optional, expressions)
+
+    def _validate_int_property_definition(
+            self, phase, class_name, prop_name, data):
+        pass
+
+    def _load_int_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        return definitions.IntPropertyDefinition(prop_name, optional)
+
+    def _validate_boolean_property_definition(
+            self, phase, class_name, prop_name, data):
+        pass
+
+    def _load_boolean_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        return definitions.BooleanPropertyDefinition(prop_name, optional)
+
+    def _validate_float_property_definition(
+            self, phase, class_name, prop_name, data):
+        pass
+
+    def _load_float_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        return definitions.FloatPropertyDefinition(prop_name, optional)

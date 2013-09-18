@@ -462,3 +462,88 @@ classes:
         type: text
         optional: "True"
             ''')
+
+    def test_parsing_a_simple_class_with_an_int_property_works(self):
+        """Verify that parsing a class with a int property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      number:
+        type: int
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('number' in klass.properties)
+
+        prop = klass.properties['number']
+        self.assertTrue(isinstance(prop, definitions.IntPropertyDefinition))
+        self.assertEqual(prop.name, 'number')
+        self.assertFalse(prop.optional)
+
+    def test_parsing_a_simple_class_with_a_boolean_property_works(self):
+        """Verify that parsing a class with a boolean property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      doable-in-a-day:
+        type: boolean
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('doable-in-a-day' in klass.properties)
+
+        prop = klass.properties['doable-in-a-day']
+        self.assertTrue(
+            isinstance(prop, definitions.BooleanPropertyDefinition))
+        self.assertEqual(prop.name, 'doable-in-a-day')
+        self.assertFalse(prop.optional)
+
+    def test_parsing_a_simple_class_with_a_float_property_works(self):
+        """Verify that parsing a class with a float property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      days-estimate:
+        type: float
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('days-estimate' in klass.properties)
+
+        prop = klass.properties['days-estimate']
+        self.assertTrue(isinstance(prop, definitions.FloatPropertyDefinition))
+        self.assertEqual(prop.name, 'days-estimate')
+        self.assertFalse(prop.optional)
