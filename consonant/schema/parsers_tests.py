@@ -69,8 +69,8 @@ classes:
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
             '^'
-            'schema.yaml: SchemaClassesUndefinedError: '
-            'No classes defined in the schema'
+            'SchemaClassesUndefinedError: '
+            'Schema "some.schema.1": no classes defined'
             '$',
             self.parser.parse,
             stream)
@@ -82,7 +82,7 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaNotADictionaryError: '
-            'Schema is not defined as a dictionary'
+            'Schema "undefined": schema is not defined as a dictionary'
             '$',
             self.parser.parse,
             '')
@@ -94,7 +94,7 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaNameUndefinedError: '
-            'Schema name is undefined'
+            'Schema "undefined": schema name is undefined'
             '$',
             self.parser.parse,
             '''
@@ -112,7 +112,7 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaNameNotAStringError: '
-            'Schema name is not a string: 5'
+            'Schema "5": schema name is not a string'
             '$',
             self.parser.parse,
             'name: 5')
@@ -123,7 +123,10 @@ classes:
         # fail if the schema name is not versioned
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
-            '^SchemaNameInvalidError: org.schema$',
+            '^'
+            'SchemaNameInvalidError: '
+            'Schema "org.schema": schema name is invalid'
+            '$',
             self.parser.parse,
             '''
 name: org.schema
@@ -137,7 +140,10 @@ classes:
         # fail if the schema name begins with a number
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
-            '^SchemaNameInvalidError: 9.schema.1$',
+            '^'
+            'SchemaNameInvalidError: '
+            'Schema "9.schema.1": schema name is invalid'
+            '$',
             self.parser.parse,
             '''
 name: 9.schema.1
@@ -155,7 +161,7 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaClassesUndefinedError: '
-            'No classes defined in the schema'
+            'Schema "schema.1": no classes defined'
             '$',
             self.parser.parse,
             'name: schema.1')
@@ -167,7 +173,7 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaClassesNotADictionaryError: '
-            'Classes in the schema are not defined as a dictionary'
+            'Schema "schema.1": classes are not defined as a dictionary: 5'
             '$',
             self.parser.parse,
             '''
@@ -182,7 +188,8 @@ classes: 5
             parsers.ParserPhaseError,
             '^'
             'SchemaClassNameNotAStringError: '
-            'Class name is not a string: 5'
+            'Schema "schema.1", class "5": '
+            'class name is not a string'
             '$',
             self.parser.parse,
             '''
@@ -201,9 +208,11 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaClassNotADictionaryError: '
-            'Class "card" is not defined as a dictionary\n'
+            'Schema "schema.1", class "card": '
+            'class is not defined as a dictionary: hello\n'
             'SchemaPropertiesUndefinedError: '
-            'No properties defined for class "card"'
+            'Schema "schema.1", class "card": '
+            'no properties defined'
             '$',
             self.parser.parse,
             '''
@@ -218,7 +227,9 @@ classes:
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
             '^SchemaPropertiesUndefinedError: '
-            'No properties defined for class "card"$',
+            'Schema "schema.1", class "card": '
+            'no properties defined'
+            '$',
             self.parser.parse,
             '''
 name: schema.1
@@ -232,7 +243,8 @@ classes:
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
             '^SchemaPropertiesNotADictionaryError: '
-            'Properties of class "card" are not defined as a dictionary$',
+            'Schema "schema.1", class "card": '
+            'properties are not defined as a dictionary: 5',
             self.parser.parse,
             '''
 name: schema.1
@@ -248,7 +260,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyNameNotAStringError: '
-            'Property name in class "card" is not a string: 123'
+            'Schema "schema.1", class "card", property "123": '
+            'property name is not a string'
             '$',
             self.parser.parse,
             '''
@@ -267,7 +280,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyNameInvalidError: '
-            'Property name in class "card" is invalid: foo bar'
+            'Schema "schema.1", class "card", property "foo bar": '
+            'property name is invalid'
             '$',
             self.parser.parse,
             '''
@@ -286,9 +300,11 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyNotADictionaryError: '
-            'Property "title" in class "card" is not defined as a dictionary\n'
+            'Schema "schema.1", class "card", property "title": '
+            'property is not defined as a dictionary: text\n'
             'SchemaPropertyTypeUndefinedError: '
-            'Type of property "title" in class "card" is undefined'
+            'Schema "schema.1", class "card", property "title": '
+            'property type is undefined'
             '$',
             self.parser.parse,
             '''
@@ -306,7 +322,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyTypeUndefinedError: '
-            'Type of property "title" in class "card" is undefined'
+            'Schema "schema.1", class "card", property "title": '
+            'property type is undefined'
             '$',
             self.parser.parse,
             '''
@@ -325,7 +342,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyTypeUnsupportedError: '
-            'Type of property "title" in class "card" is unsupported: foo'
+            'Schema "schema.1", class "card", property "title": '
+            'property type is unsupported: foo'
             '$',
             self.parser.parse,
             '''
@@ -344,8 +362,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyExpressionsNotAListError: '
-            'Regular expressions of property "title" in class "card" are not '
-            'defined as a list'
+            'Schema "schema.1", class "card", property "title": '
+            'regular expressions are not defined as a list: foo'
             '$',
             self.parser.parse,
             '''
@@ -428,8 +446,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyExpressionParseError: '
-            'Regular expression of property "title" in class "card" '
-            'cannot be parsed: 5'
+            'Schema "schema.1", class "card", property "title": '
+            'regular expression cannot be parsed: 5'
             '$',
             self.parser.parse,
             '''
@@ -450,7 +468,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyOptionalHintError: '
-            'Optional hint of property "title" in class "card" is invalid'
+            'Schema "schema.1", class "card", property "title": '
+            'optional hint is invalid: True'
             '$',
             self.parser.parse,
             '''
@@ -647,8 +666,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyExpressionParseError: '
-            'Regular expression of property "screenshot" in class "issue" '
-            'cannot be parsed: 5'
+            'Schema "schema.1", class "issue", property "screenshot": '
+            'regular expression cannot be parsed: 5'
             '$',
             self.parser.parse,
             '''
@@ -669,8 +688,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyExpressionsNotAListError: '
-            'Regular expressions of property "screenshot" '
-            'in class "issue" are not defined as a list'
+            'Schema "schema.1", class "issue", property "screenshot": '
+            'regular expressions are not defined as a list: foo'
             '$',
             self.parser.parse,
             '''
@@ -690,8 +709,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyClassUndefinedError: '
-            'Target class of reference property "lane" in class "card" '
-            'is undefined'
+            'Schema "schema.1", class "card", property "lane": '
+            'target class is undefined'
             '$',
             self.parser.parse,
             '''
@@ -710,8 +729,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyClassNotAStringError: '
-            'Target class of reference property "lane" in class "card" '
-            'is not a string: 12.4'
+            'Schema "schema.1", class "card", property "lane": '
+            'target class is not a string: 12.4'
             '$',
             self.parser.parse,
             '''
@@ -731,8 +750,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyClassInvalidError: '
-            'Target class of reference property "lane" in class "card" '
-            'is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
+            'Schema "schema.1", class "card", property "lane": '
+            'target class is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
             '$',
             self.parser.parse,
             '''
@@ -752,8 +771,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertySchemaNotAStringError: '
-            'Target schema of reference property "lane" in class "card" '
-            'is not a string: 12.4'
+            'Schema "schema.1", class "card", property "lane": '
+            'target schema is not a string: 12.4'
             '$',
             self.parser.parse,
             '''
@@ -774,8 +793,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertySchemaInvalidError: '
-            'Target schema of reference property "lane" in class "card" '
-            'is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
+            'Schema "schema.1", class "card", property "lane": '
+            'target schema is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
             '$',
             self.parser.parse,
             '''
@@ -796,8 +815,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyBidirectionalInvalidError: '
-            'Bidirectional hint of reference property "lane" '
-            'in class "card" is invalid'
+            'Schema "schema.1", class "card", property "lane": '
+            'bidirectional hint is invalid: 123123'
             '$',
             self.parser.parse,
             '''
@@ -955,8 +974,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyListElementsUndefinedError: '
-            'Element type of list property "cards" in class "lane" '
-            'is undefined'
+            'Schema "schema.1", class "lane", property "cards": '
+            'element type of list property is undefined'
             '$',
             self.parser.parse,
             '''
@@ -975,7 +994,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyNotADictionaryError: '
-            'Property "cards" in class "lane" is not defined as a dictionary'
+            'Schema "schema.1", class "lane", property "cards": '
+            'property is not defined as a dictionary: 123123123'
             '$',
             self.parser.parse,
             '''
@@ -995,7 +1015,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyTypeUndefinedError: '
-            'Type of property "cards" in class "lane" is undefined'
+            'Schema "schema.1", class "lane", property "cards": '
+            'property type is undefined'
             '$',
             self.parser.parse,
             '''
@@ -1016,7 +1037,8 @@ classes:
             parsers.ParserPhaseError,
             '^'
             'SchemaPropertyTypeUnsupportedError: '
-            'Type of property "cards" in class "lane" is unsupported: foo'
+            'Schema "schema.1", class "lane", property "cards": '
+            'property type is unsupported: foo'
             '$',
             self.parser.parse,
             '''
