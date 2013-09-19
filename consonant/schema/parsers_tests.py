@@ -947,3 +947,122 @@ classes:
         self.assertEqual(prop.klass, 'lane')
         self.assertEqual(prop.schema, 'schema.2')
         self.assertEqual(prop.bidirectional, True)
+
+    def test_parsing_of_class_with_list_property_with_no_elements_fails(self):
+        """Verify that parsing fails if a list property has no elements."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyListElementsUndefinedError: '
+            'Element type of list property "cards" in class "lane" '
+            'is undefined'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  lane:
+    properties:
+      cards:
+        type: list
+            ''')
+
+    def test_parsing_fails_if_class_has_non_dict_elements_in_a_list(self):
+        """Verify that parsing fails if a class has non-dict elements."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyNotADictionaryError: '
+            'Property "cards" in class "lane" is not defined as a dictionary'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  lane:
+    properties:
+      cards:
+        type: list
+        elements: 123123123
+            ''')
+
+    def test_parsing_fails_if_list_prop_def_elements_have_no_type(self):
+        """Verify that parsing fails if list prop def elements have no type."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyTypeUndefinedError: '
+            'Type of property "cards" in class "lane" is undefined'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  lane:
+    properties:
+      cards:
+        type: list
+        elements:
+          foo: bar
+            ''')
+
+    def test_parsing_fails_if_list_prop_def_elements_are_unsupported(self):
+        """Verify parsing fails if list prop def elements are unsupported."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyTypeUnsupportedError: '
+            'Type of property "cards" in class "lane" is unsupported: foo'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  lane:
+    properties:
+      cards:
+        type: list
+        elements:
+          type: foo
+            ''')
+
+    def test_parsing_class_with_a_string_list_property_works(self):
+        """Verify parsing a class with a string list property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  lane:
+    properties:
+      cards:
+        type: list
+        elements:
+          type: reference
+          class: card
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('lane' in schema.classes)
+
+        klass = schema.classes['lane']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'lane')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('cards' in klass.properties)
+
+        prop = klass.properties['cards']
+        self.assertTrue(isinstance(prop, definitions.ListPropertyDefinition))
+        self.assertEqual(prop.name, 'cards')
+        self.assertFalse(prop.optional)
+        self.assertTrue(
+            isinstance(prop.elements, definitions.ReferencePropertyDefinition))
+        self.assertEqual(prop.elements.name, 'cards')
+        self.assertEqual(prop.elements.klass, 'card')
+        self.assertEqual(prop.elements.schema, None)
+        self.assertFalse(prop.elements.bidirectional)

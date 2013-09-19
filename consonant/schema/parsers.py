@@ -345,6 +345,19 @@ class SchemaPropertyBidirectionalInvalidError(Exception):
                'is invalid' % (self.property_name, self.class_name)
 
 
+class SchemaPropertyListElementsUndefinedError(Exception):
+
+    """Error raised when the element type of a list property is undefined."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Element type of list property "%s" in class "%s" ' \
+               'is undefined' % (self.property_name, self.class_name)
+
+
 class SchemaParser(object):
 
     """The default schema parser implementation."""
@@ -593,3 +606,19 @@ class SchemaParser(object):
 
         return definitions.ReferencePropertyDefinition(
             prop_name, optional, target_class, target_schema, bidirectional)
+
+    def _validate_list_property_definition(
+            self, phase, class_name, prop_name, data):
+        if 'elements' in data:
+            self._validate_property_definition(
+                phase, class_name, prop_name, data['elements'])
+        else:
+            phase.error(SchemaPropertyListElementsUndefinedError(
+                class_name, prop_name))
+
+    def _load_list_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        elements = self._load_property_definition(
+            phase, class_name, prop_name, data['elements'])
+        return definitions.ListPropertyDefinition(
+            prop_name, optional, elements)
