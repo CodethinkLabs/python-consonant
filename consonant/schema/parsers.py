@@ -395,12 +395,12 @@ class SchemaParser(object):
 
     def _validate_text_property_definition(
             self, phase, class_name, prop_name, data):
-        if 'expressions' in data:
-            if not isinstance(data['expressions'], list):
+        if 'regex' in data:
+            if not isinstance(data['regex'], list):
                 phase.error(SchemaPropertyExpressionsNotAListError(
                     class_name, prop_name))
             else:
-                for expression in data['expressions']:
+                for expression in data['regex']:
                     try:
                         re.compile(expression)
                     except Exception:
@@ -410,8 +410,8 @@ class SchemaParser(object):
     def _load_text_property_definition(
             self, phase, class_name, prop_name, optional, data):
         expressions = []
-        if 'expressions' in data:
-            expressions[:] = [str(x) for x in data['expressions']]
+        if 'regex' in data:
+            expressions[:] = [str(x) for x in data['regex']]
 
         return definitions.TextPropertyDefinition(
             prop_name, optional, expressions)
@@ -439,3 +439,34 @@ class SchemaParser(object):
     def _load_float_property_definition(
             self, phase, class_name, prop_name, optional, data):
         return definitions.FloatPropertyDefinition(prop_name, optional)
+
+    def _validate_timestamp_property_definition(
+            self, phase, class_name, prop_name, data):
+        pass
+
+    def _load_timestamp_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        return definitions.TimestampPropertyDefinition(prop_name, optional)
+
+    def _validate_raw_property_definition(
+            self, phase, class_name, prop_name, data):
+        if 'content-type-regex' in data:
+            if not isinstance(data['content-type-regex'], list):
+                phase.error(SchemaPropertyExpressionsNotAListError(
+                    class_name, prop_name))
+            else:
+                for expression in data['content-type-regex']:
+                    try:
+                        re.compile(expression)
+                    except Exception:
+                        phase.error(SchemaPropertyExpressionParseError(
+                            class_name, prop_name, expression))
+
+    def _load_raw_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        expressions = []
+        if 'content-type-regex' in data:
+            expressions[:] = [str(x) for x in data['content-type-regex']]
+
+        return definitions.RawPropertyDefinition(
+            prop_name, optional, expressions)

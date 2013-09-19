@@ -355,7 +355,7 @@ classes:
     properties:
       title:
         type: text
-        expressions: foo
+        regex: foo
             ''')
 
     def test_parsing_a_simple_class_with_one_property_returns_a_schema(self):
@@ -397,7 +397,7 @@ classes:
     properties:
       title:
         type: text
-        expressions:
+        regex:
           - ^foo$
           - ^[0-9]+$
             ''')
@@ -439,7 +439,7 @@ classes:
     properties:
       title:
         type: text
-        expressions:
+        regex:
           - 5
             ''')
 
@@ -547,3 +547,138 @@ classes:
         self.assertTrue(isinstance(prop, definitions.FloatPropertyDefinition))
         self.assertEqual(prop.name, 'days-estimate')
         self.assertFalse(prop.optional)
+
+    def test_parsing_a_simple_class_with_a_timestamp_property_works(self):
+        """Verify that parsing a class with a timestamp property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  milestone:
+    properties:
+      deadline:
+        type: timestamp
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('milestone' in schema.classes)
+
+        klass = schema.classes['milestone']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'milestone')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('deadline' in klass.properties)
+
+        prop = klass.properties['deadline']
+        self.assertTrue(
+            isinstance(prop, definitions.TimestampPropertyDefinition))
+        self.assertEqual(prop.name, 'deadline')
+        self.assertFalse(prop.optional)
+
+    def test_parsing_a_simple_class_with_raw_property_works(self):
+        """Verify that parsing a class with a simple raw property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  issue:
+    properties:
+      screenshot:
+        type: raw
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('issue' in schema.classes)
+
+        klass = schema.classes['issue']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'issue')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('screenshot' in klass.properties)
+
+        prop = klass.properties['screenshot']
+        self.assertTrue(isinstance(prop, definitions.RawPropertyDefinition))
+        self.assertEqual(prop.name, 'screenshot')
+        self.assertFalse(prop.optional)
+        self.assertEqual(len(prop.expressions), 0)
+
+    def test_parsing_a_raw_property_definition_with_expressions_works(self):
+        """Verify that parsing a raw prop def with expressions works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  issue:
+    properties:
+      screenshot:
+        type: raw
+        content-type-regex:
+          - ^image\/png$
+          - ^image\/jpeg$
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('issue' in schema.classes)
+
+        klass = schema.classes['issue']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'issue')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('screenshot' in klass.properties)
+
+        prop = klass.properties['screenshot']
+        self.assertTrue(isinstance(prop, definitions.RawPropertyDefinition))
+        self.assertEqual(prop.name, 'screenshot')
+        self.assertFalse(prop.optional)
+        self.assertEqual(len(prop.expressions), 2)
+        self.assertEqual(prop.expressions[0], re.compile('^image\/png$'))
+        self.assertEqual(prop.expressions[1], re.compile('^image\/jpeg$'))
+
+    def test_parsing_fails_if_a_raw_property_expression_is_invalid(self):
+        """Verify that parsing a raw prop def with an invalid regexp fails."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyExpressionParseError: '
+            'Regular expression of property "screenshot" in class "issue" '
+            'cannot be parsed: 5'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  issue:
+    properties:
+      screenshot:
+        type: raw
+        content-type-regex:
+          - 5
+            ''')
+
+    def test_parsing_fails_if_raw_expressions_are_not_a_list(self):
+        """Verify that parsing fails if raw prop def regexps are not a list."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyExpressionsNotAListError: '
+            'Regular expressions of property "screenshot" '
+            'in class "issue" are not defined as a list'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  issue:
+    properties:
+      screenshot:
+        type: raw
+        content-type-regex: foo
+            ''')
