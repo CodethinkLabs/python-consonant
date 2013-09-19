@@ -100,12 +100,11 @@ class ReferencePropertyDefinition(PropertyDefinition):
 
     """Class to represent reference object property definitions in schemas."""
 
-    def __init__(self, name, optional, klass, schema, service, bidirectional):
+    def __init__(self, name, optional, klass, schema, bidirectional):
         PropertyDefinition.__init__(self, name, optional)
 
         self.klass = klass
         self.schema = schema
-        self.service = service
         self.bidirectional = bidirectional
 
     def __eq__(self, other):
@@ -115,7 +114,6 @@ class ReferencePropertyDefinition(PropertyDefinition):
             and self.optional == other.optional \
             and self.klass == other.klass \
             and self.schema == other.schema \
-            and self.service == other.service \
             and self.bidirectional == other.bidirectional
 
 

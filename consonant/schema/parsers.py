@@ -259,6 +259,92 @@ class SchemaPropertyExpressionParseError(Exception):
                (self.property_name, self.class_name, self.expression)
 
 
+class SchemaPropertyClassUndefinedError(Exception):
+
+    """Error raised when the class of a reference property is undefined."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Target class of reference property "%s" in class "%s" ' \
+               'is undefined' % (self.property_name, self.class_name)
+
+
+class SchemaPropertyClassNotAStringError(Exception):
+
+    """Error raised when the class of a reference property is not a string."""
+
+    def __init__(self, class_name, property_name, target_class):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.target_class = target_class
+
+    def __str__(self):
+        return 'Target class of reference property "%s" in class "%s" ' \
+               'is not a string: %s' % \
+               (self.property_name, self.class_name, self.target_class)
+
+
+class SchemaPropertyClassInvalidError(Exception):
+
+    """Error raised when the class of a reference property is invalid."""
+
+    def __init__(self, class_name, property_name, target_class):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.target_class = target_class
+
+    def __str__(self):
+        return 'Target class of reference property "%s" in class "%s" ' \
+               'is invalid: %s' % \
+               (self.property_name, self.class_name, self.target_class)
+
+
+class SchemaPropertySchemaNotAStringError(Exception):
+
+    """Error raised when the schema of a reference property is not a string."""
+
+    def __init__(self, class_name, property_name, target_schema):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.target_schema = target_schema
+
+    def __str__(self):
+        return 'Target schema of reference property "%s" in class "%s" ' \
+               'is not a string: %s' % \
+               (self.property_name, self.class_name, self.target_schema)
+
+
+class SchemaPropertySchemaInvalidError(Exception):
+
+    """Error raised when the schema of a reference property is invalid."""
+
+    def __init__(self, class_name, property_name, target_schema):
+        self.class_name = class_name
+        self.property_name = property_name
+        self.target_schema = target_schema
+
+    def __str__(self):
+        return 'Target schema of reference property "%s" in class "%s" ' \
+               'is invalid: %s' % \
+               (self.property_name, self.class_name, self.target_schema)
+
+
+class SchemaPropertyBidirectionalInvalidError(Exception):
+
+    """Error raised when the bidirectional hint of a property is invalid."""
+
+    def __init__(self, class_name, property_name):
+        self.class_name = class_name
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Bidirectional hint of reference property "%s" in class "%s" ' \
+               'is invalid' % (self.property_name, self.class_name)
+
+
 class SchemaParser(object):
 
     """The default schema parser implementation."""
@@ -470,3 +556,40 @@ class SchemaParser(object):
 
         return definitions.RawPropertyDefinition(
             prop_name, optional, expressions)
+
+    def _validate_reference_property_definition(
+            self, phase, class_name, prop_name, data):
+        if 'class' in data:
+            if not isinstance(data['class'], basestring):
+                phase.error(SchemaPropertyClassNotAStringError(
+                    class_name, prop_name, data['class']))
+
+            if not expressions.class_name.match(data['class']):
+                phase.error(SchemaPropertyClassInvalidError(
+                    class_name, prop_name, data['class']))
+        else:
+            phase.error(SchemaPropertyClassUndefinedError(
+                class_name, prop_name))
+
+        if 'schema' in data:
+            if not isinstance(data['schema'], basestring):
+                phase.error(SchemaPropertySchemaNotAStringError(
+                    class_name, prop_name, data['schema']))
+
+            if not expressions.schema_name.match(data['schema']):
+                phase.error(SchemaPropertySchemaInvalidError(
+                    class_name, prop_name, data['schema']))
+
+        if 'bidirectional' in data:
+            if not data['bidirectional'] in (True, False):
+                phase.error(SchemaPropertyBidirectionalInvalidError(
+                    class_name, prop_name))
+
+    def _load_reference_property_definition(
+            self, phase, class_name, prop_name, optional, data):
+        target_class = data.get('class', None)
+        target_schema = data.get('schema', None)
+        bidirectional = data.get('bidirectional', False)
+
+        return definitions.ReferencePropertyDefinition(
+            prop_name, optional, target_class, target_schema, bidirectional)

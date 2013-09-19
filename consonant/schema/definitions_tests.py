@@ -58,7 +58,7 @@ class PropertyDefinitionTests(unittest.TestCase):
             definitions.TextPropertyDefinition('name', False, []),
             definitions.RawPropertyDefinition('name', False, []),
             definitions.ReferencePropertyDefinition(
-                'name', False, 'class', None, None, False),
+                'name', False, 'class', None, False),
             definitions.ListPropertyDefinition(
                 'name', False,
                 definitions.IntPropertyDefinition('name', False)),
@@ -78,7 +78,7 @@ class PropertyDefinitionTests(unittest.TestCase):
             (definitions.TextPropertyDefinition, 'name', False, []),
             (definitions.RawPropertyDefinition, 'name', False, []),
             (definitions.ReferencePropertyDefinition,
-                'name', False, 'class', None, None, False),
+                'name', False, 'class', None, False),
             (definitions.ListPropertyDefinition,
                 'name', False,
                 definitions.IntPropertyDefinition('name', False)),
@@ -317,137 +317,113 @@ class ReferencePropertyDefinitionTests(unittest.TestCase):
         """Verify that the constructor sets the property name."""
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
+            'name1', False, 'lane', None, False)
         self.assertEqual(prop.name, 'name1')
 
         prop = definitions.ReferencePropertyDefinition(
-            'name2', False, 'lane', None, None, False)
+            'name2', False, 'lane', None, False)
         self.assertEqual(prop.name, 'name2')
 
     def test_constructor_sets_optional_hint(self):
         """Verify that the constructor sets the optional hint."""
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
+            'name1', False, 'lane', None, False)
         self.assertEqual(prop.optional, False)
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', True, 'lane', None, None, False)
+            'name1', True, 'lane', None, False)
         self.assertEqual(prop.optional, True)
 
     def test_constructor_sets_the_class_name(self):
         """Verify that the constructor sets the target class."""
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
+            'name1', False, 'lane', None, False)
         self.assertEqual(prop.klass, 'lane')
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'card', None, None, False)
+            'name1', False, 'card', None, False)
         self.assertEqual(prop.klass, 'card')
 
     def test_constructor_sets_the_schema(self):
         """Verify that the constructor sets the target schema."""
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
+            'name1', False, 'lane', None, False)
         self.assertEqual(prop.schema, None)
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', 'schema1', None, False)
+            'name1', False, 'lane', 'schema1', False)
         self.assertEqual(prop.schema, 'schema1')
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', 'schema2', None, False)
+            'name1', False, 'lane', 'schema2', False)
         self.assertEqual(prop.schema, 'schema2')
-
-    def test_constructor_sets_the_service(self):
-        """Verify that the constructor sets the target service."""
-
-        prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
-        self.assertEqual(prop.service, None)
-
-        prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, 'service1', False)
-        self.assertEqual(prop.service, 'service1')
-
-        prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, 'service2', False)
-        self.assertEqual(prop.service, 'service2')
 
     def test_constructor_sets_the_bidirectional_hint(self):
         """Verify that the constructor sets the bidirectional hint."""
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, False)
+            'name1', False, 'lane', None, False)
         self.assertEqual(prop.bidirectional, False)
 
         prop = definitions.ReferencePropertyDefinition(
-            'name1', False, 'lane', None, None, True)
+            'name1', False, 'lane', None, True)
         self.assertEqual(prop.bidirectional, True)
 
     def test_definitions_with_same_target_attributes_are_equal(self):
         """Verify that ref prop defs with same target attributes are equal."""
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', None, None, False)
+            'name', False, 'lane', None, False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', None, None, False)
+            'name', False, 'lane', None, False)
         self.assertEqual(prop1, prop2)
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', None, False)
+            'name', False, 'lane', 'schema.1', False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', None, False)
+            'name', False, 'lane', 'schema.1', False)
         self.assertEqual(prop1, prop2)
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'some.service', False)
+            'name', False, 'lane', 'schema.1', False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'some.service', False)
+            'name', False, 'lane', 'schema.1', False)
         self.assertEqual(prop1, prop2)
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'some.service', True)
+            'name', False, 'lane', 'schema.1', True)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'some.service', True)
+            'name', False, 'lane', 'schema.1', True)
         self.assertEqual(prop1, prop2)
 
     def test_definitions_with_different_target_class_are_not_equal(self):
         """Verify that ref prop defs with different classes are not equal."""
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', None, None, False)
+            'name', False, 'lane', None, False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'card', None, None, False)
+            'name', False, 'card', None, False)
         self.assertFalse(prop1 == prop2)
 
     def test_definitions_with_different_schema_are_not_equal(self):
         """Verify that ref prop defs with different schemas are not equal."""
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', None, False)
+            'name', False, 'lane', 'schema.1', False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.2', None, False)
-        self.assertFalse(prop1 == prop2)
-
-    def test_definitions_with_different_service_are_not_equal(self):
-        """Verify that ref prop defs with different services are not equal."""
-
-        prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'a.service', False)
-        prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'b.service', False)
+            'name', False, 'lane', 'schema.2', False)
         self.assertFalse(prop1 == prop2)
 
     def test_bidirectional_and_non_bidirectional_defs_are_not_equal(self):
         """Verify that bi-/non-bidirectional ref prop defs are not equal."""
 
         prop1 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'a.service', False)
+            'name', False, 'lane', 'schema.1', False)
         prop2 = definitions.ReferencePropertyDefinition(
-            'name', False, 'lane', 'schema.1', 'a.service', True)
+            'name', False, 'lane', 'schema.1', True)
         self.assertFalse(prop1 == prop2)
 
 

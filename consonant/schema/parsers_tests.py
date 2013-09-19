@@ -682,3 +682,268 @@ classes:
         type: raw
         content-type-regex: foo
             ''')
+
+    def test_parsing_fails_if_target_class_of_ref_prop_is_undefined(self):
+        """Verify that parsing fails if class of ref prop is undefined."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyClassUndefinedError: '
+            'Target class of reference property "lane" in class "card" '
+            'is undefined'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+            ''')
+
+    def test_parsing_fails_if_target_class_of_ref_prop_is_not_a_string(self):
+        """Verify that parsing fails if class of ref prop is not a string."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyClassNotAStringError: '
+            'Target class of reference property "lane" in class "card" '
+            'is not a string: 12.4'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: 12.4
+            ''')
+
+    def test_parsing_fails_if_target_class_of_ref_prop_is_invalid(self):
+        """Verify that parsing fails if class of ref prop def is invalid."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyClassInvalidError: '
+            'Target class of reference property "lane" in class "card" '
+            'is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: 9990123asdasdasd1231dasda,asda,sdasd
+            ''')
+
+    def test_parsing_fails_if_target_schema_of_ref_prop_is_not_a_string(self):
+        """Verify that parsing fails if schema of ref prop is not a string."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertySchemaNotAStringError: '
+            'Target schema of reference property "lane" in class "card" '
+            'is not a string: 12.4'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: 12.4
+            ''')
+
+    def test_parsing_fails_if_target_schema_of_ref_prop_is_invalid(self):
+        """Verify that parsing fails if schema of ref prop def is invalid."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertySchemaInvalidError: '
+            'Target schema of reference property "lane" in class "card" '
+            'is invalid: 9990123asdasdasd1231dasda,asda,sdasd'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: 9990123asdasdasd1231dasda,asda,sdasd
+            ''')
+
+    def test_parsing_fails_if_bidirect_hint_of_ref_prop_is_invalid(self):
+        """Verify that parsing fails if the bidirect hint of ref is invalid."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyBidirectionalInvalidError: '
+            'Bidirectional hint of reference property "lane" '
+            'in class "card" is invalid'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+        bidirectional: 123123
+            ''')
+
+    def test_parsing_of_a_class_with_a_reference_property_works(self):
+        """Verify that parsing a class with a simple ref prop def works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('lane' in klass.properties)
+
+        prop = klass.properties['lane']
+        self.assertTrue(
+            isinstance(prop, definitions.ReferencePropertyDefinition))
+        self.assertEqual(prop.name, 'lane')
+        self.assertFalse(prop.optional)
+        self.assertEqual(prop.klass, 'lane')
+        self.assertEqual(prop.schema, None)
+        self.assertEqual(prop.bidirectional, False)
+
+    def test_parsing_of_a_class_with_a_schema_reference_property_works(self):
+        """Verify that parsing a class with a ref prop with a schema works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('lane' in klass.properties)
+
+        prop = klass.properties['lane']
+        self.assertTrue(
+            isinstance(prop, definitions.ReferencePropertyDefinition))
+        self.assertEqual(prop.name, 'lane')
+        self.assertFalse(prop.optional)
+        self.assertEqual(prop.klass, 'lane')
+        self.assertEqual(prop.schema, 'schema.2')
+        self.assertEqual(prop.bidirectional, False)
+
+    def test_parsing_of_class_with_a_schema_reference_property_works(self):
+        """Verify that parsing a class with a ref prop with a schema works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('lane' in klass.properties)
+
+        prop = klass.properties['lane']
+        self.assertTrue(
+            isinstance(prop, definitions.ReferencePropertyDefinition))
+        self.assertEqual(prop.name, 'lane')
+        self.assertFalse(prop.optional)
+        self.assertEqual(prop.klass, 'lane')
+        self.assertEqual(prop.schema, 'schema.2')
+        self.assertEqual(prop.bidirectional, False)
+
+    def test_parsing_of_class_with_a_bidirectional_ref_property_works(self):
+        """Verify that parsing a class with a bidirectional property works."""
+
+        schema = self.parser.parse('''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+        bidirectional: true
+            ''')
+
+        self.assertTrue(isinstance(schema, schemas.Schema))
+        self.assertEqual(schema.name, 'schema.1')
+        self.assertTrue(len(schema.classes), 1)
+        self.assertTrue('card' in schema.classes)
+
+        klass = schema.classes['card']
+        self.assertTrue(isinstance(klass, definitions.ClassDefinition))
+        self.assertEqual(klass.name, 'card')
+        self.assertEqual(len(klass.properties), 1)
+        self.assertTrue('lane' in klass.properties)
+
+        prop = klass.properties['lane']
+        self.assertTrue(
+            isinstance(prop, definitions.ReferencePropertyDefinition))
+        self.assertEqual(prop.name, 'lane')
+        self.assertFalse(prop.optional)
+        self.assertEqual(prop.klass, 'lane')
+        self.assertEqual(prop.schema, 'schema.2')
+        self.assertEqual(prop.bidirectional, True)

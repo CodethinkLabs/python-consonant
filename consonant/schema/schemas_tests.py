@@ -45,7 +45,7 @@ class SchemaTest(unittest.TestCase):
                 definitions.TextPropertyDefinition('title', False, []),
                 definitions.ListPropertyDefinition(
                     'cards', False, definitions.ReferencePropertyDefinition(
-                        'cards', False, 'card', None, None, False)
+                        'cards', False, 'card', None, False)
                     )]
                 ),
             ]
