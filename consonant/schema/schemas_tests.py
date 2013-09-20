@@ -19,6 +19,7 @@
 
 
 import unittest
+import yaml
 
 from consonant.schema import definitions, schemas
 
@@ -111,3 +112,47 @@ class SchemaTest(unittest.TestCase):
             ])
 
         self.assertFalse(schema1 == schema2)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of schemas is ok."""
+
+        klasses = [
+            definitions.ClassDefinition('card', [
+                definitions.TextPropertyDefinition('title', False, []),
+                definitions.IntPropertyDefinition('number', True),
+                ]),
+            definitions.ClassDefinition('lane', [
+                definitions.ListPropertyDefinition(
+                    'cards', True, definitions.ReferencePropertyDefinition(
+                        'cards', False, 'card', None, None))
+                ]),
+            ]
+        schema = schemas.Schema('schema.1', klasses)
+
+        string = yaml.dump(schema)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['name'], 'schema.1')
+        self.assertEqual(len(yaml_data['classes']), 2)
+        self.assertTrue('card' in yaml_data['classes'])
+        self.assertTrue('lane' in yaml_data['classes'])
+
+        card_data = yaml_data['classes']['card']
+        self.assertEqual(len(card_data['properties']), 2)
+        self.assertTrue('title' in card_data['properties'])
+        self.assertTrue('number' in card_data['properties'])
+        self.assertEqual(card_data['properties']['title']['type'], 'text')
+        self.assertFalse('optional' in card_data['properties']['title'])
+        self.assertEqual(card_data['properties']['number']['type'], 'int')
+        self.assertTrue(card_data['properties']['number']['optional'])
+
+        lane_data = yaml_data['classes']['lane']
+        self.assertEqual(len(lane_data['properties']), 1)
+        self.assertTrue('cards' in lane_data['properties'])
+        self.assertEqual(lane_data['properties']['cards']['type'], 'list')
+        self.assertTrue(lane_data['properties']['cards']['optional'])
+        self.assertEqual(lane_data['properties']['cards']['elements']['type'],
+                         'reference')
+        self.assertEqual(lane_data['properties']['cards']['elements']['class'],
+                         'card')

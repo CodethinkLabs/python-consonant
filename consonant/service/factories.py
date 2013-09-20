@@ -50,6 +50,6 @@ class ServiceFactory(object):
         if protocol in ('http', 'https'):
             raise NotImplementedError
         elif protocol and protocol != 'file':
-            return remote.RemoteStore(url, register)
+            return remote.RemoteStore(url, self.register)
         else:
-            return local.LocalStore(url, register)
+            return local.LocalStore(url, self.register)

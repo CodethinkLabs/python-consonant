@@ -362,6 +362,22 @@ class SchemaPropertySchemaInvalidError(SchemaPropertyError):
             return 'target schema is invalid: %s' % self.target_schema
 
 
+class SchemaPropertyBidirectionalNotAStringError(SchemaPropertyError):
+
+    """Error raised when a bidirectional hint of a property is not a string."""
+
+    def __init__(self, phase, hint):
+        SchemaPropertyError.__init__(self, phase)
+        self.hint = hint
+
+    def _msg(self):
+        if self.phase.in_list:  # pragma: no cover
+            return 'bidirectional hint of list property elements ' \
+                   'is not a string: %s' % self.hint
+        else:
+            return 'bidirectional hint is not a string: %s' % self.hint
+
+
 class SchemaPropertyBidirectionalInvalidError(SchemaPropertyError):
 
     """Error raised when the bidirectional hint of a property is invalid."""
@@ -624,7 +640,11 @@ class SchemaParser(object):
                     phase, data['schema']))
 
         if 'bidirectional' in data:
-            if not data['bidirectional'] in (True, False):
+            if not isinstance(data['bidirectional'], basestring):
+                phase.error(SchemaPropertyBidirectionalNotAStringError(
+                    phase, data['bidirectional']))
+
+            if not expressions.property_name.match(data['bidirectional']):
                 phase.error(SchemaPropertyBidirectionalInvalidError(
                     phase, data['bidirectional']))
 
@@ -632,7 +652,7 @@ class SchemaParser(object):
             self, phase, class_name, prop_name, optional, data):
         target_class = data.get('class', None)
         target_schema = data.get('schema', None)
-        bidirectional = data.get('bidirectional', False)
+        bidirectional = data.get('bidirectional', None)
 
         return definitions.ReferencePropertyDefinition(
             prop_name, optional, target_class, target_schema, bidirectional)

@@ -4,20 +4,20 @@ Fetch meta information and check the result
 Fetch the schema name from a store
 ----------------------------------
 
-    IMPLEMENTS WHEN fetching the schema name from commit ([abcdef0-9]{8})
+    IMPLEMENTS WHEN fetching the schema from commit ([abcdef0-9]{8})
 
     run_consonant_store <<-EOF
     commit = store.commit("$MATCH_1")
-    print store.schema(commit)
+    print yaml.dump(store.schema(commit))
     EOF
 
     fail_unknown_api
 
-    IMPLEMENTS WHEN fetching the schema name from the non-existent commit ([abcdef0-9]{8})
+    IMPLEMENTS WHEN fetching the schema from the non-existent commit ([abcdef0-9]{8})
 
     run_consonant_store <<-EOF || true
     commit = store.commit("$MATCH_1")
-    print store.schema(commit)
+    print yaml.dump(store.schema(commit))
     EOF
 
     fail_unknown_api
@@ -63,6 +63,186 @@ Fetch the store name from a store
     EOF
 
     fail_unknown_api
+
+Verify that the result is a single schema object
+------------------------------------------------
+
+    IMPLEMENTS THEN the result is a single schema object
+
+    run_python_test <<-EOF
+    assert 'name' in output_yaml
+    assert 'classes' in output_yaml
+    EOF
+
+Verify that the resulting schema has a given name
+-------------------------------------------------
+
+    IMPLEMENTS THEN the schema has the name "(.+)"
+
+    run_python_test <<-EOF
+    assert 'name' in output_yaml
+    assert output_yaml['name'] == "$MATCH_1"
+    EOF
+
+Verify that the resulting schema has a given number of classes
+--------------------------------------------------------------
+
+    IMPLEMENTS THEN the schema has exactly ([0-9]+) classes
+
+    run_python_test <<-EOF
+    assert 'classes' in output_yaml
+    assert len(output_yaml['classes']) == $MATCH_1
+    EOF
+
+Verify that the resulting schema defines a given class
+------------------------------------------------------
+
+    IMPLEMENTS THEN the schema defines the class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    assert isinstance(output_yaml['classes'], dict)
+    assert "$MATCH_1" in output_yaml['classes']
+    EOF
+
+Verify that a schema class has a given number of properties
+-----------------------------------------------------------
+
+    IMPLEMENTS THEN the schema class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has exactly ([0-9]+) properties
+
+    run_python_test <<-EOF
+    assert isinstance(output_yaml['classes']["$MATCH_1"], dict)
+    assert 'properties' in output_yaml['classes']["$MATCH_1"]
+    assert isinstance(output_yaml['classes']["$MATCH_1"]['properties'], dict)
+    assert len(output_yaml['classes']["$MATCH_1"]['properties']) == $MATCH_2
+    EOF
+
+Verify that a schema class has a given property
+-----------------------------------------------
+
+    IMPLEMENTS THEN the schema class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has an? (non-optional|optional) ([a-z]+) property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_1"]
+    assert 'properties' in klass
+    assert "$MATCH_4" in klass['properties']
+
+    property = klass['properties']["$MATCH_4"]
+    assert isinstance(property, dict)
+    assert 'type' in property
+    assert property['type'] == "$MATCH_3"
+    if "$MATCH_2" == 'optional':
+        assert 'optional' in property
+        assert property['optional'] == True
+    else:
+        if 'optional' in property:
+            assert property['optional'] == False
+    EOF
+
+    IMPLEMENTS THEN the schema class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has an? (non-optional|optional) ([a-z]+) list property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_1"]
+    assert 'properties' in klass
+    assert "$MATCH_4" in klass['properties']
+
+    property = klass['properties']["$MATCH_4"]
+    assert isinstance(property, dict)
+    assert 'type' in property
+    assert property['type'] == "list"
+    if "$MATCH_2" == 'optional':
+        assert 'optional' in property
+        assert property['optional'] == True
+    else:
+        if 'optional' in property:
+            assert property['optional'] == False
+
+    assert 'elements' in property
+    assert isinstance(property['elements'], dict)
+    assert 'type' in property['elements']
+    assert property['elements']['type'] == "$MATCH_3"
+    EOF
+
+Verify that a reference property of a schema class has a given target class
+---------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the reference property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has the target class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'class' in property
+    assert property['class'] == "$MATCH_3"
+    EOF
+
+    IMPLEMENTS THEN the reference list property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has the target class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'class' in property['elements']
+    assert property['elements']['class'] == "$MATCH_3"
+    EOF
+
+Verify that a reference property of a schema class has a given target schema
+----------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the reference property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has the target schema "[a-zA-Z][a-zA-Z0-9-]*(\.[a-zA-Z][a-zA-Z0-9-]*)*\.[0-9]+"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'schema' in property
+    assert property['schema'] == "$MATCH_3"
+    EOF
+
+    IMPLEMENTS THEN the reference property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has the target schema "[a-zA-Z][a-zA-Z0-9-]*(\.[a-zA-Z][a-zA-Z0-9-]*)*\.[0-9]+"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'schema' in property['elements']
+    assert property['elements']['schema'] == "$MATCH_3"
+    EOF
+
+Verify that a reference property of a schema class no target schema
+-------------------------------------------------------------------
+
+    IMPLEMENTS THEN the reference property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has no target schema
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'schema' not in property
+    EOF
+
+    IMPLEMENTS THEN the reference list property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" has no target schema
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'schema' not in property['elements']
+    EOF
+
+Verify that a reference property of a schema class is bidirectional
+-------------------------------------------------------------------
+
+    IMPLEMENTS THEN the reference property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is bidirectional via the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'bidirectional' in property
+    assert property['bidirectional'] == "$MATCH_3"
+    EOF
+
+    IMPLEMENTS THEN the reference list property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" is bidirectional via the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    klass = output_yaml['classes']["$MATCH_2"]
+    property = klass['properties']["$MATCH_1"]
+    assert 'bidirectional' in property['elements']
+    assert property['elements']['bidirectional'] == "$MATCH_3"
+    EOF
 
 Verify that the result contains a given number of service aliases
 -----------------------------------------------------------------

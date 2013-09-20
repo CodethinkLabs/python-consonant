@@ -37,6 +37,17 @@ class RegisterFormatError(Exception):
         return 'File "%s": %s' % (self.filename, self.msg)
 
 
+class UnknownSchemaError(Exception):
+
+    """Exception for when an unknown schema is looked up via the register."""
+
+    def __init__(self, schema):
+        self.schema = schema
+
+    def __str__(self):
+        return '%s' % self.schema
+
+
 class Register(yaml.YAMLObject):
 
     """Class to access the system and user register."""
@@ -84,8 +95,7 @@ class Register(yaml.YAMLObject):
                             'Schema name "%s" is not a string' % key))
                     if not expressions.schema_name.match(key):
                         phase.error(RegisterFormatError(
-                            filename,
-                            'Schema name "%s" is invalid'))
+                            filename, 'Schema name "%s" is invalid' % key))
                     if not isinstance(val, basestring):
                         phase.error(RegisterFormatError(
                             filename,
@@ -133,6 +143,18 @@ class Register(yaml.YAMLObject):
         else:
             config_dirs.append(os.path.join('/etc', 'xdg'))
         return reversed(config_dirs)
+
+    def schema_url(self, name):
+        """Look up the schema URL for a schema name and return it.
+
+        Raises an UnknownSchemaError if no schema with this name is registered.
+
+        """
+
+        if name in self.schemas:
+            return self.schemas[name]
+        else:
+            raise UnknownSchemaError(name)
 
     @classmethod
     def to_yaml(cls, dumper, register):  # pragma: no cover

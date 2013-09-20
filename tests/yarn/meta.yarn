@@ -19,22 +19,54 @@ Fetch the store name from a store
     WHEN     fetching the store name from the non-existent commit b7479fa9
     THEN     this fails
 
-Fetch the schema name from a store
+Fetch the schema from a store
 ----------------------------------
 
-    SCENARIO fetch the schema name from a commit in the store
+    SCENARIO fetch the schema from a commit in the store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching the schema name from commit 9a52d24f
-    THEN     the result is "com.github.consonant.consonant-test-schemas.01"
+    WHEN     fetching the schema from commit 9a52d24f
+    THEN     the result is a single schema object
+    AND      the schema has the name "com.github.consonant.consonant-test-schemas.01"
+    AND      the schema has exactly 2 classes
+    AND      the schema defines the class "card"
+    AND      the schema defines the class "lane"
+    AND      the schema class "card" has exactly 2 properties
+    AND      the schema class "card" has a non-optional text property "title"
+    AND      the schema class "card" has a non-optional reference property "lane"
+    AND      the reference property "lane" of class "card" has the target class "lane"
+    AND      the reference property "lane" of class "card" has no target schema
+    AND      the reference property "lane" of class "card" is bidirectional via the property "cards"
+    AND      the schema class "lane" has exactly 2 properties
+    AND      the schema class "lane" has a non-optional text property "title"
+    AND      the schema class "lane" has an optional reference list property "cards"
+    AND      the reference list property "cards" of class "lane" has the target class "card"
+    AND      the reference list property "cards" of class "lane" has no target schema
+    AND      the reference list property "cards" of class "lane" is bidirectional via the property "lane"
 
-    SCENARIO fetch the schema name from a different commit in the store
+    SCENARIO fetch the schema from a different commit in the store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching the schema name from commit 5c127eaf
-    THEN     the result is "com.github.consonant.consonant-test-schemas.01"
+    WHEN     fetching the schema from commit 5c127eaf
+    THEN     the result is a single schema object
+    AND      the schema has the name "com.github.consonant.consonant-test-schemas.01"
+    AND      the schema has exactly 2 classes
+    AND      the schema defines the class "card"
+    AND      the schema defines the class "lane"
+    AND      the schema class "card" has exactly 2 properties
+    AND      the schema class "card" has a non-optional text property "title"
+    AND      the schema class "card" has a non-optional reference property "lane"
+    AND      the reference property "lane" of class "card" has the target class "lane"
+    AND      the reference property "lane" of class "card" has no target schema
+    AND      the reference property "lane" of class "card" is bidirectional via the property "cards"
+    AND      the schema class "lane" has exactly 2 properties
+    AND      the schema class "lane" has a non-optional text property "title"
+    AND      the schema class "lane" has an optional reference list property "cards"
+    AND      the reference list property "cards" of class "lane" has the target class "card"
+    AND      the reference list property "cards" of class "lane" has no target schema
+    AND      the reference list property "cards" of class "lane" is bidirectional via the property "lane"
 
-    SCENARIO fetch the schema name from a non-existent commit in the store
+    SCENARIO fetch the schema from a non-existent commit in the store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching the schema name from the non-existent commit 950f9d21
+    WHEN     fetching the schema from the non-existent commit 950f9d21
     THEN     this fails
 
 Fetch the service aliases from a store

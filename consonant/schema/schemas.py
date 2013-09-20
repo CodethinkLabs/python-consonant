@@ -18,9 +18,14 @@
 """Classes to represent Consonant schemas."""
 
 
-class Schema(object):
+import yaml
+
+
+class Schema(yaml.YAMLObject):
 
     """Class to represent a Consonant schema."""
+
+    yaml_tag = u'!Schema'
 
     def __init__(self, name, classes):
         self.name = name
@@ -32,3 +37,17 @@ class Schema(object):
         if not isinstance(other, Schema):
             return False
         return self.name == other.name and self.classes == other.classes
+
+    @classmethod
+    def to_yaml(cls, dumper, schema):
+        """Return a YAML representation of the given schema."""
+
+        classes_mapping = {}
+        for name, klass in sorted(schema.classes.iteritems()):
+            classes_mapping[name] = klass
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', {
+                'name': schema.name,
+                'classes': classes_mapping,
+                })

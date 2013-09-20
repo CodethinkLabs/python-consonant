@@ -3,7 +3,12 @@ Prepare access to test stores
 
 
     IMPLEMENTS GIVEN the standard test store "(.+)"
-    git clone ../consonant-test-schemas \
-        $DATADIR/test-schemas
-    git clone ../$MATCH_1 \
-        $DATADIR/test-store
+
+    git clone ../consonant-test-schemas $DATADIR/test-schemas
+    git clone ../$MATCH_1               $DATADIR/test-store
+
+    mkdir -p $DATADIR/system-config-dir/consonant
+    cat > $DATADIR/system-config-dir/consonant/register.yaml <<-EOF
+    schemas:
+        com.github.consonant.consonant-test-schemas.01: file://$DATADIR/test-schemas/com.github.consonant.consonant-test-schemas.01.yaml
+    EOF

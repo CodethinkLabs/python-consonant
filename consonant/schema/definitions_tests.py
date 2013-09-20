@@ -21,6 +21,7 @@
 import itertools
 import re
 import unittest
+import yaml
 
 from consonant.schema import definitions
 
@@ -113,6 +114,25 @@ class BooleanPropertyDefinitionTests(unittest.TestCase):
         prop = definitions.BooleanPropertyDefinition('name1', True)
         self.assertEqual(prop.optional, True)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of bool prop defs is ok."""
+
+        prop = definitions.BooleanPropertyDefinition('name1', False)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'boolean')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.BooleanPropertyDefinition('name2', True)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'boolean')
+        self.assertTrue(yaml_data['optional'])
+
 
 class IntPropertyDefinitionTests(unittest.TestCase):
 
@@ -135,6 +155,25 @@ class IntPropertyDefinitionTests(unittest.TestCase):
 
         prop = definitions.IntPropertyDefinition('name1', True)
         self.assertEqual(prop.optional, True)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of int prop defs is ok."""
+
+        prop = definitions.IntPropertyDefinition('name1', False)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'int')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.IntPropertyDefinition('name2', True)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'int')
+        self.assertTrue(yaml_data['optional'])
 
 
 class FloatPropertyDefinitionTests(unittest.TestCase):
@@ -159,6 +198,25 @@ class FloatPropertyDefinitionTests(unittest.TestCase):
         prop = definitions.FloatPropertyDefinition('name1', True)
         self.assertEqual(prop.optional, True)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of float prop defs is ok."""
+
+        prop = definitions.FloatPropertyDefinition('name1', False)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'float')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.FloatPropertyDefinition('name2', True)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'float')
+        self.assertTrue(yaml_data['optional'])
+
 
 class TimestampPropertyDefinitionTests(unittest.TestCase):
 
@@ -181,6 +239,25 @@ class TimestampPropertyDefinitionTests(unittest.TestCase):
 
         prop = definitions.TimestampPropertyDefinition('name1', True)
         self.assertEqual(prop.optional, True)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of timestamp prop defs is ok."""
+
+        prop = definitions.TimestampPropertyDefinition('name1', False)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'timestamp')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.TimestampPropertyDefinition('name2', True)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'timestamp')
+        self.assertTrue(yaml_data['optional'])
 
 
 class TextPropertyDefinitionTests(unittest.TestCase):
@@ -245,6 +322,26 @@ class TextPropertyDefinitionTests(unittest.TestCase):
             'name', False, ['^foo', '[0-9]+'])
         self.assertFalse(prop1 == prop2)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of text prop defs is ok."""
+
+        prop = definitions.TextPropertyDefinition('name1', False, [])
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'text')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.TextPropertyDefinition('name2', True, ['^foo$'])
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'text')
+        self.assertTrue(yaml_data['optional'])
+        self.assertTrue('^foo$' in yaml_data['regex'])
+
 
 class RawPropertyDefinitionTests(unittest.TestCase):
 
@@ -307,6 +404,26 @@ class RawPropertyDefinitionTests(unittest.TestCase):
         prop2 = definitions.RawPropertyDefinition(
             'name', False, ['^foo', '[0-9]+'])
         self.assertFalse(prop1 == prop2)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of raw prop defs is ok."""
+
+        prop = definitions.RawPropertyDefinition('name1', False, [])
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'raw')
+        self.assertFalse('optional' in yaml_data)
+
+        prop = definitions.RawPropertyDefinition('name2', True, ['^bar$'])
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'raw')
+        self.assertTrue(yaml_data['optional'])
+        self.assertTrue('^bar$' in yaml_data['content-type-regex'])
 
 
 class ReferencePropertyDefinitionTests(unittest.TestCase):
@@ -426,6 +543,45 @@ class ReferencePropertyDefinitionTests(unittest.TestCase):
             'name', False, 'lane', 'schema.1', True)
         self.assertFalse(prop1 == prop2)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of reference prop defs is ok."""
+
+        prop = definitions.ReferencePropertyDefinition(
+            'cards', False, 'card', None, None)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'reference')
+        self.assertFalse('optional' in yaml_data)
+        self.assertEqual(yaml_data['class'], 'card')
+        self.assertFalse('schema' in yaml_data)
+        self.assertFalse('bidirectional' in yaml_data)
+
+        prop = definitions.ReferencePropertyDefinition(
+            'lane', True, 'lane', 'schema.2', None)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'reference')
+        self.assertTrue(yaml_data['optional'])
+        self.assertEqual(yaml_data['class'], 'lane')
+        self.assertEqual(yaml_data['schema'], 'schema.2')
+        self.assertFalse('bidirectional' in yaml_data)
+
+        prop = definitions.ReferencePropertyDefinition(
+            'lane', True, 'lane', 'schema.2', 'cards')
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'reference')
+        self.assertTrue(yaml_data['optional'])
+        self.assertEqual(yaml_data['class'], 'lane')
+        self.assertEqual(yaml_data['schema'], 'schema.2')
+        self.assertEqual(yaml_data['bidirectional'], 'cards')
+
 
 class ListPropertyDefinitionTests(unittest.TestCase):
 
@@ -480,6 +636,33 @@ class ListPropertyDefinitionTests(unittest.TestCase):
         prop2 = definitions.ListPropertyDefinition(
             'name', False, definitions.IntPropertyDefinition('name', False))
         self.assertFalse(prop1 == prop2)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of list prop defs is ok."""
+
+        elements = definitions.IntPropertyDefinition('name', False)
+        prop = definitions.ListPropertyDefinition('numbers', False, elements)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'list')
+        self.assertFalse('optional' in yaml_data)
+        self.assertTrue(isinstance(yaml_data['elements'], dict))
+        self.assertEqual(yaml_data['elements']['type'], 'int')
+        self.assertFalse('optional' in yaml_data['elements'])
+
+        elements = definitions.FloatPropertyDefinition('name', False)
+        prop = definitions.ListPropertyDefinition('numbers', True, elements)
+        string = yaml.dump(prop)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['type'], 'list')
+        self.assertTrue(yaml_data['optional'])
+        self.assertTrue(isinstance(yaml_data['elements'], dict))
+        self.assertEqual(yaml_data['elements']['type'], 'float')
+        self.assertFalse('optional' in yaml_data['elements'])
 
 
 class ClassDefinition(unittest.TestCase):
@@ -556,3 +739,25 @@ class ClassDefinition(unittest.TestCase):
             ])
 
         self.assertFalse(klass1 == klass2)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of class definitions is ok."""
+
+        props = [
+            definitions.TextPropertyDefinition('title', False, []),
+            definitions.IntPropertyDefinition('number', True),
+            ]
+        klass = definitions.ClassDefinition('card', props)
+
+        string = yaml.dump(klass)
+        yaml_data = yaml.load(string)
+
+        self.assertTrue(isinstance(yaml_data, dict))
+        self.assertEqual(yaml_data['name'], 'card')
+        self.assertEqual(len(yaml_data['properties']), 2)
+        self.assertTrue('title' in yaml_data['properties'])
+        self.assertTrue('number' in yaml_data['properties'])
+        self.assertEqual(yaml_data['properties']['title']['type'], 'text')
+        self.assertFalse('optional' in yaml_data['properties']['title'])
+        self.assertEqual(yaml_data['properties']['number']['type'], 'int')
+        self.assertTrue(yaml_data['properties']['number']['optional'])

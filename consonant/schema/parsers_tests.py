@@ -808,15 +808,15 @@ classes:
         schema: 9990123asdasdasd1231dasda,asda,sdasd
             ''')
 
-    def test_parsing_fails_if_bidirect_hint_of_ref_prop_is_invalid(self):
-        """Verify that parsing fails if the bidirect hint of ref is invalid."""
+    def test_parsing_fails_if_bidirect_hint_of_ref_prop_is_not_a_string(self):
+        """Verify that parsing fails if bidirect hint of a ref is not a str."""
 
         self.assertRaisesRegexp(
             parsers.ParserPhaseError,
             '^'
-            'SchemaPropertyBidirectionalInvalidError: '
+            'SchemaPropertyBidirectionalNotAStringError: '
             'Schema "schema.1", class "card", property "lane": '
-            'bidirectional hint is invalid: 123123'
+            'bidirectional hint is not a string: 23'
             '$',
             self.parser.parse,
             '''
@@ -828,7 +828,53 @@ classes:
         type: reference
         class: lane
         schema: schema.2
-        bidirectional: 123123
+        bidirectional: 23
+            ''')
+
+    def test_parsing_fails_if_bidirect_hint_of_ref_prop_is_invalid(self):
+        """Verify that parsing fails if the bidirect hint of ref is invalid."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyBidirectionalInvalidError: '
+            'Schema "schema.1", class "card", property "lane": '
+            'bidirectional hint is invalid: ,,asdasd123'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+        bidirectional: ",,asdasd123"
+            ''')
+
+    def test_parsing_fails_if_bidirect_hint_of_ref_prop_is_invalid(self):
+        """Verify that parsing fails if the bidirect hint of ref is invalid."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'SchemaPropertyBidirectionalInvalidError: '
+            'Schema "schema.1", class "card", property "lane": '
+            'bidirectional hint is invalid: ,,asdasd123'
+            '$',
+            self.parser.parse,
+            '''
+name: schema.1
+classes:
+  card:
+    properties:
+      lane:
+        type: reference
+        class: lane
+        schema: schema.2
+        bidirectional: ",,asdasd123"
             ''')
 
     def test_parsing_of_a_class_with_a_reference_property_works(self):
@@ -862,7 +908,7 @@ classes:
         self.assertFalse(prop.optional)
         self.assertEqual(prop.klass, 'lane')
         self.assertEqual(prop.schema, None)
-        self.assertEqual(prop.bidirectional, False)
+        self.assertEqual(prop.bidirectional, None)
 
     def test_parsing_of_a_class_with_a_schema_reference_property_works(self):
         """Verify that parsing a class with a ref prop with a schema works."""
@@ -896,7 +942,7 @@ classes:
         self.assertFalse(prop.optional)
         self.assertEqual(prop.klass, 'lane')
         self.assertEqual(prop.schema, 'schema.2')
-        self.assertEqual(prop.bidirectional, False)
+        self.assertEqual(prop.bidirectional, None)
 
     def test_parsing_of_class_with_a_schema_reference_property_works(self):
         """Verify that parsing a class with a ref prop with a schema works."""
@@ -930,7 +976,7 @@ classes:
         self.assertFalse(prop.optional)
         self.assertEqual(prop.klass, 'lane')
         self.assertEqual(prop.schema, 'schema.2')
-        self.assertEqual(prop.bidirectional, False)
+        self.assertEqual(prop.bidirectional, None)
 
     def test_parsing_of_class_with_a_bidirectional_ref_property_works(self):
         """Verify that parsing a class with a bidirectional property works."""
@@ -944,7 +990,7 @@ classes:
         type: reference
         class: lane
         schema: schema.2
-        bidirectional: true
+        bidirectional: cards
             ''')
 
         self.assertTrue(isinstance(schema, schemas.Schema))
@@ -965,7 +1011,7 @@ classes:
         self.assertFalse(prop.optional)
         self.assertEqual(prop.klass, 'lane')
         self.assertEqual(prop.schema, 'schema.2')
-        self.assertEqual(prop.bidirectional, True)
+        self.assertEqual(prop.bidirectional, 'cards')
 
     def test_parsing_of_class_with_list_property_with_no_elements_fails(self):
         """Verify that parsing fails if a list property has no elements."""
@@ -1088,4 +1134,4 @@ classes:
         self.assertEqual(prop.elements.name, 'cards')
         self.assertEqual(prop.elements.klass, 'card')
         self.assertEqual(prop.elements.schema, None)
-        self.assertFalse(prop.elements.bidirectional)
+        self.assertEqual(prop.elements.bidirectional, None)

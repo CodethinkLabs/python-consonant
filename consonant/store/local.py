@@ -19,8 +19,10 @@
 
 
 import pygit2
+import urllib2
 import yaml
 
+from consonant import schema
 from consonant.service import services
 from consonant.store import git, objects, properties, references, timestamps
 
@@ -31,6 +33,7 @@ class LocalStore(services.Service):
 
     def __init__(self, url, register):
         services.Service.__init__(self)
+        self.register = register
         self.repo = pygit2.Repository(url)
         self.cache = None
 
@@ -82,7 +85,10 @@ class LocalStore(services.Service):
         """Return the schema name the store uses in the given commit."""
 
         data = self._load_metadata(commit)
-        return data['schema']
+        name = data['schema']
+        url = self.register.schema_url(name)
+        stream = urllib2.urlopen(url)
+        return schema.parsers.SchemaParser().parse(stream)
 
     def services(self, commit):
         """Return the service aliases used in the store at the given commit."""
