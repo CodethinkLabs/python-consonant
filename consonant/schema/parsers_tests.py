@@ -995,7 +995,8 @@ classes:
             '^'
             'SchemaPropertyNotADictionaryError: '
             'Schema "schema.1", class "lane", property "cards": '
-            'property is not defined as a dictionary: 123123123'
+            'elements of list property are not defined as '
+            'a dictionary: 123123123'
             '$',
             self.parser.parse,
             '''
@@ -1016,7 +1017,7 @@ classes:
             '^'
             'SchemaPropertyTypeUndefinedError: '
             'Schema "schema.1", class "lane", property "cards": '
-            'property type is undefined'
+            'element type of list property is undefined'
             '$',
             self.parser.parse,
             '''
@@ -1038,7 +1039,7 @@ classes:
             '^'
             'SchemaPropertyTypeUnsupportedError: '
             'Schema "schema.1", class "lane", property "cards": '
-            'property type is unsupported: foo'
+            'type of list property elements is unsupported: foo'
             '$',
             self.parser.parse,
             '''

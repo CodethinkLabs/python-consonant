@@ -36,6 +36,7 @@ class ParserPhase(Phase):
         self.schema = None
         self.klass = None
         self.prop = None
+        self.in_list = False
 
 
 ParserPhaseError = ParserPhase
@@ -207,7 +208,11 @@ class SchemaPropertyNotADictionaryError(SchemaPropertyError):
         self.data = data
 
     def _msg(self):
-        return 'property is not defined as a dictionary: %s' % self.data
+        if self.phase.in_list:
+            return 'elements of list property are not defined as a ' \
+                   'dictionary: %s' % self.data
+        else:
+            return 'property is not defined as a dictionary: %s' % self.data
 
 
 class SchemaPropertyTypeUndefinedError(SchemaPropertyError):
@@ -215,7 +220,10 @@ class SchemaPropertyTypeUndefinedError(SchemaPropertyError):
     """Error raised when a property type is missing."""
 
     def _msg(self):
-        return 'property type is undefined'
+        if self.phase.in_list:
+            return 'element type of list property is undefined'
+        else:
+            return 'property type is undefined'
 
 
 class SchemaPropertyTypeUnsupportedError(SchemaPropertyError):
@@ -227,7 +235,11 @@ class SchemaPropertyTypeUnsupportedError(SchemaPropertyError):
         self.prop_type = prop_type
 
     def _msg(self):
-        return 'property type is unsupported: %s' % self.prop_type
+        if self.phase.in_list:
+            return 'type of list property elements is unsupported: %s' % \
+                self.prop_type
+        else:
+            return 'property type is unsupported: %s' % self.prop_type
 
 
 class SchemaPropertyOptionalHintError(SchemaPropertyError):
@@ -251,8 +263,12 @@ class SchemaPropertyExpressionsNotAListError(SchemaPropertyError):
         self.data = data
 
     def _msg(self):
-        return 'regular expressions are not defined as a list: %s' % \
-            self.data
+        if self.phase.in_list:  # pragma: no cover
+            return 'regular expressions of list property elements ' \
+                   'are not defined as a list: %s' % self.data
+        else:
+            return 'regular expressions are not defined as a list: %s' % \
+                self.data
 
 
 class SchemaPropertyExpressionParseError(SchemaPropertyError):
@@ -264,7 +280,11 @@ class SchemaPropertyExpressionParseError(SchemaPropertyError):
         self.expression = expression
 
     def _msg(self):
-        return 'regular expression cannot be parsed: %s' % self.expression
+        if self.phase.in_list:  # pragma: no cover
+            return 'regular expression of list property elements ' \
+                   'cannot be parsed: %s' % self.expression
+        else:
+            return 'regular expression cannot be parsed: %s' % self.expression
 
 
 class SchemaPropertyClassUndefinedError(SchemaPropertyError):
@@ -272,7 +292,10 @@ class SchemaPropertyClassUndefinedError(SchemaPropertyError):
     """Error raised when the class of a reference property is undefined."""
 
     def _msg(self):
-        return 'target class is undefined'
+        if self.phase.in_list:  # pragma: no cover
+            return 'target class of list property elements is undefined'
+        else:
+            return 'target class is undefined'
 
 
 class SchemaPropertyClassNotAStringError(SchemaPropertyError):
@@ -284,7 +307,11 @@ class SchemaPropertyClassNotAStringError(SchemaPropertyError):
         self.target_class = target_class
 
     def _msg(self):
-        return 'target class is not a string: %s' % self.target_class
+        if self.phase.in_list:  # pragma: no cover
+            return 'target class of list property elements ' \
+                   'is not a string: %s' % self.target_class
+        else:
+            return 'target class is not a string: %s' % self.target_class
 
 
 class SchemaPropertyClassInvalidError(SchemaPropertyError):
@@ -296,7 +323,11 @@ class SchemaPropertyClassInvalidError(SchemaPropertyError):
         self.target_class = target_class
 
     def _msg(self):
-        return 'target class is invalid: %s' % self.target_class
+        if self.phase.in_list:  # pragma: no cover
+            return 'target class of list property elements ' \
+                   'is invalid: %s' % self.target_class
+        else:
+            return 'target class is invalid: %s' % self.target_class
 
 
 class SchemaPropertySchemaNotAStringError(SchemaPropertyError):
@@ -308,7 +339,11 @@ class SchemaPropertySchemaNotAStringError(SchemaPropertyError):
         self.target_schema = target_schema
 
     def _msg(self):
-        return 'target schema is not a string: %s' % self.target_schema
+        if self.phase.in_list:  # pragma: no cover
+            return 'target schema of list property elements ' \
+                   'is not a string: %s' % self.target_schema
+        else:
+            return 'target schema is not a string: %s' % self.target_schema
 
 
 class SchemaPropertySchemaInvalidError(SchemaPropertyError):
@@ -320,7 +355,11 @@ class SchemaPropertySchemaInvalidError(SchemaPropertyError):
         self.target_schema = target_schema
 
     def _msg(self):
-        return 'target schema is invalid: %s' % self.target_schema
+        if self.phase.in_list:  # pragma: no cover
+            return 'target schema of list property elements ' \
+                   'is invalid: %s' % self.target_schema
+        else:
+            return 'target schema is invalid: %s' % self.target_schema
 
 
 class SchemaPropertyBidirectionalInvalidError(SchemaPropertyError):
@@ -332,7 +371,11 @@ class SchemaPropertyBidirectionalInvalidError(SchemaPropertyError):
         self.hint = hint
 
     def _msg(self):
-        return 'bidirectional hint is invalid: %s' % self.hint
+        if self.phase.in_list:  # pragma: no cover
+            return 'bidirectional hint of list property elements ' \
+                   'is invalid: %s' % self.hint
+        else:
+            return 'bidirectional hint is invalid: %s' % self.hint
 
 
 class SchemaPropertyListElementsUndefinedError(SchemaPropertyError):
@@ -434,8 +477,10 @@ class SchemaParser(object):
     def _load_property_definitions(self, phase, class_name, data):
         properties = []
         for prop_name, prop_data in data['properties'].iteritems():
+            phase.in_list = False
             prop = self._load_property_definition(
                 phase, class_name, prop_name, prop_data)
+            phase.in_list = False
             properties.append(prop)
         return properties
 
@@ -594,6 +639,7 @@ class SchemaParser(object):
 
     def _validate_list_property_definition(
             self, phase, class_name, prop_name, data):
+        phase.in_list = True
         if 'elements' in data:
             self._validate_property_definition(
                 phase, class_name, prop_name, data['elements'])
