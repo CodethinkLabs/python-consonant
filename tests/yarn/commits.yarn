@@ -6,14 +6,14 @@ Fetch a commit from a store
 
     SCENARIO fetch a commit from a local store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching the commit 8cb43885 from the store
+    WHEN     fetching the commit 9a52d24f from the store
 
     THEN     the result is a commit
-    AND      the commit SHA1 is 8cb438859cc3bdbfe6b2f685187b2a3b60331447
+    AND      the commit SHA1 is 9a52d24fa3c2f82a704b7227f4df29129f446ab3
     AND      the commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
     AND      the commit author date is "1378118698 +0100"
     AND      the commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the commit committer date is "1378118698 +0100"
+    AND      the commit committer date is "1379689898 +0100"
     AND      the commit subject is "Add initial set of cards and lanes"
     AND      the commit has exactly 0 parents
 
@@ -22,16 +22,16 @@ Fetch a different commit from a store
 
     SCENARIO fetch a different commit from a store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching the commit 45e0ee91 from the store
+    WHEN     fetching the commit 5c127eaf from the store
 
-    THEN     the commit SHA1 is 45e0ee91b24bd37ebac2c99fdbadc5bfdc0d19d8
+    THEN     the commit SHA1 is 5c127eaf6adf42787aa282f7e30162104885de0f
     AND      the commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
     AND      the commit author date is "1378139687 +0100"
     AND      the commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
-    AND      the commit committer date is "1378226671 +0100"
+    AND      the commit committer date is "1379689903 +0100"
     AND      the commit subject is "Add another card to the doing lane"
     AND      the commit has exactly 1 parent
-    AND      the commit has a left parent "8cb438859cc3bdbfe6b2f685187b2a3b60331447"
+    AND      the commit has a left parent "9a52d24fa3c2f82a704b7227f4df29129f446ab3"
 
 Fetch a non-existent commit from a store
 ----------------------------------------

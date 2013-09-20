@@ -3,7 +3,7 @@ Fetching objects from a store
 
     SCENARIO fetch objects from a commit in a store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching objects from commit 8cb43885
+    WHEN     fetching objects from commit 9a52d24f
 
     THEN     the result contains objects of exactly 2 classes
 
@@ -55,7 +55,7 @@ Fetching objects from a store
 
     SCENARIO fetch objects from a different commit in a store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching objects from commit 45e0ee91
+    WHEN     fetching objects from commit 5c127eaf
 
     THEN     the result contains objects of exactly 2 classes
 

@@ -14,5 +14,5 @@ Fetch objects of a non-existent class from a commit in a store using consonant.s
 
     SCENARIO fetch objects of a non-existent class from a commit in a store using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     fetching objects of non-existent class "does-not-exist" from commit 8cb43885
+    WHEN     fetching objects of non-existent class "does-not-exist" from commit 9a52d24f
     THEN     a ClassNotFoundError is thrown

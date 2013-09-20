@@ -6,7 +6,7 @@ Fetch objects once:
     SCENARIO fetch objects from a commit in a store once using an object cache cache
     GIVEN    the standard test store "consonant-test-store-01"
     AND      an object cache
-    WHEN     fetching objects from commit 8cb43885
+    WHEN     fetching objects from commit 9a52d24f
 
     THEN     the result contains objects of exactly 2 classes
 
@@ -77,8 +77,8 @@ Fetch objects twice:
     SCENARIO fetch objects from a commit in a store twice using an object cache cache
     GIVEN    the standard test store "consonant-test-store-01"
     AND      an object cache
-    WHEN     fetching objects from commit 8cb43885
-    AND      fetching objects from commit 8cb43885
+    WHEN     fetching objects from commit 9a52d24f
+    AND      fetching objects from commit 9a52d24f
 
     THEN     the result contains objects of exactly 2 classes
 
