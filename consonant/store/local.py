@@ -29,7 +29,7 @@ class LocalStore(services.Service):
 
     """Store implementation for local services."""
 
-    def __init__(self, url):
+    def __init__(self, url, register):
         services.Service.__init__(self)
         self.repo = pygit2.Repository(url)
         self.cache = None

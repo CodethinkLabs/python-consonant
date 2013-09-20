@@ -21,6 +21,7 @@
 import urlparse
 
 from consonant.store import local, remote
+from consonant import register
 
 
 class ServiceFactory(object):
@@ -28,6 +29,7 @@ class ServiceFactory(object):
     """Manages a collection of services and allows to load them on demand."""
 
     def __init__(self):
+        self.register = register.Register()
         self.services = {}
 
     def service(self, url):
@@ -48,6 +50,6 @@ class ServiceFactory(object):
         if protocol in ('http', 'https'):
             raise NotImplementedError
         elif protocol and protocol != 'file':
-            return remote.RemoteStore(url)
+            return remote.RemoteStore(url, register)
         else:
-            return local.LocalStore(url)
+            return local.LocalStore(url, register)
