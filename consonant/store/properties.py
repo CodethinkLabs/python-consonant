@@ -18,12 +18,12 @@
 """Classes to represent object properties and their values."""
 
 
-import re
+import yaml
 
 from consonant.store import timestamps
 
 
-class Property(object):
+class Property(yaml.YAMLObject):
 
     """Abstract base class for property classes."""
 
@@ -43,53 +43,104 @@ class IntProperty(Property):
 
     """Object property of type `int` (64-bit integer)."""
 
+    yaml_tag = u'!IntProperty'
+
     def __init__(self, name, value):
         Property.__init__(self, name, int(value))
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of an int property."""
+
+        return dumper.represent_scalar(
+            u'tag:yaml.org,2002:int', str(prop.value))
 
 
 class FloatProperty(Property):
 
     """Object property of type `float` (double precision floating point)."""
 
+    yaml_tag = u'!FloatProperty'
+
     def __init__(self, name, value):
         Property.__init__(self, name, float(value))
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of a float property."""
+
+        return dumper.represent_scalar(
+            u'tag:yaml.org,2002:float', str(prop.value))
 
 
 class BooleanProperty(Property):
 
     """Object property of type `boolean` (true or false)."""
 
+    yaml_tag = u'!BooleanProperty'
+
     def __init__(self, name, value):
         Property.__init__(self, name, bool(value))
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of a boolean property."""
+
+        return dumper.represent_scalar(
+            u'tag:yaml.org,2002:bool', 'true' if prop.value else 'false')
 
 
 class TextProperty(Property):
 
     """Object property of type `text`."""
 
-    def __init__(self, name, value, expressions):
+    yaml_tag = u'!TextProperty'
+
+    def __init__(self, name, value):
         Property.__init__(self, name, str(value))
-        self.expressions = [re.compile(x) for x in expressions]
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of a text property."""
+
+        return dumper.represent_scalar(u'tag:yaml.org,2002:str', prop.value)
 
 
 class TimestampProperty(Property):
 
     """Object property of type `timestamp`."""
 
+    yaml_tag = u'!TimestampProperty'
+
     def __init__(self, name, value):
         Property.__init__(self, name, timestamps.Timestamp.from_raw(value))
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of a timestamp property."""
+
+        return dumper.represent_scalar(
+            u'tag:yaml.org,2002:str', prop.value.raw())
 
 
 class ReferenceProperty(Property):
 
     """Object property of type `reference`."""
 
-    pass
+    yaml_tag = u'!ReferenceProperty'
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of an int property."""
+
+        return dumper.represent_mapping(u'tag:yaml.org,2002:map', prop.value)
 
 
 class ListProperty(Property):
 
     """Object property of type `list`."""
+
+    yaml_tag = u'!ListProperty'
 
     def __init__(self, name, value):
         if isinstance(value, dict):
@@ -100,3 +151,9 @@ class ListProperty(Property):
             except TypeError:
                 list_value = [value]
         Property.__init__(self, name, list_value)
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of an int property."""
+
+        return dumper.represent_sequence(u'tag:yaml.org,2002:seq', prop.value)

@@ -126,8 +126,8 @@ class ObjectTests(unittest.TestCase):
              objects.ObjectClass('someclass', []), []),
             ('ad791799-4c3a-4cac-a07d-43493baab121',
              objects.ObjectClass('someclass', []), [
-                 properties.TextProperty('title', 'Title', []),
-                 properties.TextProperty('info', 'Info', []),
+                 properties.TextProperty('title', 'Title'),
+                 properties.TextProperty('info', 'Info'),
                  properties.FloatProperty('amount', 237.5),
                  properties.BooleanProperty('important', False),
                  properties.IntProperty('count', 5),

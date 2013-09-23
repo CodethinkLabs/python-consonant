@@ -21,8 +21,8 @@
 import datetime
 import itertools
 import random
-import re
 import unittest
+import yaml
 
 from consonant.store import properties, references, timestamps
 
@@ -52,7 +52,7 @@ class PropertyTests(unittest.TestCase):
             properties.IntProperty('name', 5),
             properties.BooleanProperty('name', True),
             properties.FloatProperty('name', 5.0),
-            properties.TextProperty('name', '5', []),
+            properties.TextProperty('name', '5'),
             1,
             2.0,
             'some text'
@@ -124,6 +124,21 @@ class IntPropertyTest(unittest.TestCase):
             else:
                 self.assertEqual(int_property.value, 15)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of int properties is ok."""
+
+        prop = properties.IntProperty('name', 5)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, int))
+        self.assertEqual(data, 5)
+
+        prop = properties.IntProperty('name', 32)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, int))
+        self.assertEqual(data, 32)
+
 
 class FloatPropertyTest(unittest.TestCase):
 
@@ -175,6 +190,21 @@ class FloatPropertyTest(unittest.TestCase):
             else:
                 self.assertEqual(float_property.value, 15.0)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of float properties is ok."""
+
+        prop = properties.FloatProperty('name', 5)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, float))
+        self.assertEqual(data, 5.0)
+
+        prop = properties.FloatProperty('name', 32.37123)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, float))
+        self.assertEqual(data, 32.37123)
+
 
 class BooleanPropertyTest(unittest.TestCase):
 
@@ -217,27 +247,39 @@ class BooleanPropertyTest(unittest.TestCase):
             self.assertEqual(type(boolean_property.value), type(True))
             self.assertEqual(boolean_property.value, bool_value)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of boolean properties is ok."""
+
+        prop = properties.BooleanProperty('name', True)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, bool))
+        self.assertEqual(data, True)
+
+        prop = properties.BooleanProperty('name', False)
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, bool))
+        self.assertEqual(data, False)
+
 
 class TextPropertyTest(unittest.TestCase):
 
     """Unit tests for the TextProperty class."""
 
-    def test_constructor_sets_name_value_and_expressions_properly(self):
-        """Verify the constructor sets property name, value, expressions."""
+    def test_constructor_sets_name_and_value_properly(self):
+        """Verify the constructor sets property name and value."""
 
         test_input = [
-            ('property1', 'foo', []),
-            ('property2', 'bar', ['Foo']),
-            ('property3', 'foo bar', ['^Foo$', '^(.*)$']),
+            ('property1', 'foo'),
+            ('property2', 'bar'),
+            ('property3', 'foo bar'),
         ]
 
-        for name, value, expressions in test_input:
-            text_property = properties.TextProperty(name, value, expressions)
+        for name, value in test_input:
+            text_property = properties.TextProperty(name, value)
             self.assertEqual(text_property.name, name)
             self.assertEqual(text_property.value, value)
-            self.assertEqual(
-                text_property.expressions,
-                [re.compile(x) for x in expressions])
 
     def test_input_value_is_converted_to_a_string(self):
         """Verify that the input value is converted to a string."""
@@ -259,10 +301,25 @@ class TextPropertyTest(unittest.TestCase):
         ]
 
         for value, str_value in test_input:
-            text_property = properties.TextProperty('name', value, [])
+            text_property = properties.TextProperty('name', value)
             self.assertTrue(isinstance(text_property.value, basestring))
             self.assertEqual(type(text_property.value), type('foo'))
             self.assertEqual(text_property.value, str_value)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of text properties is ok."""
+
+        prop = properties.TextProperty('name', 'foo')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'foo')
+
+        prop = properties.TextProperty('name', 'foo\nbar\nbaz')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'foo\nbar\nbaz')
 
 
 class TimestampPropertyTest(unittest.TestCase):
@@ -291,6 +348,21 @@ class TimestampPropertyTest(unittest.TestCase):
             self.assertEqual(ts_property.name, name)
             self.assertEqual(ts_property.value, ts)
 
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of timestamp props is ok."""
+
+        prop = properties.TimestampProperty('name', '1379698303 +0100')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, '1379698303 +0100')
+
+        prop = properties.TextProperty('name', '1379608009 +0500')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, '1379608009 +0500')
+
 
 class ReferencePropertyTest(unittest.TestCase):
 
@@ -316,6 +388,42 @@ class ReferencePropertyTest(unittest.TestCase):
                 name, object_reference)
             self.assertEqual(reference_property.name, name)
             self.assertEqual(reference_property.value, object_reference)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of reference props is ok."""
+
+        prop = properties.ReferenceProperty('name', {
+            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
+            })
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertTrue(not 'service' in data)
+        self.assertTrue(not 'ref' in data)
+
+        prop = properties.ReferenceProperty('name', {
+            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
+            'service': 'issues',
+            })
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertEqual(data['service'], 'issues')
+        self.assertTrue(not 'ref' in data)
+
+        prop = properties.ReferenceProperty('name', {
+            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
+            'service': 'issues',
+            'ref': 'master'
+            })
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertEqual(data['service'], 'issues')
+        self.assertEqual(data['ref'], 'master')
 
 
 class ListPropertyTest(unittest.TestCase):
@@ -365,3 +473,23 @@ class ListPropertyTest(unittest.TestCase):
             self.assertTrue(isinstance(list_property.value, list))
             self.assertEquals(type(list_property.value), type([]))
             self.assertEquals(list_property.value, list_value)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of list properties is ok."""
+
+        prop = properties.ListProperty('name', [])
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 0)
+
+        prop = properties.ListProperty('name', [
+            properties.IntProperty('name', 5),
+            properties.IntProperty('name', -17),
+            ])
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0], 5)
+        self.assertEqual(data[1], -17)

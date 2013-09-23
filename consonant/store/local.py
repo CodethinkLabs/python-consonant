@@ -123,21 +123,25 @@ class LocalStore(services.Service):
     def objects(self, commit, klass=None):
         """Return the objects present in the given commit of the store."""
 
+        schema = self.schema(commit)
+
         if klass:
-            return sorted(self._class_objects(commit, klass))
+            return sorted(self._class_objects(commit, schema, klass))
         else:
             classes = self.classes(commit)
             objects = {}
             for klass in classes.itervalues():
                 objects[klass.name] = sorted(
-                    self._class_objects(commit, klass))
+                    self._class_objects(commit, schema, klass))
             return objects
 
     def object(self, commit, uuid, klass=None):
         """Return the object with the given UUID from a commit of the store."""
 
+        schema = self.schema(commit)
+
         if klass:
-            object = self._class_object(commit, uuid, klass)
+            object = self._class_object(commit, schema, uuid, klass)
             if object:
                 return object
             else:
@@ -145,19 +149,19 @@ class LocalStore(services.Service):
         else:
             classes = self.classes(commit)
             for klass in classes.itervalues():
-                object = self._class_object(commit, uuid, klass)
+                object = self._class_object(commit, schema, uuid, klass)
                 if object:
                     return object
             raise services.ObjectNotFoundError(commit, uuid)
 
-    def _class_object(self, commit, uuid, klass):
+    def _class_object(self, commit, schema, uuid, klass):
         objects = [x for x in klass.objects if x.uuid == uuid]
         if objects:
             commit_object = self.repo[commit.sha1]
             class_entry = commit_object.tree[klass.name]
             class_tree = self.repo[class_entry.oid]
             object_entry = class_tree[uuid]
-            return self._load_object(commit, klass, object_entry)
+            return self._load_object(commit, schema, klass, object_entry)
         else:
             return None
 
@@ -171,7 +175,7 @@ class LocalStore(services.Service):
             object_references.add(reference)
         return object_references
 
-    def _class_objects(self, commit, klass):
+    def _class_objects(self, commit, schema, klass):
         """Return the objects of a class in the given commit of the store."""
 
         commit_object = self.repo[commit.sha1]
@@ -179,7 +183,7 @@ class LocalStore(services.Service):
         class_tree = self.repo[class_tree_entry.oid]
         objects = set()
         for object_entry in class_tree:
-            object = self._load_object(commit, klass, object_entry)
+            object = self._load_object(commit, schema, klass, object_entry)
             objects.add(object)
         return objects
 
@@ -211,7 +215,7 @@ class LocalStore(services.Service):
         blob = self.repo[entry.oid]
         return yaml.load(blob.data)
 
-    def _load_object(self, commit, klass, object_entry):
+    def _load_object(self, commit, schema, klass, object_entry):
         object_tree = self.repo[object_entry.oid]
         properties_entry = object_tree['properties.yaml']
         properties_sha1 = properties_entry.oid.hex
@@ -220,15 +224,54 @@ class LocalStore(services.Service):
             object = self.cache.read_object(object_entry.name, properties_sha1)
         if not object:
             object = self._parse_object(
-                commit, klass, object_entry, properties_entry)
+                commit, schema, klass, object_entry, properties_entry)
         if self.cache:
             self.cache.write_object(object_entry.name, properties_sha1, object)
         return object
 
-    def _parse_object(self, commit, klass, object_entry, properties_entry):
+    def _parse_object(self, commit, schema, klass, object_entry,
+                      properties_entry):
         blob = self.repo[properties_entry.oid]
         properties_data = yaml.load(blob.data)
-        return objects.Object(
-            object_entry.name, klass,
-            [properties.Property(k, v)
-             for (k, v) in properties_data.iteritems()])
+
+        props = []
+        for name, data in properties_data.iteritems():
+            props.append(self._load_property(schema, klass, name, data))
+
+        return objects.Object(object_entry.name, klass, props)
+
+    def _load_property(self, schema, klass, name, data):
+        klass_def = schema.classes[klass.name]
+        prop_def = klass_def.properties[name]
+        prop_func = '_load_%s_property' % prop_def.property_type
+        return getattr(self, prop_func)(prop_def, data)
+
+    def _load_boolean_property(self, prop_def, data):
+        return properties.BooleanProperty(prop_def.name, data)
+
+    def _load_int_property(self, prop_def, data):
+        return properties.IntProperty(prop_def.name, data)
+
+    def _load_float_property(self, prop_def, data):
+        return properties.FloatProperty(prop_def.name, data)
+
+    def _load_text_property(self, prop_def, data):
+        return properties.TextProperty(prop_def.name, data)
+
+    def _load_timestamp_property(self, prop_def, data):
+        return properties.TimestampProperty(prop_def.name, data)
+
+    def _load_raw_property(self, prop_def, data):
+        return properties.RawProperty(prop_def.name, data)
+
+    def _load_reference_property(self, prop_def, data):
+        return properties.ReferenceProperty(prop_def.name, data)
+
+    def _load_list_property(self, prop_def, data):
+        element_type = prop_def.elements.property_type
+        element_func = '_load_%s_property' % element_type
+        values = []
+        for raw_value in data:
+            value = getattr(self, element_func)(prop_def.elements, raw_value)
+            values.append(value)
+        return properties.ReferenceProperty(prop_def.name, values)

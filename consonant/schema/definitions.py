@@ -42,13 +42,14 @@ class BooleanPropertyDefinition(PropertyDefinition):
     """Class to represent boolean object property definitions in schemas."""
 
     yaml_tag = u'!BooleanPropertyDefinition'
+    property_type = 'boolean'
 
     @classmethod
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of a boolean property definition."""
 
         m = {}
-        m['type'] = 'boolean'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
@@ -59,13 +60,14 @@ class IntPropertyDefinition(PropertyDefinition):
     """Class to represent int object property definitions in schemas."""
 
     yaml_tag = u'!IntPropertyDefinition'
+    property_type = 'int'
 
     @classmethod
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of a int property definition."""
 
         m = {}
-        m['type'] = 'int'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
@@ -76,13 +78,14 @@ class FloatPropertyDefinition(PropertyDefinition):
     """Class to represent float object property definitions in schemas."""
 
     yaml_tag = u'!FloatPropertyDefinition'
+    property_type = 'float'
 
     @classmethod
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of a float property definition."""
 
         m = {}
-        m['type'] = 'float'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
@@ -93,13 +96,14 @@ class TimestampPropertyDefinition(PropertyDefinition):
     """Class to represent timestamp object property definitions in schemas."""
 
     yaml_tag = u'!TimestampPropertyDefinition'
+    property_type = 'timestamp'
 
     @classmethod
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of a timestamp property definition."""
 
         m = {}
-        m['type'] = 'timestamp'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
@@ -110,6 +114,7 @@ class TextPropertyDefinition(PropertyDefinition):
     """Class to represent text object property definitions in schemas."""
 
     yaml_tag = u'!TextPropertyDefinition'
+    property_type = 'text'
 
     def __init__(self, name, optional, expressions):
         PropertyDefinition.__init__(self, name, optional)
@@ -127,7 +132,7 @@ class TextPropertyDefinition(PropertyDefinition):
         """Return a YAML representation of a text property definition."""
 
         m = {}
-        m['type'] = 'text'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         if prop.expressions:
@@ -141,6 +146,7 @@ class RawPropertyDefinition(PropertyDefinition):
     """Class to represent raw object property definitions in schemas."""
 
     yaml_tag = u'!RawPropertyDefinition'
+    property_type = 'raw'
 
     def __init__(self, name, optional, expressions):
         PropertyDefinition.__init__(self, name, optional)
@@ -158,7 +164,7 @@ class RawPropertyDefinition(PropertyDefinition):
         """Return a YAML representation of a raw property definition."""
 
         m = {}
-        m['type'] = 'raw'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         if prop.expressions:
@@ -172,6 +178,7 @@ class ReferencePropertyDefinition(PropertyDefinition):
     """Class to represent reference object property definitions in schemas."""
 
     yaml_tag = u'!ReferencePropertyDefinition'
+    property_type = 'reference'
 
     def __init__(self, name, optional, klass, schema, bidirectional):
         PropertyDefinition.__init__(self, name, optional)
@@ -194,7 +201,7 @@ class ReferencePropertyDefinition(PropertyDefinition):
         """Return a YAML representation of a reference property definition."""
 
         m = {}
-        m['type'] = 'reference'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         m['class'] = prop.klass
@@ -211,6 +218,7 @@ class ListPropertyDefinition(PropertyDefinition):
     """Class to represent list object property definitions in schemas."""
 
     yaml_tag = u'!ListPropertyDefinition'
+    property_type = 'list'
 
     def __init__(self, name, optional, elements):
         PropertyDefinition.__init__(self, name, optional)
@@ -228,7 +236,7 @@ class ListPropertyDefinition(PropertyDefinition):
         """Return a YAML representation of a list property definition."""
 
         m = {}
-        m['type'] = 'list'
+        m['type'] = prop.property_type
         if prop.optional:
             m['optional'] = True
         m['elements'] = prop.elements
