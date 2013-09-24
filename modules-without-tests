@@ -7,5 +7,6 @@ consonant/service/factories.py
 consonant/store/__init__.py
 consonant/store/local.py
 consonant/store/remote.py
+consonant/transaction/__init__.py
 consonant/util/__init__.py
 consonant/util/expressions.py
