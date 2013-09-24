@@ -25,6 +25,9 @@ class Action(object):
     def __init__(self, id):
         self.id = id
 
+    def __eq__(self, other):
+        raise NotImplementedError
+
 
 class BeginAction(Action):
 
@@ -33,6 +36,12 @@ class BeginAction(Action):
     def __init__(self, id, source):
         Action.__init__(self, id)
         self.source = source
+
+    def __eq__(self, other):
+        if not isinstance(other, BeginAction):
+            return False
+        else:
+            return self.id == other.id and self.source == other.source
 
 
 class CommitAction(Action):
@@ -49,6 +58,18 @@ class CommitAction(Action):
         self.committer_date = committer_date
         self.message = message
 
+    def __eq__(self, other):
+        if not isinstance(other, CommitAction):
+            return False
+        else:
+            return self.id == other.id \
+                and self.target == other.target \
+                and self.author == other.author \
+                and self.author_date == other.author_date \
+                and self.committer == other.committer \
+                and self.committer_date == other.committer_date \
+                and self.message == other.message
+
 
 class CreateAction(Action):
 
@@ -59,6 +80,14 @@ class CreateAction(Action):
         self.klass = klass
         self.properties = dict((p.name, p) for p in properties)
 
+    def __eq__(self, other):
+        if not isinstance(other, CreateAction):
+            return False
+        else:
+            return self.id == other.id \
+                and self.klass == other.klass \
+                and self.properties == other.properties
+
 
 class DeleteAction(Action):
 
@@ -67,6 +96,12 @@ class DeleteAction(Action):
     def __init__(self, id, uuid):
         Action.__init__(self, id)
         self.uuid = uuid
+
+    def __eq__(self, other):
+        if not isinstance(other, DeleteAction):
+            return False
+        else:
+            return self.id == other.id and self.uuid == other.uuid
 
 
 class UpdateAction(Action):
@@ -77,6 +112,14 @@ class UpdateAction(Action):
         Action.__init__(self, id)
         self.uuid = uuid
         self.properties = dict((p.name, p) for p in properties)
+
+    def __eq__(self, other):
+        if not isinstance(other, UpdateAction):
+            return False
+        else:
+            return self.id == other.id \
+                and self.uuid == other.uuid \
+                and self.properties == other.properties
 
 
 class UpdateRawPropertyAction(Action):
@@ -90,6 +133,16 @@ class UpdateRawPropertyAction(Action):
         self.content_type = content_type
         self.data = data
 
+    def __eq__(self, other):
+        if not isinstance(other, UpdateRawPropertyAction):
+            return False
+        else:
+            return self.id == other.id \
+                and self.uuid == other.uuid \
+                and self.property == other.property \
+                and self.content_type == other.content_type \
+                and self.data == other.data
+
 
 class UnsetRawPropertyAction(Action):
 
@@ -99,3 +152,11 @@ class UnsetRawPropertyAction(Action):
         Action.__init__(self, id)
         self.uuid = uuid
         self.property = property
+
+    def __eq__(self, other):
+        if not isinstance(other, UnsetRawPropertyAction):
+            return False
+        else:
+            return self.id == other.id \
+                and self.uuid == other.uuid \
+                and self.property == other.property

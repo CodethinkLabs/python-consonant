@@ -18,6 +18,7 @@
 """Unit tests for classes representing actions in transactions."""
 
 
+import itertools
 import unittest
 
 from consonant.store import properties
@@ -36,6 +37,34 @@ class ActionTests(unittest.TestCase):
 
         action = actions.Action('foo')
         self.assertEqual(action.id, 'foo')
+
+    def test_equality_operator_is_not_implemented(self):
+        """Verify that the equality operator of Action is not implemented."""
+
+        action = actions.Action('foo')
+
+        def _compare_actions():
+            action == action
+
+        self.assertRaises(NotImplementedError, _compare_actions)
+
+    def test_equality_operator_is_false_if_action_classes_dont_match(self):
+        """Verify that the equality operator is false if classes differ."""
+
+        acts = [
+            actions.BeginAction('foo', 'source'),
+            actions.CommitAction(
+                'foo', 'target', 'author', 'author date',
+                'committer', 'committer date', 'message'),
+            actions.CreateAction('foo', 'klass', []),
+            actions.DeleteAction('foo', 'uuid'),
+            actions.UpdateAction('foo', 'uuid', []),
+            actions.UpdateRawPropertyAction('foo', 'uuid', 'p', 't', 'data'),
+            actions.UnsetRawPropertyAction('foo', 'uuid', 'prop'),
+            ]
+
+        for action1, action2 in itertools.permutations(acts, 2):
+            self.assertFalse(action1 == action2)
 
 
 class BeginActionTests(unittest.TestCase):
@@ -62,6 +91,30 @@ class BeginActionTests(unittest.TestCase):
         self.assertEqual(action.id, '2')
         self.assertEqual(
             action.source, '4a723c3748b984962f58dfcfc274995f4a7e75db')
+
+    def test_equal_begin_actions_are_equal(self):
+        """Verify that equal begin actions are equal."""
+
+        action1 = actions.BeginAction(
+            'foo', 'dca2e18637af3d0d73bb575c7501869fdc3aad15')
+        action2 = actions.BeginAction(
+            'foo', 'dca2e18637af3d0d73bb575c7501869fdc3aad15')
+        self.assertEqual(action1, action2)
+
+    def test_different_begin_actions_are_not_equal(self):
+        """Verify that different begin actions are not equal."""
+
+        action1 = actions.BeginAction(
+            'foo', 'dca2e18637af3d0d73bb575c7501869fdc3aad15')
+        action2 = actions.BeginAction(
+            'bar', 'dca2e18637af3d0d73bb575c7501869fdc3aad15')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.BeginAction(
+            'foo', 'dca2e18637af3d0d73bb575c7501869fdc3aad15')
+        action2 = actions.BeginAction(
+            'foo', '54d4bca0df18a068061c135ca6c3d35cff44770e')
+        self.assertFalse(action1 == action2)
 
 
 class CommitActionTests(unittest.TestCase):
@@ -107,6 +160,44 @@ class CommitActionTests(unittest.TestCase):
         self.assertEqual(action.committer_date, '1374782771 +0100')
         self.assertEqual(action.message, 'This is a different commit message')
 
+    def test_equal_commit_actions_are_equal(self):
+        """Verify that equal commit actions are equal."""
+
+        action1 = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a commit message')
+        action2 = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a commit message')
+        self.assertEqual(action1, action2)
+
+    def test_different_commit_actions_are_different(self):
+        """Verify that different commit actions are different."""
+
+        action1 = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a commit message')
+        action2 = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a different commit message')
+        self.assertFalse(action1 == action2)
+
 
 class CreateActionTests(unittest.TestCase):
 
@@ -149,6 +240,36 @@ class CreateActionTests(unittest.TestCase):
                     ]),
             })
 
+    def test_equal_create_actions_are_equal(self):
+        """Verify that equal create actions are equal."""
+
+        action1 = actions.CreateAction('id', 'lane', [])
+        action2 = actions.CreateAction('id', 'lane', [])
+        self.assertEqual(action1, action2)
+
+        action1 = actions.CreateAction('id', 'lane', [
+            properties.TextProperty('title', 'A title')])
+        action2 = actions.CreateAction('id', 'lane', [
+            properties.TextProperty('title', 'A title')])
+        self.assertEqual(action1, action2)
+
+    def test_different_create_actions_are_different(self):
+        """Verify that different create actions are different."""
+
+        action1 = actions.CreateAction('id', 'lane', [])
+        action2 = actions.CreateAction('id', 'card', [])
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.CreateAction('id1', 'lane', [])
+        action2 = actions.CreateAction('id2', 'lane', [])
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.CreateAction('id', 'lane', [
+            properties.TextProperty('title1', 'A title')])
+        action2 = actions.CreateAction('id', 'lane', [
+            properties.TextProperty('title2', 'A title')])
+        self.assertFalse(action1 == action2)
+
 
 class DeleteActionTests(unittest.TestCase):
 
@@ -171,6 +292,24 @@ class DeleteActionTests(unittest.TestCase):
             'bar', 'b4f4de38-1fa1-45ce-ab7a-8c749954538c')
         self.assertEqual(action.id, 'bar')
         self.assertEqual(action.uuid, 'b4f4de38-1fa1-45ce-ab7a-8c749954538c')
+
+    def test_equal_delete_actions_are_equal(self):
+        """Verify that equal delete actions are equal."""
+
+        action1 = actions.DeleteAction('id', 'uuid')
+        action2 = actions.DeleteAction('id', 'uuid')
+        self.assertEqual(action1, action2)
+
+    def test_different_delete_actions_are_different(self):
+        """Verify that different delete actions are different."""
+
+        action1 = actions.DeleteAction('id', 'uuid1')
+        action2 = actions.DeleteAction('id', 'uuid2')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.DeleteAction('id1', 'uuid')
+        action2 = actions.DeleteAction('id2', 'uuid')
+        self.assertFalse(action1 == action2)
 
 
 class UpdateActionTests(unittest.TestCase):
@@ -220,6 +359,36 @@ class UpdateActionTests(unittest.TestCase):
                     ])
             })
 
+    def test_equal_update_actions_are_equal(self):
+        """Verify that equal update actions are equal."""
+
+        action1 = actions.UpdateAction('id', 'uuid', [])
+        action2 = actions.UpdateAction('id', 'uuid', [])
+        self.assertEqual(action1, action2)
+
+        action1 = actions.UpdateAction('id', 'uuid', [
+            properties.TextProperty('title', 'A title')])
+        action2 = actions.UpdateAction('id', 'uuid', [
+            properties.TextProperty('title', 'A title')])
+        self.assertEqual(action1, action2)
+
+    def test_different_update_actions_are_different(self):
+        """Verify that different update actions are different."""
+
+        action1 = actions.UpdateAction('id', 'uuid1', [])
+        action2 = actions.UpdateAction('id', 'uuid2', [])
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateAction('id1', 'uuid', [])
+        action2 = actions.UpdateAction('id2', 'uuid', [])
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateAction('id', 'uuid', [
+            properties.TextProperty('title1', 'A title')])
+        action2 = actions.UpdateAction('id', 'uuid', [
+            properties.TextProperty('title2', 'A title')])
+        self.assertFalse(action1 == action2)
+
 
 class UpdateRawPropertyActionTests(unittest.TestCase):
 
@@ -246,6 +415,36 @@ class UpdateRawPropertyActionTests(unittest.TestCase):
         self.assertEqual(action.content_type, 'text/plain')
         self.assertEqual(action.data, 'patch content')
 
+    def test_equal_update_raw_property_actions_are_equal(self):
+        """Verify that equal update raw property actions are equal."""
+
+        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd')
+        self.assertEqual(action1, action2)
+
+    def test_different_update_raw_property_actions_are_different(self):
+        """Verify that different update raw property actions are different."""
+
+        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd1')
+        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd2')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't1', 'd')
+        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't2', 'd')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p1', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p2', 't', 'd')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateRawPropertyAction('id', 'uuid1', 'p', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction('id', 'uuid2', 'p', 't', 'd')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateRawPropertyAction('id1', 'uuid', 'p', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction('id2', 'uuid', 'p', 't', 'd')
+        self.assertFalse(action1 == action2)
+
 
 class UnsetRawPropertyActionTests(unittest.TestCase):
 
@@ -265,3 +464,25 @@ class UnsetRawPropertyActionTests(unittest.TestCase):
         self.assertEqual(action.id, 'bar')
         self.assertEqual(action.uuid, 'e17de337-73ab-411a-9e1d-5b84e8d101f0')
         self.assertEqual(action.property, 'patch')
+
+    def test_equal_unset_raw_property_actions_are_equal(self):
+        """Verify that equal unset raw property actions are equal."""
+
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid', 'property')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid', 'property')
+        self.assertEqual(action1, action2)
+
+    def test_different_unset_raw_property_actions_are_different(self):
+        """Verify that different unset raw property actions are different."""
+
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid', 'property1')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid', 'property2')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid1', 'property')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid2', 'property')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UnsetRawPropertyAction('id1', 'uuid', 'property')
+        action2 = actions.UnsetRawPropertyAction('id2', 'uuid', 'property')
+        self.assertFalse(action1 == action2)

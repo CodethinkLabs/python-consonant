@@ -15,8 +15,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes for parsing, representing and validating transactions."""
+"""Classes for representing transactions."""
 
 
-import actions
-import transactions
+class Transaction(object):
+
+    """Class to represent a transaction."""
+
+    def __init__(self, actions):
+        self.actions = actions
