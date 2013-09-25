@@ -24,3 +24,9 @@ class Transaction(object):
 
     def __init__(self, actions):
         self.actions = actions
+
+    def __eq__(self, other):
+        if not isinstance(other, Transaction):
+            return False
+        else:
+            return self.actions == other.actions

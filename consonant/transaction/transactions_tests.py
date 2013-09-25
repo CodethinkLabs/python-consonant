@@ -60,3 +60,41 @@ class TransactionTests(unittest.TestCase):
                 'committer', '1379683379 +0100',
                 'message'),
             ])
+
+    def test_transaction_and_non_transaction_are_not_equal(self):
+        """Verify that a Transaction and a non-Transaction are not equal."""
+
+        self.assertFalse(transactions.Transaction([]) == [])
+
+    def test_equal_transactions_are_equal(self):
+        """Verify that equal transactions are equal."""
+
+        transaction1 = transactions.Transaction([
+            actions.BeginAction(
+                '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '3', 'refs/heads/master',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        transaction2 = transactions.Transaction([
+            actions.BeginAction(
+                '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '3', 'refs/heads/master',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        self.assertEqual(transaction1, transaction2)

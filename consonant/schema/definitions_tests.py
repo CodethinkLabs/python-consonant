@@ -378,10 +378,8 @@ class RawPropertyDefinitionTests(unittest.TestCase):
 
         prop = definitions.RawPropertyDefinition(
             'name2', True, ['^foo', '^[0-9abcdef]{40}$', '.*\.pyc?$'])
-        self.assertEqual(prop.expressions,
-                         [re.compile('^foo'),
-                          re.compile('^[0-9abcdef]{40}$'),
-                          re.compile('.*\.pyc?$')])
+        self.assertEqual([x.pattern for x in prop.expressions],
+                         ['^foo', '^[0-9abcdef]{40}$', '.*\.pyc?$'])
 
     def test_definitions_with_the_same_expressions_are_equal(self):
         """Verify that raw prop defs with the same expressions are equal."""

@@ -23,15 +23,11 @@ import re
 
 schema_name = \
     re.compile('^[a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*\.[0-9]+$')
-
-
 service_name = \
     re.compile('^[a-zA-Z][a-zA-Z0-9-]*(?:\.[a-zA-Z][a-zA-Z0-9-]*)*$')
-
-
-class_name = \
-    re.compile('^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$')
-
-
-property_name = \
-    re.compile('^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$')
+class_name = re.compile('^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$')
+property_name = re.compile('^[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]$')
+commit_sha1 = re.compile('^([0-9abcdefABCDEF]{8}|[0-9abcdefABCDEF]{40})$')
+commit_author = re.compile('^[^<>]+ ?<[^<>]+>$')
+commit_committer = re.compile('^[^<>]+ ?<[^<>]+>$')
+commit_date = re.compile('^[0-9]+ [\+-][0-9]{4}$')
