@@ -153,9 +153,10 @@ class UnsetRawPropertyAction(Action):
 
     """Class to represent unset-raw-property actions in transactions."""
 
-    def __init__(self, id, uuid, property):
+    def __init__(self, id, uuid, action_id, property):
         Action.__init__(self, id)
         self.uuid = uuid
+        self.action_id = action_id
         self.property = property
 
     def __eq__(self, other):
@@ -164,4 +165,5 @@ class UnsetRawPropertyAction(Action):
         else:
             return self.id == other.id \
                 and self.uuid == other.uuid \
+                and self.action_id == other.action_id \
                 and self.property == other.property

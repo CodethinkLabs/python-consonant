@@ -1430,3 +1430,277 @@ message: hello
             'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
             'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
             'hello'))
+
+    def test_parsing_fails_if_an_unset_raw_prop_defines_no_object(self):
+        """Verify parsing fails if a unset raw action defines no object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectUndefinedError: '
+            'Action defines no object: '
+            'action: unset-raw-property\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+property: title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_unset_raw_prop_has_an_invalid_object(self):
+        """Verify parsing fails if an unset raw action has invalid object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: unset-raw-property\n'
+            'object: foo\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object: foo
+property: title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: unset-raw-property\n'
+            'object:\n'
+            '  foo: bar\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object:
+  foo: bar
+property: title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_unset_raw_prop_has_an_ambiguous_object(self):
+        """Verify parsing fails if a unset raw action has ambiguous object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectAmbiguousError: '
+            'Action refers to an object via a UUID and '
+            'action ID at the same time: '
+            'action: unset-raw-property\n'
+            'object:\n'
+            '  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee\n'
+            '  action: 1\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+  action: 1
+property: title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_unset_raw_prop_has_non_string_property(self):
+        """Verify parsing fails if a unset raw prop act has non-str prop."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionPropertyNotAStringError: '
+            'Action defines a non-string property: 12345'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: 12345
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_unset_raw_prop_has_an_invalid_property(self):
+        """Verify parsing fails if a unset raw prop act has invalid prop."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionPropertyInvalidError: '
+            'Action defines an invalid property: 123-foo'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: 123-foo
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_a_transaction_with_an_unset_raw_prop_action_works(self):
+        """Verify parsing a transaction with an unset raw action works."""
+
+        t = self.parser.parse('''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: unset-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertEqual(len(t.actions), 3)
+        self.assertEqual(t.actions[0], actions.BeginAction(
+            None, '8c1abcdc914e174d040e151015aecc89445fa110'))
+        self.assertEqual(t.actions[1], actions.UnsetRawPropertyAction(
+            None, '505aca2c-9892-4da6-943d-f3e869f6fbee', None, 'title'))
+        self.assertEqual(t.actions[2], actions.CommitAction(
+            None, 'refs/heads/master',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'hello'))

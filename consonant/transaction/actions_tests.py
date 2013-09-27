@@ -60,7 +60,7 @@ class ActionTests(unittest.TestCase):
             actions.DeleteAction('foo', 'uuid', None),
             actions.UpdateAction('foo', 'uuid', None, []),
             actions.UpdateRawPropertyAction('foo', 'uuid', 'p', 't', 'data'),
-            actions.UnsetRawPropertyAction('foo', 'uuid', 'prop'),
+            actions.UnsetRawPropertyAction('foo', 'uuid', None, 'prop'),
             ]
 
         for action1, action2 in itertools.permutations(acts, 2):
@@ -462,35 +462,45 @@ class UnsetRawPropertyActionTests(unittest.TestCase):
         """Verify that the constructor sets the action id, uuid, property."""
 
         action = actions.UnsetRawPropertyAction(
-            'foo', '7b6b8292-7b01-4cea-87c9-6ad3b771314c', 'avatar')
+            'foo', '7b6b8292-7b01-4cea-87c9-6ad3b771314c', None, 'avatar')
         self.assertEqual(action.id, 'foo')
         self.assertEqual(action.uuid, '7b6b8292-7b01-4cea-87c9-6ad3b771314c')
+        self.assertEqual(action.action_id, None)
         self.assertEqual(action.property, 'avatar')
 
         action = actions.UnsetRawPropertyAction(
-            'bar', 'e17de337-73ab-411a-9e1d-5b84e8d101f0', 'patch')
+            'bar', None, 'other action', 'patch')
         self.assertEqual(action.id, 'bar')
-        self.assertEqual(action.uuid, 'e17de337-73ab-411a-9e1d-5b84e8d101f0')
+        self.assertEqual(action.uuid, None)
+        self.assertEqual(action.action_id, 'other action')
         self.assertEqual(action.property, 'patch')
 
     def test_equal_unset_raw_property_actions_are_equal(self):
         """Verify that equal unset raw property actions are equal."""
 
-        action1 = actions.UnsetRawPropertyAction('id', 'uuid', 'property')
-        action2 = actions.UnsetRawPropertyAction('id', 'uuid', 'property')
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid', None, 'prop')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid', None, 'prop')
+        self.assertEqual(action1, action2)
+
+        action1 = actions.UnsetRawPropertyAction('id', None, 'action', 'prop')
+        action2 = actions.UnsetRawPropertyAction('id', None, 'action', 'prop')
         self.assertEqual(action1, action2)
 
     def test_different_unset_raw_property_actions_are_different(self):
         """Verify that different unset raw property actions are different."""
 
-        action1 = actions.UnsetRawPropertyAction('id', 'uuid', 'property1')
-        action2 = actions.UnsetRawPropertyAction('id', 'uuid', 'property2')
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid', None, 'prop1')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid', None, 'prop2')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UnsetRawPropertyAction('id', 'uuid1', 'property')
-        action2 = actions.UnsetRawPropertyAction('id', 'uuid2', 'property')
+        action1 = actions.UnsetRawPropertyAction('id', 'uuid1', None, 'prop')
+        action2 = actions.UnsetRawPropertyAction('id', 'uuid2', None, 'prop')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UnsetRawPropertyAction('id1', 'uuid', 'property')
-        action2 = actions.UnsetRawPropertyAction('id2', 'uuid', 'property')
+        action1 = actions.UnsetRawPropertyAction('id1', 'uuid', None, 'prop')
+        action2 = actions.UnsetRawPropertyAction('id2', 'uuid', None, 'prop')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UnsetRawPropertyAction('id', None, 'action1', 'prop')
+        action2 = actions.UnsetRawPropertyAction('id', None, 'action2', 'prop')
         self.assertFalse(action1 == action2)

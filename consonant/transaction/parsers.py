@@ -351,6 +351,30 @@ class ActionObjectAmbiguousError(ActionError):
                'at the same time: %s' % self.part.get_payload().strip()
 
 
+class ActionPropertyNotAStringError(ActionError):
+
+    """Error for when a raw property action defines a non-string property."""
+
+    def __init__(self, phase, part, prop):
+        ActionError.__init__(self, phase, part)
+        self.prop = prop
+
+    def __str__(self):
+        return 'Action defines a non-string property: %s' % self.prop
+
+
+class ActionPropertyInvalidError(ActionError):
+
+    """Error for when a raw property action defines an invalid property."""
+
+    def __init__(self, phase, part, prop):
+        ActionError.__init__(self, phase, part)
+        self.prop = prop
+
+    def __str__(self):
+        return 'Action defines an invalid property: %s' % self.prop
+
+
 class TransactionParser(object):
 
     """Parser for multipart/mixed transactions."""
@@ -493,7 +517,8 @@ class TransactionParser(object):
             phase.error(ActionWithoutActionTypeError(phase, part))
 
         if not phase.errors:
-            parse_func = '_parse_%s_action' % data['action']
+            normalised_name = str(data['action']).replace('-', '_')
+            parse_func = '_parse_%s_action' % normalised_name
 
             if not hasattr(self, parse_func):
                 phase.error(ActionUnsupportedActionTypeError(
@@ -565,6 +590,34 @@ class TransactionParser(object):
             action_id = data['object'].get('action', None)
             action = actions.DeleteAction(
                 data.get('id', None), uuid, action_id)
+            return action, index + 1
+
+    def _parse_unset_raw_property_action(
+            self, phase, index, part, remaining_parts, data):
+        if not 'object' in data:
+            phase.error(ActionObjectUndefinedError(phase, part))
+        else:
+            obj = data['object']
+            if not isinstance(obj, dict):
+                phase.error(ActionObjectInvalidError(phase, part))
+            else:
+                if not 'action' in obj and not 'uuid' in obj:
+                    phase.error(ActionObjectInvalidError(phase, part))
+                elif 'action' in obj and 'uuid' in obj:
+                    phase.error(ActionObjectAmbiguousError(phase, part))
+
+            prop = data.get('property', '')
+            if not isinstance(prop, basestring):
+                phase.error(ActionPropertyNotAStringError(phase, part, prop))
+            else:
+                if not expressions.property_name.match(prop):
+                    phase.error(ActionPropertyInvalidError(phase, part, prop))
+
+        if not phase.errors:
+            uuid = data['object'].get('uuid', None)
+            action_id = data['object'].get('action', None)
+            action = actions.UnsetRawPropertyAction(
+                data.get('id', None), uuid, action_id, prop)
             return action, index + 1
 
     def _check_for_content_type(self, phase, part, *types):
