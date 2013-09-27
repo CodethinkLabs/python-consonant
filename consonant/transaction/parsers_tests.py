@@ -992,3 +992,250 @@ message: hello
             'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
             'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
             'hello'))
+
+    def test_parsing_fails_if_an_update_action_defines_no_object(self):
+        """Verify parsing fails if an update action defines no object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectUndefinedError: '
+            'Action defines no object: '
+            'action: update\n'
+            'properties:\n'
+            '  title: Some title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+properties:
+  title: Some title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_action_has_an_invalid_object(self):
+        """Verify parsing fails if an update action has an invalid object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: update\n'
+            'object: foo\n'
+            'properties:\n'
+            '  title: Some title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+object: foo
+properties:
+  title: Some title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: update\n'
+            'object:\n'
+            '  foo: bar\n'
+            'properties:\n'
+            '  title: Some title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+object:
+  foo: bar
+properties:
+  title: Some title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_action_has_an_ambiguous_object(self):
+        """Verify parsing fails if an update action has an ambiguous object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectAmbiguousError: '
+            'Action refers to an object via a UUID and '
+            'action ID at the same time: '
+            'action: update\n'
+            'object:\n'
+            '  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee\n'
+            '  action: 1\n'
+            'properties:\n'
+            '  title: Some title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+  action: 1
+properties:
+  title: Some title
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_action_has_non_dict_properties(self):
+        """Verify parsing fails if an update action has non-dict properties."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionPropertiesNotADictError: '
+            'Action defines non-dict properties: hello'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+properties: hello
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_a_transaction_with_a_simple_update_action_works(self):
+        """Verify parsing a transaction with a simple update action works."""
+
+        t = self.parser.parse('''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+properties:
+  title: xyz
+--CONSONANT
+Content-type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertEqual(len(t.actions), 3)
+        self.assertEqual(t.actions[0], actions.BeginAction(
+            None, '8c1abcdc914e174d040e151015aecc89445fa110'))
+        self.assertEqual(t.actions[1], actions.UpdateAction(
+            None, '505aca2c-9892-4da6-943d-f3e869f6fbee', None,
+            [properties.Property('title', 'xyz')]))
+        self.assertEqual(t.actions[2], actions.CommitAction(
+            None, 'refs/heads/master',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'hello'))

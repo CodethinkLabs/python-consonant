@@ -58,7 +58,7 @@ class ActionTests(unittest.TestCase):
                 'committer', 'committer date', 'message'),
             actions.CreateAction('foo', 'klass', []),
             actions.DeleteAction('foo', 'uuid'),
-            actions.UpdateAction('foo', 'uuid', []),
+            actions.UpdateAction('foo', 'uuid', None, []),
             actions.UpdateRawPropertyAction('foo', 'uuid', 'p', 't', 'data'),
             actions.UnsetRawPropertyAction('foo', 'uuid', 'prop'),
             ]
@@ -316,19 +316,18 @@ class UpdateActionTests(unittest.TestCase):
 
     """Unit tests for the UpdateAction class."""
 
-    def test_constructor_sets_action_id_uuid_and_properties(self):
-        """Verify that the constructor sets the action id, uuid and props."""
+    def test_constructor_sets_action_id_uuid_action_id_and_properties(self):
+        """Verify that the constructor sets the id, uuid, action id, props."""
 
         action = actions.UpdateAction(
-            'foo',
-            '37982fe0-467f-4f02-b6a0-f010ceb8ad63',
-            [
+            'foo', '37982fe0-467f-4f02-b6a0-f010ceb8ad63', None, [
                 properties.TextProperty('title', 'New title'),
                 properties.ReferenceProperty(
                     'lane', {'uuid': 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39'}),
                 ])
         self.assertEqual(action.id, 'foo')
         self.assertEqual(action.uuid, '37982fe0-467f-4f02-b6a0-f010ceb8ad63')
+        self.assertEqual(action.action_id, None)
         self.assertEqual(action.properties, {
             'title': properties.TextProperty('title', 'New title'),
             'lane': properties.ReferenceProperty(
@@ -337,7 +336,7 @@ class UpdateActionTests(unittest.TestCase):
 
         action = actions.UpdateAction(
             'bar',
-            'e0fac940-e60a-4f55-aa95-bae774b72870',
+            None, '5',
             [
                 properties.TextProperty('title', 'A new title'),
                 properties.ListProperty(
@@ -348,7 +347,8 @@ class UpdateActionTests(unittest.TestCase):
                         ])
                 ])
         self.assertEqual(action.id, 'bar')
-        self.assertEqual(action.uuid, 'e0fac940-e60a-4f55-aa95-bae774b72870')
+        self.assertEqual(action.uuid, None)
+        self.assertEqual(action.action_id, '5')
         self.assertEqual(action.properties, {
             'title': properties.TextProperty('title', 'A new title'),
             'cards': properties.ListProperty(
@@ -362,30 +362,30 @@ class UpdateActionTests(unittest.TestCase):
     def test_equal_update_actions_are_equal(self):
         """Verify that equal update actions are equal."""
 
-        action1 = actions.UpdateAction('id', 'uuid', [])
-        action2 = actions.UpdateAction('id', 'uuid', [])
+        action1 = actions.UpdateAction('id', 'uuid', None, [])
+        action2 = actions.UpdateAction('id', 'uuid', None, [])
         self.assertEqual(action1, action2)
 
-        action1 = actions.UpdateAction('id', 'uuid', [
+        action1 = actions.UpdateAction('id', 'uuid', None, [
             properties.TextProperty('title', 'A title')])
-        action2 = actions.UpdateAction('id', 'uuid', [
+        action2 = actions.UpdateAction('id', 'uuid', None, [
             properties.TextProperty('title', 'A title')])
         self.assertEqual(action1, action2)
 
     def test_different_update_actions_are_different(self):
         """Verify that different update actions are different."""
 
-        action1 = actions.UpdateAction('id', 'uuid1', [])
-        action2 = actions.UpdateAction('id', 'uuid2', [])
+        action1 = actions.UpdateAction('id', 'uuid1', None, [])
+        action2 = actions.UpdateAction('id', 'uuid2', None, [])
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateAction('id1', 'uuid', [])
-        action2 = actions.UpdateAction('id2', 'uuid', [])
+        action1 = actions.UpdateAction('id1', 'uuid', None, [])
+        action2 = actions.UpdateAction('id2', 'uuid', None, [])
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateAction('id', 'uuid', [
+        action1 = actions.UpdateAction('id', 'uuid', None, [
             properties.TextProperty('title1', 'A title')])
-        action2 = actions.UpdateAction('id', 'uuid', [
+        action2 = actions.UpdateAction('id', 'uuid', None, [
             properties.TextProperty('title2', 'A title')])
         self.assertFalse(action1 == action2)
 

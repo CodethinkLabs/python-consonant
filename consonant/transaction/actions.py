@@ -108,9 +108,10 @@ class UpdateAction(Action):
 
     """Class to represent update actions in transactions."""
 
-    def __init__(self, id, uuid, properties):
+    def __init__(self, id, uuid, action_id, properties):
         Action.__init__(self, id)
         self.uuid = uuid
+        self.action_id = action_id
         self.properties = dict((p.name, p) for p in properties)
 
     def __eq__(self, other):
@@ -119,6 +120,7 @@ class UpdateAction(Action):
         else:
             return self.id == other.id \
                 and self.uuid == other.uuid \
+                and self.action_id == other.action_id \
                 and self.properties == other.properties
 
 

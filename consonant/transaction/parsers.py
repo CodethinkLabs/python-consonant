@@ -324,6 +324,33 @@ class ActionPropertiesNotADictError(ActionError):
         return 'Action defines non-dict properties: %s' % self.properties
 
 
+class ActionObjectUndefinedError(ActionError):
+
+    """Error for when an action defines no object."""
+
+    def __str__(self):
+        return 'Action defines no object: %s' % \
+            self.part.get_payload().strip()
+
+
+class ActionObjectInvalidError(ActionError):
+
+    """Error for when an action refers to object in an invalid way."""
+
+    def __str__(self):
+        return 'Action does not refer to an object via a UUID ' \
+               'or an action ID: %s' % self.part.get_payload().strip()
+
+
+class ActionObjectAmbiguousError(ActionError):
+
+    """Error for when an action refers to object in an ambiguous way."""
+
+    def __str__(self):
+        return 'Action refers to an object via a UUID and action ID ' \
+               'at the same time: %s' % self.part.get_payload().strip()
+
+
 class TransactionParser(object):
 
     """Parser for multipart/mixed transactions."""
@@ -493,6 +520,31 @@ class TransactionParser(object):
             klass = data['class']
             props = [properties.Property(k, v) for k, v in props.iteritems()]
             action = actions.CreateAction(data.get('id', None), klass, props)
+            return action, index + 1
+
+    def _parse_update_action(self, phase, index, part, remaining_parts, data):
+        if not 'object' in data:
+            phase.error(ActionObjectUndefinedError(phase, part))
+        else:
+            obj = data['object']
+            if not isinstance(obj, dict):
+                phase.error(ActionObjectInvalidError(phase, part))
+            else:
+                if not 'action' in obj and not 'uuid' in obj:
+                    phase.error(ActionObjectInvalidError(phase, part))
+                elif 'action' in obj and 'uuid' in obj:
+                    phase.error(ActionObjectAmbiguousError(phase, part))
+
+            props = data.get('properties', {})
+            if not isinstance(props, dict):
+                phase.error(ActionPropertiesNotADictError(phase, part, props))
+
+        if not phase.errors:
+            uuid = data['object'].get('uuid', None)
+            action_id = data['object'].get('action', None)
+            props = [properties.Property(k, v) for k, v in props.iteritems()]
+            action = actions.UpdateAction(
+                data.get('id', None), uuid, action_id, props)
             return action, index + 1
 
     def _check_for_content_type(self, phase, part, *types):

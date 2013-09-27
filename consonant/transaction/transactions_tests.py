@@ -38,7 +38,7 @@ class TransactionTests(unittest.TestCase):
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
-                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
                     properties.TextProperty('title', 'new title')
                     ]),
             actions.CommitAction(
@@ -51,7 +51,7 @@ class TransactionTests(unittest.TestCase):
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
-                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
                     properties.TextProperty('title', 'new title')
                     ]),
             actions.CommitAction(
@@ -73,7 +73,7 @@ class TransactionTests(unittest.TestCase):
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
-                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
                     properties.TextProperty('title', 'new title')
                     ]),
             actions.CommitAction(
@@ -87,7 +87,7 @@ class TransactionTests(unittest.TestCase):
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
-                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', [
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
                     properties.TextProperty('title', 'new title')
                     ]),
             actions.CommitAction(
