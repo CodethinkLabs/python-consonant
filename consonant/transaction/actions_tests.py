@@ -57,7 +57,7 @@ class ActionTests(unittest.TestCase):
                 'foo', 'target', 'author', 'author date',
                 'committer', 'committer date', 'message'),
             actions.CreateAction('foo', 'klass', []),
-            actions.DeleteAction('foo', 'uuid'),
+            actions.DeleteAction('foo', 'uuid', None),
             actions.UpdateAction('foo', 'uuid', None, []),
             actions.UpdateRawPropertyAction('foo', 'uuid', 'p', 't', 'data'),
             actions.UnsetRawPropertyAction('foo', 'uuid', 'prop'),
@@ -279,36 +279,44 @@ class DeleteActionTests(unittest.TestCase):
         """Verify that the constructor sets the action id and object uuid."""
 
         action = actions.DeleteAction(
-            'foo', 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39')
+            'foo', 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39', None)
         self.assertEqual(action.id, 'foo')
         self.assertEqual(action.uuid, 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39')
 
         action = actions.DeleteAction(
-            'bar', 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39')
+            'bar', 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39', None)
         self.assertEqual(action.id, 'bar')
         self.assertEqual(action.uuid, 'cfdaa6e9-eb13-49a3-b43c-51b40a005d39')
 
         action = actions.DeleteAction(
-            'bar', 'b4f4de38-1fa1-45ce-ab7a-8c749954538c')
+            'bar', 'b4f4de38-1fa1-45ce-ab7a-8c749954538c', None)
         self.assertEqual(action.id, 'bar')
         self.assertEqual(action.uuid, 'b4f4de38-1fa1-45ce-ab7a-8c749954538c')
 
     def test_equal_delete_actions_are_equal(self):
         """Verify that equal delete actions are equal."""
 
-        action1 = actions.DeleteAction('id', 'uuid')
-        action2 = actions.DeleteAction('id', 'uuid')
+        action1 = actions.DeleteAction('id', 'uuid', None)
+        action2 = actions.DeleteAction('id', 'uuid', None)
+        self.assertEqual(action1, action2)
+
+        action1 = actions.DeleteAction('id', None, 'action id')
+        action2 = actions.DeleteAction('id', None, 'action id')
         self.assertEqual(action1, action2)
 
     def test_different_delete_actions_are_different(self):
         """Verify that different delete actions are different."""
 
-        action1 = actions.DeleteAction('id', 'uuid1')
-        action2 = actions.DeleteAction('id', 'uuid2')
+        action1 = actions.DeleteAction('id', 'uuid1', None)
+        action2 = actions.DeleteAction('id', 'uuid2', None)
         self.assertFalse(action1 == action2)
 
-        action1 = actions.DeleteAction('id1', 'uuid')
-        action2 = actions.DeleteAction('id2', 'uuid')
+        action1 = actions.DeleteAction('id1', 'uuid', None)
+        action2 = actions.DeleteAction('id2', 'uuid', None)
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.DeleteAction('id', 'uuid', 'action1')
+        action2 = actions.DeleteAction('id', 'uuid', 'action2')
         self.assertFalse(action1 == action2)
 
 

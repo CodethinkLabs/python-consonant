@@ -547,6 +547,26 @@ class TransactionParser(object):
                 data.get('id', None), uuid, action_id, props)
             return action, index + 1
 
+    def _parse_delete_action(self, phase, index, part, remaining_parts, data):
+        if not 'object' in data:
+            phase.error(ActionObjectUndefinedError(phase, part))
+        else:
+            obj = data['object']
+            if not isinstance(obj, dict):
+                phase.error(ActionObjectInvalidError(phase, part))
+            else:
+                if not 'action' in obj and not 'uuid' in obj:
+                    phase.error(ActionObjectInvalidError(phase, part))
+                elif 'action' in obj and 'uuid' in obj:
+                    phase.error(ActionObjectAmbiguousError(phase, part))
+
+        if not phase.errors:
+            uuid = data['object'].get('uuid', None)
+            action_id = data['object'].get('action', None)
+            action = actions.DeleteAction(
+                data.get('id', None), uuid, action_id)
+            return action, index + 1
+
     def _check_for_content_type(self, phase, part, *types):
         if not 'Content-Type' in part:
             phase.error(ActionWithoutContentTypeError(phase, part))

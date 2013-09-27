@@ -93,15 +93,18 @@ class DeleteAction(Action):
 
     """Class to represent delete actions in transactions."""
 
-    def __init__(self, id, uuid):
+    def __init__(self, id, uuid, action_id):
         Action.__init__(self, id)
         self.uuid = uuid
+        self.action_id = action_id
 
     def __eq__(self, other):
         if not isinstance(other, DeleteAction):
             return False
         else:
-            return self.id == other.id and self.uuid == other.uuid
+            return self.id == other.id \
+                and self.uuid == other.uuid \
+                and self.action_id == other.action_id
 
 
 class UpdateAction(Action):
