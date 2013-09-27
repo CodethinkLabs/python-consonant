@@ -375,6 +375,24 @@ class ActionPropertyInvalidError(ActionError):
         return 'Action defines an invalid property: %s' % self.prop
 
 
+class ActionRawPropertyDataMissingError(ActionError):
+
+    """Error for when an update raw prop action isn't followed by raw data."""
+
+    def __str__(self):
+        return 'Raw property update action is not followed by ' \
+               'raw property data: %s' % self.part.get_payload().strip()
+
+
+class ActionRawPropertyContentTypeUndefinedError(ActionError):
+
+    """Error for when raw property data is lacking a Content-Type header."""
+
+    def __str__(self):
+        return 'Raw property data following action has ' \
+               'no Content-Type header: %s' % self.part.get_payload().strip()
+
+
 class TransactionParser(object):
 
     """Parser for multipart/mixed transactions."""
@@ -410,11 +428,14 @@ class TransactionParser(object):
 
         _actions = []
         _actions.append(begin)
-        for index in range(1, len(parts)-1):
+        index = 1
+        while index < len(parts)-1:
+            old_index = index
             with ParserPhase() as _phase:
                 action, index = self._parse_other_action(
-                    _phase, index, parts[index], parts[index+1:])
+                    _phase, index, parts[index], parts)
             _actions.append(action)
+            assert index > old_index
         _actions.append(commit)
         return _actions
 
@@ -506,7 +527,7 @@ class TransactionParser(object):
                 data['committer-date'],
                 data['message'])
 
-    def _parse_other_action(self, phase, index, part, remaining_parts):
+    def _parse_other_action(self, phase, index, part, parts):
         self._check_for_content_type(
             phase, part, 'application/x-yaml', 'application/json')
 
@@ -525,10 +546,9 @@ class TransactionParser(object):
                     phase, part, data['action']))
 
         if not phase.errors:
-            return getattr(self, parse_func)(
-                phase, index, part, remaining_parts, data)
+            return getattr(self, parse_func)(phase, index, part, parts, data)
 
-    def _parse_create_action(self, phase, index, part, remaining_parts, data):
+    def _parse_create_action(self, phase, index, part, parts, data):
         if not 'class' in data:
             phase.error(ActionClassUndefinedError(phase, part))
 
@@ -547,7 +567,7 @@ class TransactionParser(object):
             action = actions.CreateAction(data.get('id', None), klass, props)
             return action, index + 1
 
-    def _parse_update_action(self, phase, index, part, remaining_parts, data):
+    def _parse_update_action(self, phase, index, part, parts, data):
         if not 'object' in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
@@ -572,7 +592,7 @@ class TransactionParser(object):
                 data.get('id', None), uuid, action_id, props)
             return action, index + 1
 
-    def _parse_delete_action(self, phase, index, part, remaining_parts, data):
+    def _parse_delete_action(self, phase, index, part, parts, data):
         if not 'object' in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
@@ -593,32 +613,47 @@ class TransactionParser(object):
             return action, index + 1
 
     def _parse_unset_raw_property_action(
-            self, phase, index, part, remaining_parts, data):
+            self, phase, index, part, parts, data):
         if not 'object' in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
-            obj = data['object']
-            if not isinstance(obj, dict):
-                phase.error(ActionObjectInvalidError(phase, part))
-            else:
-                if not 'action' in obj and not 'uuid' in obj:
-                    phase.error(ActionObjectInvalidError(phase, part))
-                elif 'action' in obj and 'uuid' in obj:
-                    phase.error(ActionObjectAmbiguousError(phase, part))
-
-            prop = data.get('property', '')
-            if not isinstance(prop, basestring):
-                phase.error(ActionPropertyNotAStringError(phase, part, prop))
-            else:
-                if not expressions.property_name.match(prop):
-                    phase.error(ActionPropertyInvalidError(phase, part, prop))
+            obj = self._load_object_or_action_reference(phase, part, data)
+            prop = self._load_raw_property_name(phase, part, data)
 
         if not phase.errors:
-            uuid = data['object'].get('uuid', None)
-            action_id = data['object'].get('action', None)
+            uuid = obj.get('uuid', None)
+            action_id = obj.get('action', None)
             action = actions.UnsetRawPropertyAction(
                 data.get('id', None), uuid, action_id, prop)
             return action, index + 1
+
+    def _parse_update_raw_property_action(
+            self, phase, index, part, parts, data):
+        if not 'object' in data:
+            phase.error(ActionObjectUndefinedError(phase, part))
+        else:
+            obj = self._load_object_or_action_reference(phase, part, data)
+            prop = self._load_raw_property_name(phase, part, data)
+
+        if index >= len(parts)-2:
+            phase.error(ActionRawPropertyDataMissingError(phase, part))
+
+        if not phase.errors:
+            raw_data_part = parts[index + 1]
+
+            if not 'Content-Type' in raw_data_part:
+                phase.error(ActionRawPropertyContentTypeUndefinedError(
+                    phase, part))
+
+        if not phase.errors:
+            uuid = obj.get('uuid', None)
+            action_id = obj.get('action', None)
+            content_type = raw_data_part['Content-Type']
+            raw_data = raw_data_part.get_payload()
+            action = actions.UpdateRawPropertyAction(
+                data.get('id', None), uuid, action_id, prop,
+                content_type, raw_data)
+            return action, index + 2
 
     def _check_for_content_type(self, phase, part, *types):
         if not 'Content-Type' in part:
@@ -639,3 +674,23 @@ class TransactionParser(object):
                 return json.loads(part.get_payload())
             except Exception, e:
                 phase.error(ActionInvalidJSONError(phase, part, e))
+
+    def _load_object_or_action_reference(self, phase, part, data):
+        obj = data['object']
+        if not isinstance(obj, dict):
+            phase.error(ActionObjectInvalidError(phase, part))
+        else:
+            if not 'action' in obj and not 'uuid' in obj:
+                phase.error(ActionObjectInvalidError(phase, part))
+            elif 'action' in obj and 'uuid' in obj:
+                phase.error(ActionObjectAmbiguousError(phase, part))
+        return obj
+
+    def _load_raw_property_name(self, phase, part, data):
+        prop = data.get('property', '')
+        if not isinstance(prop, basestring):
+            phase.error(ActionPropertyNotAStringError(phase, part, prop))
+        else:
+            if not expressions.property_name.match(prop):
+                phase.error(ActionPropertyInvalidError(phase, part, prop))
+        return prop

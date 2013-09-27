@@ -59,7 +59,8 @@ class ActionTests(unittest.TestCase):
             actions.CreateAction('foo', 'klass', []),
             actions.DeleteAction('foo', 'uuid', None),
             actions.UpdateAction('foo', 'uuid', None, []),
-            actions.UpdateRawPropertyAction('foo', 'uuid', 'p', 't', 'data'),
+            actions.UpdateRawPropertyAction(
+                'foo', 'uuid', None, 'p', 't', 'data'),
             actions.UnsetRawPropertyAction('foo', 'uuid', None, 'prop'),
             ]
 
@@ -406,19 +407,21 @@ class UpdateRawPropertyActionTests(unittest.TestCase):
         """Verify that the constructor sets the action id, uuid etc."""
 
         action = actions.UpdateRawPropertyAction(
-            'foo', '7b6b8292-7b01-4cea-87c9-6ad3b771314c',
+            'foo', '7b6b8292-7b01-4cea-87c9-6ad3b771314c', None,
             'avatar', 'image/png', 'image data')
         self.assertEqual(action.id, 'foo')
         self.assertEqual(action.uuid, '7b6b8292-7b01-4cea-87c9-6ad3b771314c')
+        self.assertEqual(action.action_id, None)
         self.assertEqual(action.property, 'avatar')
         self.assertEqual(action.content_type, 'image/png')
         self.assertEqual(action.data, 'image data')
 
         action = actions.UpdateRawPropertyAction(
-            'bar', 'e17de337-73ab-411a-9e1d-5b84e8d101f0',
+            'bar', None, 'action ID',
             'patch', 'text/plain', 'patch content')
         self.assertEqual(action.id, 'bar')
-        self.assertEqual(action.uuid, 'e17de337-73ab-411a-9e1d-5b84e8d101f0')
+        self.assertEqual(action.uuid, None)
+        self.assertEqual(action.action_id, 'action ID')
         self.assertEqual(action.property, 'patch')
         self.assertEqual(action.content_type, 'text/plain')
         self.assertEqual(action.data, 'patch content')
@@ -426,31 +429,55 @@ class UpdateRawPropertyActionTests(unittest.TestCase):
     def test_equal_update_raw_property_actions_are_equal(self):
         """Verify that equal update raw property actions are equal."""
 
-        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd')
-        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd')
+        action1 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'p', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'p', 't', 'd')
+        self.assertEqual(action1, action2)
+
+        action1 = actions.UpdateRawPropertyAction(
+            'id', None, 'action', 'p', 't', 'd')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', None, 'action', 'p', 't', 'd')
         self.assertEqual(action1, action2)
 
     def test_different_update_raw_property_actions_are_different(self):
         """Verify that different update raw property actions are different."""
 
-        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd1')
-        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't', 'd2')
+        action1 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property', 'content-type', 'data1')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property', 'content-type', 'data2')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't1', 'd')
-        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p', 't2', 'd')
+        action1 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property', 'content-type1', 'data')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property', 'content-type2', 'data')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateRawPropertyAction('id', 'uuid', 'p1', 't', 'd')
-        action2 = actions.UpdateRawPropertyAction('id', 'uuid', 'p2', 't', 'd')
+        action1 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property1', 'content-type', 'data')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', 'uuid', None, 'property2', 'content-type', 'data')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateRawPropertyAction('id', 'uuid1', 'p', 't', 'd')
-        action2 = actions.UpdateRawPropertyAction('id', 'uuid2', 'p', 't', 'd')
+        action1 = actions.UpdateRawPropertyAction(
+            'id', 'uuid1', None, 'property', 'content-type', 'data')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', 'uuid2', None, 'property', 'content-type', 'data')
         self.assertFalse(action1 == action2)
 
-        action1 = actions.UpdateRawPropertyAction('id1', 'uuid', 'p', 't', 'd')
-        action2 = actions.UpdateRawPropertyAction('id2', 'uuid', 'p', 't', 'd')
+        action1 = actions.UpdateRawPropertyAction(
+            'id1', 'uuid', None, 'property', 'content-type', 'data')
+        action2 = actions.UpdateRawPropertyAction(
+            'id2', 'uuid', None, 'property', 'content-type', 'data')
+        self.assertFalse(action1 == action2)
+
+        action1 = actions.UpdateRawPropertyAction(
+            'id', None, 'action1', 'property', 'content-type', 'data')
+        action2 = actions.UpdateRawPropertyAction(
+            'id', None, 'action2', 'property', 'content-type', 'data')
         self.assertFalse(action1 == action2)
 
 

@@ -131,9 +131,10 @@ class UpdateRawPropertyAction(Action):
 
     """Class to represent update-raw-property actions in transactions."""
 
-    def __init__(self, id, uuid, property, content_type, data):
+    def __init__(self, id, uuid, action_id, property, content_type, data):
         Action.__init__(self, id)
         self.uuid = uuid
+        self.action_id = action_id
         self.property = property
         self.content_type = content_type
         self.data = data
@@ -144,6 +145,7 @@ class UpdateRawPropertyAction(Action):
         else:
             return self.id == other.id \
                 and self.uuid == other.uuid \
+                and self.action_id == other.action_id \
                 and self.property == other.property \
                 and self.content_type == other.content_type \
                 and self.data == other.data

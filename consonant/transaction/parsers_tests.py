@@ -209,7 +209,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 target: refs/heads/master
 author: Samuel Bartlett <samuel@yourproject.org>
@@ -325,7 +325,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 author: Samuel Bartlett <samuel@yourproject.org>
@@ -361,7 +361,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: [1, 2]
@@ -395,7 +395,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -422,7 +422,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -458,7 +458,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -487,7 +487,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -523,7 +523,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -552,7 +552,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -588,7 +588,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -617,7 +617,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -653,7 +653,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -689,7 +689,7 @@ Content-Type: application/x-yaml
 action: begin
 source: 8c1abcdc914e174d040e151015aecc89445fa110
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -723,7 +723,7 @@ source: 8c1abcdc914e174d040e151015aecc89445fa110
 
 action: foo
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -760,7 +760,7 @@ Content-Type: application/x-yaml
 
 ,,,,foo
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -794,7 +794,7 @@ Content-Type: application/x-yaml
 
 foo: bar
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -828,7 +828,7 @@ Content-Type: application/x-yaml
 
 action: foo
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -867,7 +867,7 @@ action: create
 properties:
   title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -904,7 +904,7 @@ class: foo bar
 properties:
     title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -940,7 +940,7 @@ action: create
 class: card
 properties: a string
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -970,7 +970,7 @@ class: card
 properties:
     title: xyz
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1021,7 +1021,7 @@ action: update
 properties:
   title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1062,7 +1062,7 @@ object: foo
 properties:
   title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1102,7 +1102,7 @@ object:
 properties:
   title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1148,7 +1148,7 @@ object:
 properties:
   title: Some title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1185,7 +1185,7 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 properties: hello
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1216,7 +1216,7 @@ object:
 properties:
   title: xyz
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1264,7 +1264,7 @@ Content-Type: application/x-yaml
 
 action: delete
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1301,7 +1301,7 @@ Content-Type: application/x-yaml
 action: delete
 object: foo
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1337,7 +1337,7 @@ action: delete
 object:
   foo: bar
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1379,7 +1379,7 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
   action: 1
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1408,7 +1408,7 @@ action: delete
 object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1457,7 +1457,7 @@ Content-Type: application/x-yaml
 action: unset-raw-property
 property: title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1496,7 +1496,7 @@ action: unset-raw-property
 object: foo
 property: title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1534,7 +1534,7 @@ object:
   foo: bar
 property: title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1578,7 +1578,7 @@ object:
   action: 1
 property: title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1615,7 +1615,7 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 property: 12345
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1652,7 +1652,7 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 property: 123-foo
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1682,7 +1682,7 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 property: title
 --CONSONANT
-Content-type: application/x-yaml
+Content-Type: application/x-yaml
 
 action: commit
 target: refs/heads/master
@@ -1699,6 +1699,394 @@ message: hello
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))
         self.assertEqual(t.actions[1], actions.UnsetRawPropertyAction(
             None, '505aca2c-9892-4da6-943d-f3e869f6fbee', None, 'title'))
+        self.assertEqual(t.actions[2], actions.CommitAction(
+            None, 'refs/heads/master',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
+            'hello'))
+
+    def test_parsing_fails_if_an_update_raw_prop_defines_no_object(self):
+        """Verify parsing fails if a update raw action defines no object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectUndefinedError: '
+            'Action defines no object: '
+            'action: update-raw-property\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_has_an_invalid_object(self):
+        """Verify parsing fails if an update raw action has invalid object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: update-raw-property\n'
+            'object: foo\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object: foo
+property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectInvalidError: '
+            'Action does not refer to an object via a UUID or an action ID: '
+            'action: update-raw-property\n'
+            'object:\n'
+            '  foo: bar\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  foo: bar
+property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_has_an_ambiguous_object(self):
+        """Verify parsing fails if a update raw action has ambiguous object."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionObjectAmbiguousError: '
+            'Action refers to an object via a UUID and '
+            'action ID at the same time: '
+            'action: update-raw-property\n'
+            'object:\n'
+            '  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee\n'
+            '  action: 1\n'
+            'property: title'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+  action: 1
+property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_has_non_string_property(self):
+        """Verify parsing fails if a update raw prop act has non-str prop."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionPropertyNotAStringError: '
+            'Action defines a non-string property: 12345'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: 12345
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_has_an_invalid_property(self):
+        """Verify parsing fails if a update raw prop act has invalid prop."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionPropertyInvalidError: '
+            'Action defines an invalid property: 123-foo'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: 123-foo
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_has_no_property_data(self):
+        """Verify parsing fails if an update raw prop act has no prop data."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionRawPropertyDataMissingError: '
+            'Raw property update action is not followed by raw property data: '
+            'action: update-raw-property\n'
+            'object:\n'
+            '  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee\n'
+            'property: avatar'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: avatar
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_raw_property_data_has_no_content_type(self):
+        """Verify parsing fails if raw property data has no content type."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'ActionRawPropertyContentTypeUndefinedError: '
+            'Raw property data following action has no Content-Type header: '
+            'action: update-raw-property\n'
+            'object:\n'
+            '  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee\n'
+            'property: avatar'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: avatar
+--CONSONANT
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_a_transaction_with_an_update_raw_prop_action_works(self):
+        """Verify parsing a transaction with an update raw action works."""
+
+        t = self.parser.parse('''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
+property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertEqual(len(t.actions), 3)
+        self.assertEqual(t.actions[0], actions.BeginAction(
+            None, '8c1abcdc914e174d040e151015aecc89445fa110'))
+        self.assertEqual(t.actions[1], actions.UpdateRawPropertyAction(
+            None, '505aca2c-9892-4da6-943d-f3e869f6fbee', None, 'title',
+            'image/png', 'PNG IMAGE DATA'))
         self.assertEqual(t.actions[2], actions.CommitAction(
             None, 'refs/heads/master',
             'Samuel Bartlett <samuel@yourproject.org>', '1379947345 +0100',
