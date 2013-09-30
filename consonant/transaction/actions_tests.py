@@ -161,6 +161,68 @@ class CommitActionTests(unittest.TestCase):
         self.assertEqual(action.committer_date, '1374782771 +0100')
         self.assertEqual(action.message, 'This is a different commit message')
 
+    def test_author_signature_matches_author_and_author_date(self):
+        """Verify that the author signature matches author and author date."""
+
+        action = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a commit message')
+        signature = action.author_signature()
+
+        self.assertEqual(signature.name, 'Aidan Wilkins')
+        self.assertEqual(signature.email, 'aidan@yourproject.org')
+        self.assertEqual(signature.time, 1376405234)
+        self.assertEqual(signature.offset, 60)
+
+        action = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 -0100',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'This is a commit message')
+        signature = action.author_signature()
+
+        self.assertEqual(signature.name, 'Jeff Arnold')
+        self.assertEqual(signature.email, 'jeff@yourproject.org')
+        self.assertEqual(signature.time, 1374782771)
+        self.assertEqual(signature.offset, -60)
+
+    def test_committer_signature_matches_committer_and_committer_date(self):
+        """Verify that the committer signature matches committer name/date."""
+
+        action = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 +0100',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 +0100',
+            'This is a commit message')
+        signature = action.committer_signature()
+
+        self.assertEqual(signature.name, 'Jeff Arnold')
+        self.assertEqual(signature.email, 'jeff@yourproject.org')
+        self.assertEqual(signature.time, 1374782771)
+        self.assertEqual(signature.offset, 60)
+
+        action = actions.CommitAction(
+            'bar', 'refs/heads/user/branch',
+            'Jeff Arnold <jeff@yourproject.org>',
+            '1374782771 -0100',
+            'Aidan Wilkins <aidan@yourproject.org>',
+            '1376405234 -0100',
+            'This is a commit message')
+        signature = action.committer_signature()
+
+        self.assertEqual(signature.name, 'Aidan Wilkins')
+        self.assertEqual(signature.email, 'aidan@yourproject.org')
+        self.assertEqual(signature.time, 1376405234)
+        self.assertEqual(signature.offset, -60)
+
     def test_equal_commit_actions_are_equal(self):
         """Verify that equal commit actions are equal."""
 

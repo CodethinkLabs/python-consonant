@@ -57,20 +57,26 @@ class Timestamp(yaml.YAMLObject):
         tzinfo = Timezone(offset)
         self.value = datetime.datetime.fromtimestamp(float(time), tzinfo)
 
+    def seconds(self):
+        """Return the time in seconds."""
+        return calendar.timegm(self.value.utctimetuple())
+
+    def offset(self):
+        """Return the offset from UTC."""
+        return self.value.tzinfo.offset
+
     @classmethod
     def from_raw(cls, value):
         """Parse a raw string representation("%s %z"), return a Timestamp."""
 
         ts, tz = value.split()
         tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
-        return Timestamp(ts, tz_offset)
+        return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
 
     def raw(self):
         """Return a raw string representation ("%s %z") of the timestamp."""
 
-        return '%s %s' % (
-            calendar.timegm(self.value.utctimetuple()),
-            self.value.tzinfo.tzname(self.value))
+        return '%s %s' % (self.seconds(), self.value.tzinfo.tzname(self.value))
 
     @classmethod
     def to_yaml(cls, dumper, timestamp):

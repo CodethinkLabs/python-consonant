@@ -19,4 +19,5 @@
 
 
 import expressions
+import git
 import phase

@@ -69,6 +69,7 @@ class TimestampTests(unittest.TestCase):
         """Initialise helper variables for the tests."""
 
         tz = timestamps.Timezone(60)
+        tz1 = timestamps.Timezone(-60)
         self.timestamps = [
             ((1377170684, 60), '1377170684 +0100',
              datetime.datetime(2013, 8, 22, 12, 24, 44, 0, tz)),
@@ -76,8 +77,8 @@ class TimestampTests(unittest.TestCase):
             ((1375287273, 60), '1375287273 +0100',
              datetime.datetime(2013, 7, 31, 17, 14, 33, 0, tz)),
 
-            ((1375199863, 60), '1375199863 +0100',
-             datetime.datetime(2013, 7, 30, 16, 57, 43, 0, tz)),
+            ((1375199863, -60), '1375199863 -0100',
+             datetime.datetime(2013, 7, 30, 14, 57, 43, 0, tz1)),
 
             ((1374578024, 60), '1374578024 +0100',
              datetime.datetime(2013, 7, 23, 12, 13, 44, 0, tz)),
@@ -103,6 +104,17 @@ class TimestampTests(unittest.TestCase):
             self.assertEqual(timestamps.Timestamp.from_raw(raw).raw(), raw)
             self.assertEqual(timestamps.Timestamp.from_raw(raw).value,
                              datetime_value)
+
+    def test_seconds_and_offset_methods_return_correct_values(self):
+        """Verify that the seconds() and offset() methods are correct."""
+
+        ts1 = timestamps.Timestamp.from_raw('1234 +0100')
+        self.assertEqual(ts1.seconds(), 1234)
+        self.assertEqual(ts1.offset(), 60)
+
+        ts2 = timestamps.Timestamp.from_raw('94039450 -0200')
+        self.assertEqual(ts2.seconds(), 94039450)
+        self.assertEqual(ts2.offset(), -120)
 
     def test_equality_operator_is_correct(self):
         """Verify that the __eq__ operator is correct."""

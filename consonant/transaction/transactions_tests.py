@@ -66,6 +66,76 @@ class TransactionTests(unittest.TestCase):
 
         self.assertFalse(transactions.Transaction([]) == [])
 
+    def test_begin_action_matches_first_action(self):
+        """Verify that equal transactions are equal."""
+
+        transaction1 = transactions.Transaction([
+            actions.BeginAction(
+                '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '3', 'refs/heads/master',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        self.assertEqual(transaction1.begin(), transaction1.actions[0])
+
+        transaction2 = transactions.Transaction([
+            actions.BeginAction(
+                'foo', 'ab8465d7b4b3ee5929d8a1b5df854fb21552f5c5'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '3', 'refs/heads/master',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        self.assertEqual(transaction2.begin(), transaction2.actions[0])
+
+    def test_commit_action_matches_first_action(self):
+        """Verify that equal transactions are equal."""
+
+        transaction1 = transactions.Transaction([
+            actions.BeginAction(
+                '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '3', 'refs/heads/master',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        self.assertEqual(transaction1.commit(), transaction1.actions[2])
+
+        transaction2 = transactions.Transaction([
+            actions.BeginAction(
+                '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
+            actions.UpdateAction(
+                '2', 'e03debd2-b1e5-459c-9ca6-2b91c8c8217e', None, [
+                    properties.TextProperty('title', 'new title')
+                    ]),
+            actions.CommitAction(
+                '2', 'refs/heads/yourbranch',
+                'author', '1379682134 +0100',
+                'committer', '1379683379 +0100',
+                'message'),
+            ])
+
+        self.assertEqual(transaction2.commit(), transaction2.actions[2])
+
     def test_equal_transactions_are_equal(self):
         """Verify that equal transactions are equal."""
 

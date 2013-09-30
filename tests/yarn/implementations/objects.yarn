@@ -22,6 +22,15 @@ Fetch objects from a store
 
     fail_unknown_api
 
+    IMPLEMENTS WHEN fetching objects from the latest commit
+
+    run_consonant_store <<-EOF
+    ref = store.ref('refs/heads/master')
+    print yaml.dump(store.objects(ref.head))
+    EOF
+
+    fail_unknown_api
+
 Verify that the result contains objects of a given number of classes
 --------------------------------------------------------------------
 

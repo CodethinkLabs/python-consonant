@@ -15,28 +15,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes for representing transactions."""
+"""Helper utilities to work with Git."""
 
 
-class Transaction(object):
+import subprocess
 
-    """Class to represent a transaction."""
 
-    def __init__(self, actions):
-        self.actions = actions
+def subcommand(repo, command, **kwargs):
+    """Run a git subcommand in a local repository and return its output."""
 
-    def begin(self):
-        """Return the begin action of the transaction."""
+    if not 'cwd' in kwargs:
+        kwargs['cwd'] = repo.path
 
-        return self.actions[0]
-
-    def commit(self):
-        """Return the commit action of the transaction."""
-
-        return self.actions[-1]
-
-    def __eq__(self, other):
-        if not isinstance(other, Transaction):
-            return False
-        else:
-            return self.actions == other.actions
+    return subprocess.check_output(['git'] + command, **kwargs)

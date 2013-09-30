@@ -18,6 +18,12 @@
 """Classes for representing actions in transactions."""
 
 
+import pygit2
+
+from consonant.store import timestamps
+from consonant.util import expressions
+
+
 class Action(object):
 
     """Class to represent an action of a transaction."""
@@ -57,6 +63,24 @@ class CommitAction(Action):
         self.committer = committer
         self.committer_date = committer_date
         self.message = message
+
+    def author_signature(self):
+        """Return a pygit2.Signature for the commit's author name/date."""
+
+        match = expressions.commit_author.match(self.author)
+        name, email = match.groups()
+        timestamp = timestamps.Timestamp.from_raw(self.author_date)
+        time, offset = timestamp.seconds(), timestamp.offset()
+        return pygit2.Signature(name, email, time, offset)
+
+    def committer_signature(self):
+        """Return a pygit2.Signature for the commit's committer name/date."""
+
+        match = expressions.commit_author.match(self.committer)
+        name, email = match.groups()
+        timestamp = timestamps.Timestamp.from_raw(self.committer_date)
+        time, offset = timestamp.seconds(), timestamp.offset()
+        return pygit2.Signature(name, email, time, offset)
 
     def __eq__(self, other):
         if not isinstance(other, CommitAction):

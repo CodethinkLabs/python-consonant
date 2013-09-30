@@ -66,8 +66,12 @@ class Service(object):  # pragma: no cover
         """Create a new Git ref in the store."""
         raise NotImplementedError
 
-    def create_commit(self, transaction, ref=None, parent=None):
+    def prepare_transaction(self, transaction):
         """Create a new commit in the store from a transaction."""
+        raise NotImplementedError
+
+    def commit_transaction(self, transaction, commit, validator):
+        """Validate a transaction and merge it into its target ref."""
         raise NotImplementedError
 
     def sync(self):

@@ -8,5 +8,6 @@ consonant/store/__init__.py
 consonant/store/local.py
 consonant/store/remote.py
 consonant/transaction/__init__.py
+consonant/transaction/validation.py
 consonant/util/__init__.py
 consonant/util/expressions.py

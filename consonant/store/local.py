@@ -23,6 +23,7 @@ import urllib2
 import yaml
 
 from consonant import schema
+from consonant import util
 from consonant.service import services
 from consonant.store import git, objects, properties, references, timestamps
 
@@ -275,3 +276,51 @@ class LocalStore(services.Service):
             value = getattr(self, element_func)(prop_def.elements, raw_value)
             values.append(value)
         return properties.ReferenceProperty(prop_def.name, values)
+
+    def prepare_transaction(self, transaction):
+        """Create a new commit from a transaction and return it."""
+
+        # obtain the tree of the source commit the transaction is based on
+        source = self.commit(transaction.begin().source)
+        source_object = self.repo[source.sha1]
+        source_tree = source_object.tree
+
+        # apply all actions of the transaction
+        tree_after = self._apply_actions(transaction, source, source_tree)
+
+        # create a commit for the resulting tree
+        commit_object = self.repo.create_commit(
+            None,
+            transaction.commit().author_signature(),
+            transaction.commit().committer_signature(),
+            transaction.commit().message,
+            tree_after.oid,
+            [source_object.oid])
+
+        # return a commit object for the transaction commit
+        return self.commit(commit_object.hex)
+
+    def _apply_actions(self, transaction, commit, tree):
+        return tree
+
+    def commit_transaction(self, transaction, commit, validator):
+        """Validate a transaction and merge it into its target ref."""
+
+        # first, validate the commit
+        if validator.validate(self, commit):
+            # obtain the head commit SHA1 (and short SHA1) of the target ref
+            ref = self.ref(transaction.commit().target)
+            sha1s = (ref.head.sha1, ref.head.sha1[:8])
+
+            # check if the target ref hasn't moved on since
+            # we started the transaction
+            if transaction.begin().source in sha1s:
+                # it hasn't changed, attempt to just update the ref from the
+                # source commit to the transaction commit; if this fails,
+                # we'll just throw an exception and give up
+                util.git.subcommand(
+                    self.repo,
+                    ['update-ref', transaction.commit().target,
+                     commit.sha1, transaction.begin().source])
+            else:
+                raise NotImplementedError
