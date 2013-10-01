@@ -38,6 +38,17 @@ Define a create action
     action: create
     EOF
 
+Define an update action
+----------------------
+
+    IMPLEMENTS WHEN defining an update action
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    --CONSONANT
+    Content-Type: application/x-yaml
+
+    action: update
+    EOF
+
 Define object properties
 ------------------------
 
@@ -49,10 +60,20 @@ Define object properties
 Setting fields of the current transaction action
 ------------------------------------------------
 
-    IMPLEMENTS WHEN setting the action (.+) to "(.+)"
+    IMPLEMENTS WHEN setting the action ([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]) to "(.+)"
 
     cat <<-EOF >> $DATADIR/transaction.yaml
     $MATCH_1: $MATCH_2
+    EOF
+
+Setting the target object of an action
+--------------------------------------
+
+    IMPLEMENTS WHEN setting the action target object to "(.+)"
+
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    object:
+        $MATCH_1
     EOF
 
 Setting object text properties
@@ -80,7 +101,27 @@ Submitting a transaction
 
     fail_unknown_api
 
+Submitting an invalid transaction
+---------------------------------
+
     IMPLEMENTS WHEN submitting the invalid transaction
+
+    cat $DATADIR/transaction.yaml
+
+    run_consonant_store <<-EOF || true
+    parser = consonant.transaction.parsers.TransactionParser()
+    transaction = parser.parse(open('transaction.yaml'))
+    validator = consonant.transaction.validation.CommitValidator()
+    commit = store.prepare_transaction(transaction)
+    store.commit_transaction(transaction, commit, validator)
+    EOF
+
+    fail_unknown_api
+
+Submitting a transaction based on a non-existent commit
+-------------------------------------------------------
+
+    IMPLEMENTS WHEN submitting the transaction based on the non-existent commit
 
     cat $DATADIR/transaction.yaml
 
