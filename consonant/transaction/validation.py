@@ -18,6 +18,35 @@
 """Classes for validating the results of a transaction."""
 
 
+class ValidationError(Exception):
+
+    """An error occuring in the apply/validation phase of transactions."""
+
+    pass
+
+
+class ActionValidationError(ValidationError):
+
+    """An error ocurring while applying/validating an action."""
+
+    def __init__(self, action, schema):
+        self.action = action
+        self.schema = schema
+
+
+class ActionClassUnknownError(ActionValidationError):
+
+    """Exception for when an action refers to a class not in a schema."""
+
+    def __init__(self, action, schema, klass):
+        ActionValidationError.__init__(self, action, schema)
+        self.klass = klass
+
+    def __str__(self):
+        return 'Action refers to class unknown in schema "%s": %s' % (
+            self.schema.name, self.klass)
+
+
 class ValidationHook(object):
 
     """A hook to register with CommitValidator for extra validation."""

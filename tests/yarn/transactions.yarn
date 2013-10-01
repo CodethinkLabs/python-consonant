@@ -73,3 +73,136 @@ the objects have changed:
     AND      the object "633715b8-70ea-4b06-94c6-43ee83a8df9e" has exactly 2 properties set
     AND      the property "title" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" is set to "Write tests for feature C"
     AND      the property "lane" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+Apply a valid transaction that creates a new object
+---------------------------------------------------
+
+Apply a valid transaction that creates a new object and verify that
+afterwards this object exists and no other objects were modified.
+
+    SCENARIO apply a transaction that creates a new object
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining a create action
+    AND      setting the action class to "lane"
+    AND      defining object properties
+    AND      setting the object text property title to "New Lane"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Modify no objects"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit
+
+    THEN     the result contains objects of exactly 2 classes
+
+    AND      the result contains exactly 3 objects of class "lane"
+
+    AND      the objects of class "lane" include "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the objects of class "lane" include "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the result contains exactly 6 objects of class "card"
+
+    AND      the objects of class "card" include "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the objects of class "card" include "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the objects of class "card" include "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the objects of class "card" include "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the objects of class "card" include "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the objects of class "card" include "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+
+    AND      the object "27519b8d-8ad8-4558-8ea2-f128404e6f58" has exactly 2 properties set
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+
+    AND      the object "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" has exactly 2 properties set
+    AND      the property "title" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" is set to "Doing"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" contains exactly 3 elements
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      the property "cards" of "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527" includes the object "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+
+    AND      the newly created object has exactly 1 properties set
+    AND      the property "title" of the newly created object is set to "New Lane"
+
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 2 properties set
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "7501f1f4-e357-4af4-b5ff-546fae3f25f4" has exactly 2 properties set
+    AND      the property "title" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" is set to "Write tests for feature A"
+    AND      the property "lane" of "7501f1f4-e357-4af4-b5ff-546fae3f25f4" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object "86ab9538-3926-42ff-9fc7-e122a006cd4d" has exactly 2 properties set
+    AND      the property "title" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" is set to "Implement feature B"
+    AND      the property "lane" of "86ab9538-3926-42ff-9fc7-e122a006cd4d" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "dd7ff995-eba8-46e0-93d4-7297a691919e" is set to "Implement feature C"
+    AND      the property "lane" of "dd7ff995-eba8-46e0-93d4-7297a691919e" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+    AND      the object "dd7ff995-eba8-46e0-93d4-7297a691919e" has exactly 2 properties set
+    AND      the property "title" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" is set to "Write tests for feature B"
+    AND      the property "lane" of "efb3c4e5-3ee0-4171-bddd-a56e9b0765cd" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    AND      the object "633715b8-70ea-4b06-94c6-43ee83a8df9e" has exactly 2 properties set
+    AND      the property "title" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" is set to "Write tests for feature C"
+    AND      the property "lane" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+Apply an invalid transaction that creates a new object of a non-existent class
+------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that creates a new object of a non-existent class
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining a create action
+    AND      setting the action class to "bucket"
+    AND      defining object properties
+    AND      setting the object text property title to "Bucket 1"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Modify no objects"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction that creates a new object with a non-existent property
+-----------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that creates a new object with a non-existent property
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining a create action
+    AND      setting the action class to "card"
+    AND      defining object properties
+    AND      setting the object text property nonexistentproperty to "Hello"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Modify no objects"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction that modifies a raw property in a create action
+----------------------------------------------------------------------------
+
+TODO - the example schema has no raw property definitions yet, so we
+cannot test this at the moment.
+
+Apply an invalid transaction that creates a new object that references a non-existent object
+--------------------------------------------------------------------------------------------
+
+TODO - the example schema only has bidirectional references. To create
+an object that references another, we have to not just have an
+implementation of create but also of update actions.

@@ -130,6 +130,21 @@ EOF
 }
 
 
+created_objects()
+{
+    cd $DATADIR/test-store
+
+    OLD_OBJECTS=$(git ls-tree -r master~1 | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+    NEW_OBJECTS=$(git ls-tree -r master   | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+
+    python /dev/stdin <<-EOF
+old_objects = set("$OLD_OBJECTS".split())
+new_objects = set("$NEW_OBJECTS".split())
+print list(new_objects - old_objects)
+EOF
+}
+
+
 test_for_exception()
 {
     cat $DATADIR/stderr

@@ -19,13 +19,18 @@
 
 
 import pygit2
+import re
 import urllib2
+import uuid
 import yaml
 
 from consonant import schema
 from consonant import util
+from consonant.schema import definitions
 from consonant.service import services
 from consonant.store import git, objects, properties, references, timestamps
+from consonant.transaction import validation
+from consonant.util.phase import Phase
 
 
 class LocalStore(services.Service):
@@ -37,6 +42,11 @@ class LocalStore(services.Service):
         self.register = register
         self.repo = pygit2.Repository(url)
         self.cache = None
+
+    def generate_uuid(self, commit, klass):
+        """Generate and return a random ID for a new object."""
+
+        return uuid.uuid4().hex
 
     def refs(self):
         """Return a set of Ref objects for all Git refs in the store."""
@@ -280,28 +290,8 @@ class LocalStore(services.Service):
     def prepare_transaction(self, transaction):
         """Create a new commit from a transaction and return it."""
 
-        # obtain the tree of the source commit the transaction is based on
-        source = self.commit(transaction.begin().source)
-        source_object = self.repo[source.sha1]
-        source_tree = source_object.tree
-
-        # apply all actions of the transaction
-        tree_after = self._apply_actions(transaction, source, source_tree)
-
-        # create a commit for the resulting tree
-        commit_object = self.repo.create_commit(
-            None,
-            transaction.commit().author_signature(),
-            transaction.commit().committer_signature(),
-            transaction.commit().message,
-            tree_after.oid,
-            [source_object.oid])
-
-        # return a commit object for the transaction commit
-        return self.commit(commit_object.hex)
-
-    def _apply_actions(self, transaction, commit, tree):
-        return tree
+        preparer = TransactionPreparer(self, transaction)
+        return preparer.prepare_transaction()
 
     def commit_transaction(self, transaction, commit, validator):
         """Validate a transaction and merge it into its target ref."""
@@ -324,3 +314,115 @@ class LocalStore(services.Service):
                      commit.sha1, transaction.begin().source])
             else:
                 raise NotImplementedError
+
+
+class TransactionPreparer(object):
+
+    """Prepares a transaction by creating a commit with its changes."""
+
+    def __init__(self, store, transaction):
+        self.store = store
+        self.transaction = transaction
+
+    def prepare_transaction(self):
+        """Create and return a commit with all changes from the transaction."""
+
+        # obtain the tree of the source commit the transaction is based on
+        source = self.store.commit(self.transaction.begin().source)
+        source_object = self.store.repo[source.sha1]
+        source_tree = source_object.tree
+
+        # load the schema of the commit
+        schema = self.store.schema(source)
+
+        # apply all actions of the transaction
+        tree_after = self._apply_actions(source, schema, source_tree)
+
+        # create a commit for the resulting tree
+        commit_object = self.store.repo.create_commit(
+            None,
+            self.transaction.commit().author_signature(),
+            self.transaction.commit().committer_signature(),
+            self.transaction.commit().message,
+            tree_after.oid,
+            [source_object.oid])
+
+        # return a commit object for the transaction commit
+        return self.store.commit(commit_object.hex)
+
+    def _apply_actions(self, commit, schema, tree):
+        for action in self.transaction.actions[1:-1]:
+            tree = self._apply_action(action, commit, schema, tree)
+        return tree
+
+    def _apply_action(self, action, commit, schema, tree):
+        class_name = action.__class__.__name__
+        normalised_name = class_name.replace('Action', '')
+        normalised_name = re.sub(r'.+([A-Z])', r'_\1', normalised_name)
+        normalised_name = normalised_name.lower()
+        apply_func = '_apply_%s_action' % normalised_name
+        return getattr(self, apply_func)(action, commit, schema, tree)
+
+    def _apply_create_action(self, action, commit, schema, tree):
+        # make sure the class of the new object is known in the schema
+        self._validate_object_class(action, action.klass, schema)
+
+        with Phase() as phase:
+            # make sure properties to be set exist in the new object's class
+            self._validate_object_properties(action, schema, phase)
+
+            # make sure none of the properties to set are raw properties
+            # as we have separate actions for them
+            self._validate_object_properties_not_raw(action, schema, phase)
+
+        class_entry = tree[action.klass]
+        class_tree = self.store.repo[class_entry.oid]
+
+        uuid = self.store.generate_uuid(commit, action.klass)
+        object_tree = self._create_object_tree(uuid, action.properties)
+
+        # build new class tree with the object added
+        builder = self.store.repo.TreeBuilder(class_tree)
+        builder.insert(uuid, object_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        new_class_oid = builder.write()
+
+        # build and return a new overall store tree
+        builder = self.store.repo.TreeBuilder(tree)
+        builder.insert(action.klass, new_class_oid, pygit2.GIT_FILEMODE_TREE)
+        tree_oid = builder.write()
+        return self.store.repo[tree_oid]
+
+    def _validate_object_class(self, action, klass, schema):
+        if not klass in schema.classes:
+            raise validation.ActionClassUnknownError(action, schema, klass)
+
+    def _validate_object_properties(self, action, schema, phase):
+        for prop_name in action.properties.iterkeys():
+            if not prop_name in schema.classes[action.klass].properties:
+                phase.error(validation.ActionPropertyUnknownError(
+                    action, schema, prop_name))
+
+    def _validate_object_properties_not_raw(self, action, schema, phase):
+        for prop_name in action.properties.iterkeys():
+            if prop_name in schema.classes[action.klass].properties:
+                prop = schema.classes[action.klass].properties[prop_name]
+                if isinstance(prop, definitions.RawPropertyDefinition):
+                    phase.error(validation.ActionIllegalRawPropertyChangeError(
+                        action, schema, prop_name))
+
+    def _create_object_tree(self, uuid, properties):
+        # generate YAML data to write into <class>/<uuid>/properties.yaml
+        data = {}
+        for prop_name, prop in properties.iteritems():
+            data[prop_name] = prop.value
+        yaml_data = yaml.dump(
+            data, Dumper=yaml.CDumper, default_flow_style=False)
+
+        # generate the properties.yaml blob
+        blob_oid = self.store.repo.create_blob(yaml_data)
+
+        # generate and return the object tree
+        builder = self.store.repo.TreeBuilder()
+        builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        tree_oid = builder.write()
+        return self.store.repo[tree_oid]
