@@ -148,5 +148,5 @@ EOF
 test_for_exception()
 {
     cat $DATADIR/stderr
-    grep "^[a-zA-Z0-9_\.]*$MATCH_1" $DATADIR/stderr
+    grep "^[a-zA-Z0-9_\.: ]*$MATCH_1" $DATADIR/stderr
 }

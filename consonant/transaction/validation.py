@@ -47,6 +47,21 @@ class ActionClassUnknownError(ActionValidationError):
             self.schema.name, self.klass)
 
 
+class ActionPropertyUnknownError(ActionValidationError):
+
+    """Exception for when an action refers to a class not in a schema."""
+
+    def __init__(self, action, schema, klass, property_name):
+        ActionValidationError.__init__(self, action, schema)
+        self.klass = klass
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Action refers to unknown property in schema "%s" ' \
+               'and class "%s": %s' % \
+               (self.schema.name, self.klass, self.property_name)
+
+
 class ValidationHook(object):
 
     """A hook to register with CommitValidator for extra validation."""

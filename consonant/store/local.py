@@ -400,7 +400,7 @@ class TransactionPreparer(object):
         for prop_name in action.properties.iterkeys():
             if not prop_name in schema.classes[action.klass].properties:
                 phase.error(validation.ActionPropertyUnknownError(
-                    action, schema, prop_name))
+                    action, schema, action.klass, prop_name))
 
     def _validate_object_properties_not_raw(self, action, schema, phase):
         for prop_name in action.properties.iterkeys():
@@ -408,7 +408,7 @@ class TransactionPreparer(object):
                 prop = schema.classes[action.klass].properties[prop_name]
                 if isinstance(prop, definitions.RawPropertyDefinition):
                     phase.error(validation.ActionIllegalRawPropertyChangeError(
-                        action, schema, prop_name))
+                        action, schema, action.klass, prop_name))
 
     def _create_object_tree(self, uuid, properties):
         # generate YAML data to write into <class>/<uuid>/properties.yaml
