@@ -134,3 +134,14 @@ Submitting a transaction based on a non-existent commit
     EOF
 
     fail_unknown_api
+
+Verify that a transaction only affects a certain number of objects
+------------------------------------------------------------------
+
+    IMPLEMENTS THEN the transaction affects exactly ([0-9]+) objects?
+
+    CHANGED_OBJECTS=$(changed_objects)
+    run_python_test <<-EOF
+    changed_objects = eval("$CHANGED_OBJECTS")
+    assert len(changed_objects) == $MATCH_1
+    EOF

@@ -145,6 +145,17 @@ EOF
 }
 
 
+
+changed_objects()
+{
+    cd $DATADIR/test-store
+    CHANGED_OBJECTS=$(git diff --name-only master~1..master | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+    python /dev/stdin <<-EOF
+print list("$CHANGED_OBJECTS".split())
+EOF
+}
+
+
 test_for_exception()
 {
     cat $DATADIR/stderr
