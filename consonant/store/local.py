@@ -484,17 +484,19 @@ class TransactionPreparer(object):
                 for obj in class_objects:
                     if obj.uuid == action.uuid:
                         return obj
-            raise validation.ActionReferencesNonExistentObject(action, schema)
+            raise validation.ActionReferencesANonExistentObjectError(
+                action, schema, action.uuid)
 
     def _validate_and_resolve_target_action(self, action):
         actions = \
             [a for a in self.transaction.actions if a.id == action.action_id]
         if not actions:
-            raise validation.ActionReferenceNonExistentActionError(
-                action, schema)
+            raise validation.ActionReferencesANonExistentActionError(
+                action, schema, action.action_id)
         target_action = actions[0]
         if not target_action in self.action_objects:
-            raise validation.ActionReferencesLaterActionError(action, schema)
+            raise validation.ActionReferencesALaterActionError(
+                action, schema, action.action_id)
         return target_action
 
     def _create_object_tree(self, uuid, properties):

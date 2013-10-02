@@ -62,6 +62,42 @@ class ActionPropertyUnknownError(ActionValidationError):
                (self.schema.name, self.klass, self.property_name)
 
 
+class ActionReferencesANonExistentObjectError(ActionValidationError):
+
+    """Exception for when an action refers to a non-existent object."""
+
+    def __init__(self, action, schema, uuid):
+        ActionValidationError.__init__(self, action, schema)
+        self.uuid = uuid
+
+    def __str__(self):
+        return 'Action refers to a non-existent object: %s' % self.uuid
+
+
+class ActionReferencesANonExistentActionError(ActionValidationError):
+
+    """Exception for when an action refers to a non-existent action."""
+
+    def __init__(self, action, schema, action_id):
+        ActionValidationError.__init__(self, action, schema)
+        self.action_id = action_id
+
+    def __str__(self):
+        return 'Action refers to a non-existent action: %s' % self.action_id
+
+
+class ActionReferencesALaterActionError(ActionValidationError):
+
+    """Exception for when an action refers to a later action."""
+
+    def __init__(self, action, schema, action_id):
+        ActionValidationError.__init__(self, action, schema)
+        self.action_id = action_id
+
+    def __str__(self):
+        return 'Action refers to a later action: %s' % self.action_id
+
+
 class ValidationHook(object):
 
     """A hook to register with CommitValidator for extra validation."""
