@@ -452,6 +452,24 @@ class TransactionPreparer(object):
         updated_obj = self.store._object(new_tree, obj.uuid, klass)
         return updated_obj, new_tree
 
+    def _apply_delete_action(self, action, commit, schema, tree):
+        # load the object from the commit or from a previous action
+        obj = self._validate_and_resolve_target_object(action, commit)
+
+        # build a new class tree without the object
+        class_entry = tree[obj.klass.name]
+        class_tree = self.store.repo[class_entry.oid]
+        builder = self.store.repo.TreeBuilder(class_tree)
+        builder.remove(obj.uuid)
+        new_class_oid = builder.write()
+
+        # build and return a new overall store tree
+        builder = self.store.repo.TreeBuilder(tree)
+        builder.insert(obj.klass.name, new_class_oid, pygit2.GIT_FILEMODE_TREE)
+        new_tree_oid = builder.write()
+        new_tree = self.store.repo[new_tree_oid]
+        return None, new_tree
+
     def _validate_object_class(self, action, klass, schema):
         if not klass in schema.classes:
             raise validation.ActionClassUnknownError(action, schema, klass)

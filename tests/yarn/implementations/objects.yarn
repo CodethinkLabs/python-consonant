@@ -61,6 +61,16 @@ Verify that the objects of a given class include a certain object
     assert len([x for x in objects if x['uuid'] == "$MATCH_2"]) == 1
     EOF
 
+Verify that the objects of a given class do not include a certain object
+------------------------------------------------------------------------
+
+    IMPLEMENTS THEN the objects of class "(.+)" do not include "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    run_python_test <<-EOF
+    objects = output_yaml["$MATCH_1"]
+    assert len([x for x in objects if x['uuid'] == "$MATCH_2"]) == 0
+    EOF
+
 Verify that a given object has a certain number of properties set
 -----------------------------------------------------------------
 
