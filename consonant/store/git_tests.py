@@ -21,7 +21,8 @@
 import unittest
 import yaml
 
-from consonant.store import git, timestamps
+from consonant.store import git
+from consonant.util import timestamps
 
 
 class _DummyCommit(object):  # pragma: no cover

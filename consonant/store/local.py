@@ -28,8 +28,9 @@ from consonant import schema
 from consonant import util
 from consonant.schema import definitions
 from consonant.service import services
-from consonant.store import git, objects, properties, references, timestamps
+from consonant.store import git, objects, properties, references
 from consonant.transaction import validation
+from consonant.util import timestamps
 from consonant.util.phase import Phase
 
 

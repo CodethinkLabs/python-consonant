@@ -22,7 +22,8 @@ import subprocess
 import time
 import unittest
 
-from consonant.store import caches, objects, properties, references, timestamps
+from consonant.store import caches, objects, properties, references
+from consonant.util import timestamps
 
 
 class MemcachedObjectCacheTests(unittest.TestCase):

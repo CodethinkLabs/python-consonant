@@ -20,7 +20,7 @@
 
 import yaml
 
-from consonant.store import timestamps
+from consonant.util import timestamps
 
 
 class Property(yaml.YAMLObject):

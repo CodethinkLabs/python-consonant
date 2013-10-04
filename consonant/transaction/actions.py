@@ -20,8 +20,7 @@
 
 import pygit2
 
-from consonant.store import timestamps
-from consonant.util import expressions
+from consonant.util import expressions, timestamps
 
 
 class Action(object):

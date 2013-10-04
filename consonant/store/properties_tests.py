@@ -24,7 +24,8 @@ import random
 import unittest
 import yaml
 
-from consonant.store import properties, references, timestamps
+from consonant.store import properties, references
+from consonant.util import timestamps
 
 
 class PropertyTests(unittest.TestCase):

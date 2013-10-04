@@ -23,7 +23,7 @@ import itertools
 import unittest
 import yaml
 
-from consonant.store import timestamps
+from consonant.util import timestamps
 
 
 class TimezoneTests(unittest.TestCase):
