@@ -48,6 +48,17 @@ class UnknownSchemaError(Exception):
         return '%s' % self.schema
 
 
+class UnknownServiceError(Exception):
+
+    """Exception for when an unknown service is looked up via the register."""
+
+    def __init__(self, service):
+        self.service = service
+
+    def __str__(self):
+        return '%s' % self.service
+
+
 class Register(yaml.YAMLObject):
 
     """Class to access the system and user register."""
@@ -155,6 +166,19 @@ class Register(yaml.YAMLObject):
             return self.schemas[name]
         else:
             raise UnknownSchemaError(name)
+
+    def service_url(self, name):
+        """Look up the service URL for a service name and return it.
+
+        Raises an UnknownServiceError if no service with this name is
+        registered.
+
+        """
+
+        if name in self.services:
+            return self.services[name]
+        else:
+            raise UnknownServiceError(name)
 
     @classmethod
     def to_yaml(cls, dumper, register):  # pragma: no cover

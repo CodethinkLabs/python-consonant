@@ -57,6 +57,38 @@ Load the Consonant register
 
     fail_unknown_api
 
+Resolve a schema or service name into a URI
+-------------------------------------------
+
+    IMPLEMENTS WHEN resolving the (schema|service) name "(.+)" into a URI
+
+    run_consonant_register <<-EOF
+    register = consonant.register.Register()
+    if "$MATCH_1" == 'schema':
+        uri = register.schema_url("$MATCH_2")
+    else:
+        uri = register.service_url("$MATCH_2")
+    print uri
+    EOF
+
+    fail_unknown_api
+
+Resolve an unknown schema or service name into a URI
+----------------------------------------------------
+
+    IMPLEMENTS WHEN resolving the unknown (schema|service) name "(.+)" into a URI
+
+    run_consonant_register <<-EOF || true
+    register = consonant.register.Register()
+    if "$MATCH_1" == 'schema':
+        uri = register.schema_url("$MATCH_2")
+    else:
+        uri = register.service_url("$MATCH_2")
+    print uri
+    EOF
+
+    fail_unknown_api
+
 Verify that the register contains a given number of schemas
 -----------------------------------------------------------
 

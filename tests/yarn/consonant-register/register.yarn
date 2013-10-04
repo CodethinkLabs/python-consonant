@@ -104,3 +104,39 @@ Load the Consonant register and check the result
     THEN     the register maps the service "first.test.service" to "http://url.of/test.service/1"
     THEN     the register maps the service "second.test.service" to "http://url.from.the.user.register/"
     THEN     the register maps the service "test.service" to "file:///new/entry/from/the/user/register"
+
+    SCENARIO resolving a service name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the service name "first.test.service" into a URI
+    THEN     the result is "http://url.of/test.service/1"
+
+    SCENARIO resolving a different service name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the service name "second.test.service" into a URI
+    THEN     the result is "/path/to/the/second/test/service"
+
+    SCENARIO resolving a schema name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the schema name "tests.schema.1" into a URI
+    THEN     the result is "http://url.of.test.schema/1"
+
+    SCENARIO resolving a different schema name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the schema name "tests.schema.2" into a URI
+    THEN     the result is "file:///path/to/test/schema/2"
+
+    SCENARIO resolving an unknown service name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the unknown service name "foo" into a URI
+    THEN     an UnknownServiceError is thrown
+
+    SCENARIO resolving an unknown schema name into a URI using the register
+    GIVEN    a system register with schemas and services
+    GIVEN    a user register with schemas and services
+    WHEN     resolving the unknown schema name "foo" into a URI
+    THEN     an UnknownSchemaError is thrown
