@@ -118,9 +118,7 @@ Submitting a transaction
     run_consonant_store <<-EOF
     parser = consonant.transaction.parsers.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
-    validator = consonant.transaction.validation.CommitValidator()
-    commit = store.prepare_transaction(transaction)
-    store.commit_transaction(transaction, commit, validator)
+    store.apply_transaction(transaction)
     EOF
 
     fail_unknown_api
@@ -135,9 +133,7 @@ Submitting an invalid transaction
     run_consonant_store <<-EOF || true
     parser = consonant.transaction.parsers.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
-    validator = consonant.transaction.validation.CommitValidator()
-    commit = store.prepare_transaction(transaction)
-    store.commit_transaction(transaction, commit, validator)
+    store.apply_transaction(transaction)
     EOF
 
     fail_unknown_api
@@ -152,9 +148,7 @@ Submitting a transaction based on a non-existent commit
     run_consonant_store <<-EOF || true
     parser = consonant.transaction.parsers.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
-    validator = consonant.transaction.validation.CommitValidator()
-    commit = store.prepare_transaction(transaction)
-    store.commit_transaction(transaction, commit, validator)
+    store.apply_transaction(transaction)
     EOF
 
     fail_unknown_api

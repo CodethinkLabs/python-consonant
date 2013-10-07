@@ -28,8 +28,8 @@ from consonant import schema
 from consonant import util
 from consonant.schema import definitions
 from consonant.service import services
-from consonant.store import git, objects, properties, references
-from consonant.transaction import validation
+from consonant.store import git, objects, properties, references, validation
+from consonant.transaction import validation as tvalidation
 from consonant.util import timestamps
 from consonant.util.phase import Phase
 
@@ -308,13 +308,23 @@ class LocalStore(services.Service):
             values.append(value)
         return properties.ReferenceProperty(prop_def.name, values)
 
-    def prepare_transaction(self, transaction):
+    def apply_transaction(self, transaction, hooks=[]):
+        """Validate and apply a transaction. Return the resulting commit."""
+
+        commit = self._prepare_transaction(transaction)
+        validator = tvalidation.CommitValidator()
+        validator.add_hook(validation.LocalCommitValidator())
+        for hook in hooks:
+            validator.add_hook(hook)
+        return self._commit_transaction(transaction, commit, validator)
+
+    def _prepare_transaction(self, transaction):
         """Create a new commit from a transaction and return it."""
 
         preparer = TransactionPreparer(self, transaction)
         return preparer.prepare_transaction()
 
-    def commit_transaction(self, transaction, commit, validator):
+    def _commit_transaction(self, transaction, commit, validator):
         """Validate a transaction and merge it into its target ref."""
 
         # first, validate the commit
@@ -473,13 +483,13 @@ class TransactionPreparer(object):
 
     def _validate_object_class(self, action, klass, schema):
         if not klass in schema.classes:
-            raise validation.ActionClassUnknownError(action, schema, klass)
+            raise tvalidation.ActionClassUnknownError(action, schema, klass)
 
     def _validate_object_properties(
             self, phase, action, schema, klass, properties):
         for prop_name in properties.iterkeys():
             if not prop_name in schema.classes[klass].properties:
-                phase.error(validation.ActionPropertyUnknownError(
+                phase.error(tvalidation.ActionPropertyUnknownError(
                     action, schema, klass, prop_name))
 
     def _validate_object_properties_not_raw(
@@ -488,8 +498,9 @@ class TransactionPreparer(object):
             if prop_name in schema.classes[klass].properties:
                 prop = schema.classes[klass].properties[prop_name]
                 if isinstance(prop, definitions.RawPropertyDefinition):
-                    phase.error(validation.ActionIllegalRawPropertyChangeError(
-                        action, schema, klass, prop_name))
+                    phase.error(
+                        tvalidation.ActionIllegalRawPropertyChangeError(
+                            action, schema, klass, prop_name))
 
     def _validate_and_resolve_target_object(self, action, commit):
         if action.action_id is not None:
@@ -503,18 +514,18 @@ class TransactionPreparer(object):
                 for obj in class_objects:
                     if obj.uuid == action.uuid:
                         return obj
-            raise validation.ActionReferencesANonExistentObjectError(
+            raise tvalidation.ActionReferencesANonExistentObjectError(
                 action, schema, action.uuid)
 
     def _validate_and_resolve_target_action(self, action):
         actions = \
             [a for a in self.transaction.actions if a.id == action.action_id]
         if not actions:
-            raise validation.ActionReferencesANonExistentActionError(
+            raise tvalidation.ActionReferencesANonExistentActionError(
                 action, schema, action.action_id)
         target_action = actions[0]
         if not target_action in self.action_objects:
-            raise validation.ActionReferencesALaterActionError(
+            raise tvalidation.ActionReferencesALaterActionError(
                 action, schema, action.action_id)
         return target_action
 

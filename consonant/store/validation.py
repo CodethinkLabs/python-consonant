@@ -15,14 +15,17 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
+"""Validate commits, classes, objects, properties in local stores."""
 
 
-import caches
-import git
-import objects
-import local
-import properties
-import references
-import remote
-import validation
+from consonant import transaction
+
+
+class LocalCommitValidator(transaction.validation.ValidationHook):
+
+    """A validation hook that validates a commit in a local store."""
+
+    def validate(self, service, commit):  # pragma: no cover
+        """Validate the contents of a commit and return true if it is valid."""
+
+        return True

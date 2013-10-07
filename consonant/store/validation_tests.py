@@ -15,14 +15,4 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Classes to read from and write to local and remote store repositories."""
-
-
-import caches
-import git
-import objects
-import local
-import properties
-import references
-import remote
-import validation
+"""Unit tests for commit, classe, object and properties validation classes."""
