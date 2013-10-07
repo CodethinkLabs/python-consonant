@@ -55,6 +55,19 @@ class TransactionNotMultipartMixedError(TransactionError):
         return 'Transaction is not a multipart/mixed message'
 
 
+class TransactionDuplicateActionIDError(TransactionError):
+
+    """Error for when two or more actions have the same action ID."""
+
+    def __init__(self, phase, action_id):
+        TransactionError.__init__(self, phase)
+        self.action_id = action_id
+
+    def __str__(self):
+        return 'Transaction has multiple actions with the same ID: %s' % \
+            self.action_id
+
+
 class ActionError(Exception):
 
     """Base class for transaction action errors."""
@@ -418,6 +431,7 @@ class TransactionParser(object):
         with ParserPhase() as phase:
             parts = message.get_payload()
             _actions = self._parse_actions(phase, parts)
+            self._validate_action_ids(phase, _actions)
             return transactions.Transaction(_actions)
 
     def _parse_actions(self, phase, parts):
@@ -694,3 +708,11 @@ class TransactionParser(object):
             if not expressions.property_name.match(prop):
                 phase.error(ActionPropertyInvalidError(phase, part, prop))
         return prop
+
+    def _validate_action_ids(self, phase, actions):
+        ids = set()
+        for action in actions:
+            if action.id is not None and action.id in ids:
+                phase.error(TransactionDuplicateActionIDError(
+                    phase, action.id))
+            ids.add(action.id)

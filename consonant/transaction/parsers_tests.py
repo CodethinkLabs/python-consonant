@@ -805,6 +805,38 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
+    def test_parsing_fails_if_two_actions_have_the_same_id(self):
+        """Verify parsing fails if two actions have the same ID."""
+
+        self.assertRaisesRegexp(
+            parsers.ParserPhaseError,
+            '^'
+            'TransactionDuplicateActionIDError: '
+            'Transaction has multiple actions with the same ID: foo'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+id: foo
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+id: foo
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: Some commit
+            ''')
+
     def test_parsing_fails_if_an_action_has_unsupported_action_type(self):
         """Verify parsing fails if an action has an unsupported action type."""
 
