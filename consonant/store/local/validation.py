@@ -23,7 +23,14 @@ from consonant import transaction
 
 class LocalCommitValidator(transaction.validation.ValidationHook):
 
-    """A validation hook that validates a commit in a local store."""
+    """A validation hook that validates a commit in a local store.
+
+    The LocalCommitValidator is responsible for verifying that all classes,
+    objects and properties in a commit in a local store are valid. It is also
+    responsible for checking the integrity of all object references in the
+    commit.
+
+    """
 
     def validate(self, service, commit):  # pragma: no cover
         """Validate the contents of a commit and return true if it is valid."""

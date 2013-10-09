@@ -29,7 +29,16 @@ from consonant.transaction import validation
 
 class TransactionPreparer(object):
 
-    """Prepares a transaction by creating a commit with its changes."""
+    """Prepares a transaction by creating a commit with its changes.
+
+    The TransactionPreparer is responsible to validate the transaction
+    syntactically and make sure no classes or properties unknown to
+    the schema used in the source commit are added to the store.
+
+    It is also responsible to validate and resolve references between
+    actions into object references.
+
+    """
 
     def __init__(self, store, transaction):
         self.store = store
