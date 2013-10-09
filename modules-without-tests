@@ -5,7 +5,11 @@ consonant/service/__init__.py
 consonant/service/services.py
 consonant/service/factories.py
 consonant/store/__init__.py
-consonant/store/local.py
+consonant/store/local/__init__.py
+consonant/store/local/loaders.py
+consonant/store/local/store.py
+consonant/store/local/transactions.py
+consonant/store/local/validation.py
 consonant/store/remote.py
 consonant/transaction/__init__.py
 consonant/transaction/validation.py

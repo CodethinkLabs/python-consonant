@@ -67,11 +67,11 @@ store_location = os.path.abspath(os.path.join('test-store'))
 factory = consonant.service.factories.ServiceFactory()
 store = factory.service(store_location)
 
-assert isinstance(store, consonant.store.local.LocalStore) \
+assert isinstance(store, consonant.store.local.store.LocalStore) \
     or isinstance(store, consonant.store.remote.RemoteStore)
 
 if os.path.exists('use-memcached'):
-    store.cache = consonant.store.caches.MemcachedObjectCache(['127.0.0.1'])
+    store.set_cache(consonant.store.caches.MemcachedObjectCache(['127.0.0.1']))
 
 $CODE
 EOF

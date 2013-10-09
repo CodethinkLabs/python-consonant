@@ -52,4 +52,4 @@ class ServiceFactory(object):
         elif protocol and protocol != 'file':
             return remote.RemoteStore(url, self.register)
         else:
-            return local.LocalStore(url, self.register)
+            return local.store.LocalStore(url, self.register)
