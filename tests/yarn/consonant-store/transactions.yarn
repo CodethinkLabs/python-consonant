@@ -281,7 +281,23 @@ TODO
 Apply an invalid transaction that sets a reference property to an invalid value using consonant.store
 -----------------------------------------------------------------------------------------------------
 
-TODO
+    SCENARIO apply an invalid transaction that sets a reference property to an invalid value using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to 12345
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyValueInvalidError is thrown
 
 Apply an invalid transaction that sets a boolean list property to an invalid value using consonant.store
 --------------------------------------------------------------------------------------------------------

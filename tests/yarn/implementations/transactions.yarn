@@ -95,6 +95,15 @@ Setting object text properties
         $MATCH_1: $MATCH_2
     EOF
 
+Setting object reference properties
+------------------------------
+
+    IMPLEMENTS WHEN setting the object reference property "(.+)" to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1:
+            $MATCH_2
+    EOF
+
 Setting object list properties
 ------------------------------
 

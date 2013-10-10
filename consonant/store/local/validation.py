@@ -118,6 +118,19 @@ class TextPropertyValueInvalidError(PropertyValidationError):
         return 'text property value is invalid: %s' % self.value
 
 
+class ReferencePropertyValueInvalidError(PropertyValidationError):
+
+    """Exception for when a reference property value is invalid."""
+
+    def __init__(self, phase, property_name, value):
+        PropertyValidationError.__init__(self, phase, property_name)
+        self.property_name = property_name
+        self.value = value
+
+    def _msg(self):
+        return 'reference property value is invalid: %s' % self.value
+
+
 class ValidatingLoader(Loader):
 
     """A validating loder for local store repositories."""
@@ -247,13 +260,26 @@ class ValidatingLoader(Loader):
 
     def phase_validate_text_property_in_data(
             self, phase, schema, klass, object_entry, name, data):
-        """Validate a boolean property and return false if it is invalid."""
+        """Validate a text property in an object properties dictionary."""
 
         phase.klass = klass
         phase.object_uuid = object_entry.name
 
         if not isinstance(data, basestring):
             phase.error(TextPropertyValueInvalidError(phase, name, data))
+
+    def phase_validate_reference_property_in_data(
+            self, phase, schema, klass, object_entry, name, data):
+        """Validate a reference property in an object properties dictionary."""
+
+        phase.klass = klass
+        phase.object_uuid = object_entry.name
+
+        if not isinstance(data, dict):
+            phase.error(ReferencePropertyValueInvalidError(phase, name, data))
+        elif not 'uuid' in data:
+            phase.error(ReferencePropertyValueInvalidError(phase, name, data))
+        # TODO more
 
 
 class LocalCommitValidator(transaction.validation.ValidationHook):
