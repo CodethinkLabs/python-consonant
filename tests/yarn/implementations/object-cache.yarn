@@ -23,17 +23,6 @@ Provide and stop an object cache
     skill -SIGKILL memcached
 
 
-Verify that an object cache item holds an object with a specific UUID
----------------------------------------------------------------------
-
-    IMPLEMENTS THEN the object cache item "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9],[abcdef0-9]{40})" holds the object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
-    run_python_test <<-EOF
-    import pylibmc
-    mc = pylibmc.Client(['127.0.0.1'])
-    object = mc.get("$MATCH_1")
-    assert object.uuid == "$MATCH_2"
-    EOF
-
 Verify that the object cache has processed a specific number of get or set commands
 -----------------------------------------------------------------------------------
 

@@ -129,7 +129,7 @@ modified.
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
     AND      setting the object properties
     AND      setting the object text property "title" to "New card title"
     AND      defining a commit action
@@ -163,7 +163,7 @@ created with the change applied and that no other objects were modified.
     AND      setting the object properties
     AND      setting the object text property "title" to "This is a new card"
     AND      defining an update action
-    AND      setting the action target object to "action: create-new-card"
+    AND      setting the action target object to action: create-new-card
     AND      setting the object properties
     AND      setting the object text property "title" to "The updated title of the new card"
     AND      defining a commit action
@@ -193,11 +193,11 @@ as expected and that no other objects were modified.
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
     AND      setting the action id to "first update"
-    AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
     AND      setting the object properties
     AND      setting the object text property "title" to "Title 1"
     AND      defining an update action
-    AND      setting the action target object to "action: first update"
+    AND      setting the action target object to action: first update
     AND      setting the object properties
     AND      setting the object text property "title" to "Title 2"
     AND      defining a commit action
@@ -222,7 +222,7 @@ Apply an invalid transaction that updates a non-existent property
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
     AND      setting the object properties
     AND      setting the object text property "nonexistent" to "Yeah, hmm"
     AND      defining a commit action
@@ -242,7 +242,7 @@ Apply an invalid transaction that updates a non-existent object
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "uuid: i-do-not-exist"
+    AND      setting the action target object to uuid: i-do-not-exist
     AND      setting the object properties
     AND      setting the object text property "title" to "Bucket 1"
     AND      defining a commit action
@@ -262,7 +262,7 @@ Apply an invalid transaction that updates a non-existent action
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "action: non-existent"
+    AND      setting the action target object to action: non-existent
     AND      setting the object properties
     AND      setting the object text property "title" to "Bucket 1"
     AND      defining a commit action
@@ -282,7 +282,7 @@ Apply an invalid transaction that updates an object only created later
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "action: create-the-card"
+    AND      setting the action target object to action: create-the-card
     AND      setting the object properties
     AND      setting the object text property "title" to "Overwritten title"
     AND      defining a create action
@@ -307,13 +307,13 @@ Apply a transaction that deletes an object and removes references to it
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
     AND      defining an update action
-    AND      setting the action target object to "uuid: 71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+    AND      setting the action target object to uuid: 71bd32d7-f02c-4cdd-9f91-1e73ba9a9527
     AND      setting the object properties
     AND      setting the object list property "cards"
-    AND      adding a list element "uuid: efb3c4e5-3ee0-4171-bddd-a56e9b0765cd"
-    AND      adding a list element "uuid: 7501f1f4-e357-4af4-b5ff-546fae3f25f4"
+    AND      adding a list element uuid: efb3c4e5-3ee0-4171-bddd-a56e9b0765cd
+    AND      adding a list element uuid: 7501f1f4-e357-4af4-b5ff-546fae3f25f4
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -343,7 +343,7 @@ Apply a transaction that creates an object and deletes it again
     AND      setting the object properties
     AND      setting the object text property "title" to "New lane"
     AND      defining a delete action
-    AND      setting the action target object to "action: create"
+    AND      setting the action target object to action: create
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -366,7 +366,7 @@ SCENARIO apply an invalid transaction that deletes an object but does not remove
 GIVEN    the standard test store "consonant-test-store-01"
 WHEN     starting a transaction based on commit 5c127eaf
 AND      defining a delete action
-AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
 AND      defining a commit action
 AND      setting the action target to "refs/heads/master"
 AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -385,7 +385,7 @@ Apply an invalid transaction that deletes a non-existent object
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "uuid: somenonexistentobject"
+    AND      setting the action target object to uuid: somenonexistentobject
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -403,7 +403,7 @@ Apply an invalid transaction that deletes an object created in a non-existent ac
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "action: non-existent action"
+    AND      setting the action target object to action: non-existent action
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -421,7 +421,7 @@ Apply an invalid transaction that deletes an object created in a later action
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "action: later action"
+    AND      setting the action target object to action: later action
     AND      defining a create action
     AND      setting the action id to "later action"
     AND      setting the action class to "card"

@@ -26,8 +26,8 @@ import yaml
 from consonant import schema
 from consonant import util
 from consonant.service import services
-from consonant.store import git, objects, properties, references, validation
-from consonant.store.local import transactions, loaders
+from consonant.store import git, objects, properties, references
+from consonant.store.local import transactions, loaders, validation
 from consonant.transaction import validation as tvalidation
 from consonant.util import timestamps
 
