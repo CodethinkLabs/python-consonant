@@ -71,7 +71,7 @@ Define object properties
 Setting fields of the current transaction action
 ------------------------------------------------
 
-    IMPLEMENTS WHEN setting the action ([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]) to "(.+)"
+    IMPLEMENTS WHEN setting the action ([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]) to (.+)
 
     cat <<-EOF >> $DATADIR/transaction.yaml
     $MATCH_1: $MATCH_2
@@ -80,7 +80,7 @@ Setting fields of the current transaction action
 Setting the target object of an action
 --------------------------------------
 
-    IMPLEMENTS WHEN setting the action target object to "(.+)"
+    IMPLEMENTS WHEN setting the action target object to (.+)
 
     cat <<-EOF >> $DATADIR/transaction.yaml
     object:
@@ -90,7 +90,7 @@ Setting the target object of an action
 Setting object text properties
 ------------------------------
 
-    IMPLEMENTS WHEN setting the object text property "(.+)" to "(.+)"
+    IMPLEMENTS WHEN setting the object text property "(.+)" to (.+)
     cat <<-EOF >> $DATADIR/transaction.yaml
         $MATCH_1: $MATCH_2
     EOF
@@ -103,7 +103,7 @@ Setting object list properties
         $MATCH_1:
     EOF
 
-    IMPLEMENTS WHEN adding a list element "(.+)"
+    IMPLEMENTS WHEN adding a list element (.+)
     cat <<-EOF >> $DATADIR/transaction.yaml
         - $MATCH_1
     EOF
