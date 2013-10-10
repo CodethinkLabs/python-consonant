@@ -25,17 +25,19 @@ class ObjectCache(object):  # pragma: no cover
 
     """Base class for object cache implementations."""
 
-    def read_object(self, sha1):
-        """Look up the object for a given SHA1.
+    def read_properties(self, uuid, sha1):
+        """Look up the object properties for a given SHA1.
 
-        Returns an Object if the SHA1 is found in the cache. Otherwise
-        returns None.
+        Returns an object properties dictionary if the UUID1 and SHA1 tuple
+        is found in the cache. Otherwise returns None.
 
         """
+
         raise NotImplementedError
 
-    def write_object(self, sha1, obj):
-        """Store an object for a given SHA1."""
+    def write_properties(self, uuid, sha1, properties):
+        """Store an object properties dictionary for a given UUID and SHA1."""
+
         raise NotImplementedError
 
     def read_raw_property_data(self, sha1):
@@ -45,14 +47,16 @@ class ObjectCache(object):  # pragma: no cover
         is found in the cache. Otherwise returns None.
 
         """
+
         raise NotImplementedError
 
     def write_raw_property_data(self, sha1, data):
         """Store raw property data for a given SHA1."""
+
         raise NotImplementedError
 
 
-class MemcachedObjectCache(ObjectCache):
+class MemcachedObjectCache(ObjectCache):  # pragma: no cover
 
     """Object cache implementation for Memcached."""
 
@@ -62,22 +66,22 @@ class MemcachedObjectCache(ObjectCache):
         self.mc = pylibmc.Client(servers)
         self.mc_pool = pylibmc.ThreadMappedPool(self.mc)
 
-    def read_object(self, uuid, sha1):
-        """Look up the object for a given SHA1.
+    def read_properties(self, uuid, sha1):
+        """Look up the object properties for a given SHA1.
 
-        Returns an Object if the UUID1 and SHA1 tuple is found in the
-        cache. Otherwise returns None.
+        Returns an object properties dictionary if the UUID1 and SHA1 tuple
+        is found in the cache. Otherwise returns None.
 
         """
 
         with self.mc_pool.reserve() as mc:
             return mc.get('%s,%s' % (uuid, sha1))
 
-    def write_object(self, uuid, sha1, obj):
-        """Store an object for a given UUID and SHA1."""
+    def write_properties(self, uuid, sha1, properties):
+        """Store an object properties dictionary for a given UUID and SHA1."""
 
         with self.mc_pool.reserve() as mc:
-            mc.set('%s,%s' % (uuid, sha1), obj)
+            mc.set('%s,%s' % (uuid, sha1), properties)
 
     def read_raw_property_data(self, sha1):
         """Look up the raw property data for a given SHA1.

@@ -77,7 +77,7 @@ Apply an invalid transaction that updates a non-existent property using consonan
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
     AND      setting the object properties
     AND      setting the object text property "nonexistent" to "Yeah, hmm"
     AND      defining a commit action
@@ -97,7 +97,7 @@ Apply an invalid transaction that updates a non-existent object using consonant.
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "uuid: i-do-not-exist"
+    AND      setting the action target object to uuid: i-do-not-exist
     AND      setting the object properties
     AND      setting the object text property "title" to "Bucket 1"
     AND      defining a commit action
@@ -117,7 +117,7 @@ Apply an invalid transaction that updates a non-existent action using consonant.
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "action: non-existent"
+    AND      setting the action target object to action: non-existent
     AND      setting the object properties
     AND      setting the object text property "title" to "Bucket 1"
     AND      defining a commit action
@@ -137,7 +137,7 @@ Apply an invalid transaction that updates an object only created later using con
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining an update action
-    AND      setting the action target object to "action: create-the-card"
+    AND      setting the action target object to action: create-the-card
     AND      setting the object properties
     AND      setting the object text property "title" to "Overwritten title"
     AND      defining a create action
@@ -166,7 +166,7 @@ SCENARIO apply an invalid transaction that deletes an object but does not remove
 GIVEN    the standard test store "consonant-test-store-01"
 WHEN     starting a transaction based on commit 5c127eaf
 AND      defining a delete action
-AND      setting the action target object to "uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e"
+AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
 AND      defining a commit action
 AND      setting the action target to "refs/heads/master"
 AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -185,7 +185,7 @@ Apply an invalid transaction that deletes a non-existent object using consonant.
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "uuid: somenonexistentobject"
+    AND      setting the action target object to uuid: somenonexistentobject
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -203,7 +203,7 @@ Apply an invalid transaction that deletes an object created in a non-existent ac
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "action: non-existent action"
+    AND      setting the action target object to action: non-existent action
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -221,7 +221,7 @@ Apply an invalid transaction that deletes an object created in a later action us
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     starting a transaction based on commit 5c127eaf
     AND      defining a delete action
-    AND      setting the action target object to "action: later action"
+    AND      setting the action target object to action: later action
     AND      defining a create action
     AND      setting the action id to "later action"
     AND      setting the action class to "card"
@@ -236,3 +236,213 @@ Apply an invalid transaction that deletes an object created in a later action us
     AND      setting the action message to "Delete a non-existent object"
     AND      submitting the invalid transaction
     THEN     an ActionReferencesALaterActionError is thrown
+
+Apply an invalid transaction that sets a boolean property to an invalid value using consonant.store
+---------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets an int property to an invalid value using consonant.store
+------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a float property to an invalid value using consonant.store
+-------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a text property to a non-string value using consonant.store
+--------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that sets a text property to a non-string value using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object text property "title" to 12345
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a TextPropertyValueNotAStringError is thrown
+
+Apply an invalid transaction that sets a text property to an invalid value using consonant.store
+------------------------------------------------------------------------------------------------
+
+Invalid in this case means a value that does not match any of the
+regular expressions defined for the text property.
+
+TODO
+
+Apply an invalid transaction that sets a timestamp property to a non-string value using consonant.store
+-------------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a timestamp property to an invalid value using consonant.store
+-----------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a raw property to an invalid value using consonant.store
+-----------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a reference property to a non-dict value using consonant.store
+-----------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that sets a reference property to a non-dict value using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to 12345
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyValueNotADictError is thrown
+
+Apply an invalid transaction that sets a reference property without a UUID using consonant.store
+------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that sets a reference property without a UUID using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { ref: master }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyUUIDUndefinedError is thrown
+
+Apply an invalid transaction that puts a non-string UUID into a reference property using consonant.store
+--------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that puts a non-string UUID into a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { uuid: 12345 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyUUIDNotAStringError is thrown
+
+Apply an invalid transaction that puts an invalid UUID into a reference property using consonant.store
+------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that puts an invalid UUID into a reference property consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to uuid: 123invalid+uuid321
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyUUIDInvalidError is thrown
+
+Apply an invalid transaction that puts a non-string ref into a reference property using consonant.store
+-------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that puts a non-string ref into a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { uuid: this-is-ok, ref: 12345 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyRefNotAStringError is thrown
+
+Apply an invalid transaction that puts a non-string service into a reference property using consonant.store
+-----------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that puts a non-string service into a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an update action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { uuid: this-is-ok, service: 12345 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Update the title of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyServiceNotAStringError is thrown
+
+Apply an invalid transaction that sets a boolean list property to an invalid value using consonant.store
+--------------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets an int list property to an invalid value using consonant.store
+-----------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a float list property to an invalid value using consonant.store
+------------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a text list property to an invalid value using consonant.store
+-----------------------------------------------------------------------------------------------------
+
+TODO
+
+Apply an invalid transaction that sets a reference list property to an invalid value using consonant.store
+----------------------------------------------------------------------------------------------------------
+
+TODO

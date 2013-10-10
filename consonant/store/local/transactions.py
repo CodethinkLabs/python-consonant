@@ -23,8 +23,9 @@ import re
 import yaml
 
 from consonant.schema import definitions
-from consonant.util.phase import Phase
+from consonant.store.local import loaders
 from consonant.transaction import validation
+from consonant.util.phase import Phase
 
 
 class TransactionPreparer(object):
@@ -116,8 +117,18 @@ class TransactionPreparer(object):
         builder.insert(action.klass, new_class_oid, pygit2.GIT_FILEMODE_TREE)
         new_tree_oid = builder.write()
         new_tree = self.store.repo[new_tree_oid]
-        klass = self.loader.class_in_tree(new_tree, action.klass)
-        obj = self.loader.object_in_tree(new_tree, uuid, klass)
+
+        # load the updated class from the new tree
+        context = loaders.LoaderContext(self.store)
+        context.set_tree(new_tree)
+        new_class_entry = new_tree[action.klass]
+        klass = self.loader.class_in_tree(context, new_class_entry)
+
+        # load the new object from the new tree
+        context.set_class(klass)
+        context.set_uuid(uuid)
+        obj = self.loader.object_in_tree(context)
+
         return obj, new_tree
 
     def _apply_update_action(self, action, commit, schema, tree):
@@ -149,8 +160,18 @@ class TransactionPreparer(object):
         builder.insert(obj.klass.name, new_class_oid, pygit2.GIT_FILEMODE_TREE)
         new_tree_oid = builder.write()
         new_tree = self.store.repo[new_tree_oid]
-        klass = self.loader.class_in_tree(new_tree, obj.klass.name)
-        updated_obj = self.loader.object_in_tree(new_tree, obj.uuid, klass)
+
+        # load the updated class from the new tree
+        context = loaders.LoaderContext(self.store)
+        context.set_tree(new_tree)
+        new_class_entry = new_tree[obj.klass.name]
+        updated_class = self.loader.class_in_tree(context, new_class_entry)
+
+        # load the updated object from the updated class
+        context.set_class(updated_class)
+        context.set_uuid(obj.uuid)
+        updated_obj = self.loader.object_in_tree(context)
+
         return updated_obj, new_tree
 
     def _apply_delete_action(self, action, commit, schema, tree):
