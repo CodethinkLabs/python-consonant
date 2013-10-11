@@ -26,10 +26,12 @@ class Phase(Exception):
         Exception.__init__(self)
         self.errors = []
 
-    def error(self, error):
+    def error(self, error, now=False):
         """Report an error during an execution phase."""
 
         self.errors.append(error)
+        if now:
+            raise error
 
     def __str__(self):
         """Return an error message that includes all the errors collected."""
