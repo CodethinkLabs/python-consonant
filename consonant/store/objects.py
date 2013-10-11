@@ -83,3 +83,6 @@ class Object(yaml.YAMLObject):
                 'class': object.klass.name,
                 'properties': properties_mapping,
                 })
+
+    def __getattr__(self, name):
+        return self.properties[name].value

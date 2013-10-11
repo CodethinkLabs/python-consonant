@@ -82,6 +82,15 @@ class LocalStore(services.Service):
                 names.update(ref.aliases)
             raise services.RefNotFoundError(name, names)
 
+    def resolve_commit(self, rev):
+        """Return the Commit object for a specific commit-ish in the store."""
+
+        try:
+            commit = self.repo.revparse_single(rev)
+        except:
+            raise services.CommitNotFoundError(rev)
+        return self._parse_commit(commit)
+
     def commit(self, sha1):
         """Return the Commit object for a specific commit in the store."""
 
