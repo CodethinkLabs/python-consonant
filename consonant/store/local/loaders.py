@@ -55,6 +55,42 @@ class PropertyValidationError(LoaderError):
         raise NotImplementedError
 
 
+class BooleanPropertyValueInvalidError(PropertyValidationError):
+
+    """Exception for when an boolean property value is invalid."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'boolean property value is invalid: %s' % self.value
+
+
+class IntPropertyValueInvalidError(PropertyValidationError):
+
+    """Exception for when an int property value is invalid."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'int property value is invalid: %s' % self.value
+
+
+class FloatPropertyValueInvalidError(PropertyValidationError):
+
+    """Exception for when an float property value is invalid."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'float property value is invalid: %s' % self.value
+
+
 class TextPropertyValueNotAStringError(PropertyValidationError):
 
     """Exception for when a text property value is not a string."""
@@ -543,6 +579,10 @@ class Loader(object):
 
     def boolean_property_in_data(self, context, object_entry, prop_def, data):
         """Return a boolean property from an object properties dictionary."""
+
+        if not isinstance(data, bool):
+            context.error(IntPropertyValueInvalidError(
+                context, prop_def.name, data))
 
         return properties.BooleanProperty(prop_def.name, data)
 
