@@ -24,13 +24,9 @@ import yaml
 
 from consonant import schema
 from consonant.service import services
-from consonant.store import git, objects, properties, references
-from consonant.util import expressions, timestamps
+from consonant.store import objects, properties, references
+from consonant.util import expressions
 from consonant.util.phase import Phase
-
-
-def validatable(func):
-    return func
 
 
 class LoaderError(Exception):
@@ -144,6 +140,7 @@ class ReferencePropertyUUIDNotAStringError(PropertyValidationError):
         return 'target UUID of reference property is not a string: %s' % \
             self.uuid
 
+
 class ReferencePropertyUUIDInvalidError(PropertyValidationError):
 
     """Exception for when the UUID of a reference property is invalid."""
@@ -181,7 +178,18 @@ class ReferencePropertyServiceNotAStringError(PropertyValidationError):
         return 'target service of reference property is not a string: %s' % \
             self.service
 
+
 class LoaderContext(Phase):
+
+    """Contextual information about where the Loader is in the loading process.
+
+    Among this information is the current store, the local store repository,
+    the current commit, the current tree, the current object class, the
+    current object UUID and the current schema.
+
+    These values are set depending on the situation.
+
+    """
 
     def __init__(self, store):
         Phase.__init__(self)
@@ -194,19 +202,29 @@ class LoaderContext(Phase):
         self.schema = None
 
     def set_commit(self, commit):
+        """Set the commit that is currently being loaded from."""
+
         self.commit = commit
         self.tree = self.repo[self.commit.sha1].tree
 
     def set_tree(self, tree):
+        """Set the tree that is currently being loaded from."""
+
         self.tree = tree
 
     def set_class(self, klass):
+        """Set the object class that is currently being loaded from."""
+
         self.klass = klass
 
     def set_uuid(self, uuid):
+        """Set the UUID of the object that is currently being loaded."""
+
         self.uuid = uuid
 
     def set_schema(self, schema):
+        """Set the schema used in the commit/tree that is being loaded from."""
+
         self.schema = schema
 
 
@@ -411,6 +429,8 @@ class Loader(object):
             return None
 
     def class_object_in_tree(self, context):
+        """Return the object of the given class and tree from the store."""
+
         objects = [x for x in context.klass.objects if x.uuid == context.uuid]
         if objects:
             class_entry = context.tree[context.klass.name]
@@ -475,6 +495,8 @@ class Loader(object):
             return objects.Object(object_entry.name, context.klass, props)
 
     def properties_data_in_tree(self, context, object_entry):
+        """Return the property dict of the given object entry in the store."""
+
         object_tree = self.repo[object_entry.oid]
         properties_data = None
         if 'properties.yaml' in object_tree:
@@ -501,7 +523,6 @@ class Loader(object):
                             properties_data)
         return {} if not properties_data else properties_data
 
-    @validatable
     def properties_in_blob_entry(self, context, object_entry, props_entry):
         """Return an object properties dictionary in a blob of the store."""
 
@@ -520,13 +541,11 @@ class Loader(object):
         prop_func = '%s_property_in_data' % prop_def.property_type
         return getattr(self, prop_func)(context, object_entry, prop_def, data)
 
-    @validatable
     def boolean_property_in_data(self, context, object_entry, prop_def, data):
         """Return a boolean property from an object properties dictionary."""
 
         return properties.BooleanProperty(prop_def.name, data)
 
-    @validatable
     def int_property_in_data(self, context, object_entry, prop_def, data):
         """Return an int property from an object properties dictionary."""
 
@@ -536,7 +555,6 @@ class Loader(object):
 
         return properties.IntProperty(prop_def.name, data)
 
-    @validatable
     def float_property_in_data(self, context, object_entry, prop_def, data):
         """Return a float property from an object properties dictionary."""
 
@@ -546,7 +564,6 @@ class Loader(object):
 
         return properties.FloatProperty(prop_def.name, data)
 
-    @validatable
     def text_property_in_data(self, context, object_entry, prop_def, data):
         """Return a text property from an object properties dictionary."""
 
@@ -561,7 +578,6 @@ class Loader(object):
 
         return properties.TextProperty(prop_def.name, data)
 
-    @validatable
     def timestamp_property_in_data(
             self, context, object_entry, prop_def, data):
         """Return a timestamp property from an object properties dictionary."""
@@ -576,13 +592,11 @@ class Loader(object):
 
         return properties.TimestampProperty(prop_def.name, data)
 
-    @validatable
     def raw_property_in_data(self, context, object_entry, prop_def, data):
         """Return a raw property from an object properties dictionary."""
 
         return properties.RawProperty(prop_def.name, data)
 
-    @validatable
     def reference_property_in_data(
             self, context, object_entry, prop_def, data):
         """Return a reference property from an object properties dictionary."""
@@ -612,7 +626,6 @@ class Loader(object):
 
         return properties.ReferenceProperty(prop_def.name, data)
 
-    @validatable
     def list_property_in_data(self, context, object_entry, prop_def, data):
         """Return a list property from an object properties dictionary."""
 

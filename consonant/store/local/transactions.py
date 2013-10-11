@@ -117,7 +117,7 @@ class TransactionPreparer(object):
         builder.insert(action.klass, new_class_oid, pygit2.GIT_FILEMODE_TREE)
         new_tree_oid = builder.write()
         new_tree = self.store.repo[new_tree_oid]
-        
+
         # load the updated class from the new tree
         context = loaders.LoaderContext(self.store)
         context.set_tree(new_tree)

@@ -31,8 +31,8 @@ class PhaseTests(unittest.TestCase):
     def test_a_phase_with_no_errors_raises_no_exception(self):
         """Verify that a phase with no errors raises no exception."""
 
-        with Phase() as phase:
-            somevar = 'somevalue'
+        with Phase():
+            'somevalue'
 
     def test_a_phase_with_one_error_raises_an_exception(self):
         """Verify that a phase with one error raises an exception."""
@@ -76,4 +76,21 @@ class PhaseTests(unittest.TestCase):
         self.assertRaisesRegexp(
             PhaseError,
             '^Exception: an error\nRuntimeError: another error$',
+            run)
+
+    def test_errors_to_be_raised_now_cause_an_immediate_exception(self):
+        """Verify that errors to be raised now cause an immediate exception."""
+
+        def run():
+            with Phase() as phase:
+                phase.error(Exception('an error'))
+                phase.error(Exception('an absolutely fatal error'), now=True)
+                phase.error(Exception('an unreached exception'))
+
+        self.assertRaisesRegexp(
+            PhaseError,
+            '^'
+            'Exception: an error\n'
+            'Exception: an absolutely fatal error'
+            '$',
             run)

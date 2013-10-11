@@ -31,7 +31,7 @@ class Phase(Exception):
 
         self.errors.append(error)
         if now:
-            raise error
+            raise self
 
     def __str__(self):
         """Return an error message that includes all the errors collected."""
