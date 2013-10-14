@@ -29,7 +29,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import consonant
 
 
-class ValidateTreeishApp(cliapp.Application):
+class ValidateCommitOrRefApp(cliapp.Application):
 
     def add_settings(self):
         self.settings.string(['store', 's'],
@@ -78,4 +78,4 @@ class ValidateTreeishApp(cliapp.Application):
 
 
 if __name__ == '__main__':
-    ValidateTreeishApp().run()
+    ValidateCommitOrRefApp().run()
