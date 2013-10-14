@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2013 Codethink Limited.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+
+"""Script to validate a commit of a store."""
+
+
+import cliapp
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import consonant
+
+
+class ValidateTreeishApp(cliapp.Application):
+
+    def add_settings(self):
+        self.settings.string(['store', 's'],
+                             'Service name or URL of a local store repository',
+                             metavar='NAME_OR_URL')
+        self.settings.string(['commit', 'c'],
+                             'SHA1 of the commit to validate',
+                             metavar='SHA1')
+        self.settings.string(['ref', 'r'],
+                             'Name of the Git ref to validate',
+                             metavar='REFNAME')
+
+    def process_args(self, args):
+        if not self.settings['store']:
+            raise cliapp.AppException('No --store/-s specified')
+        if not self.settings['commit'] and not self.settings['ref']:
+            raise cliapp.AppException('No --commit/-c or --ref/-r specified')
+
+        register = consonant.register.Register()
+        try:
+            service_url = register.service_url(self.settings['store'])
+        except consonant.register.UnknownServiceError:
+            service_url = self.settings['store']
+        service_factory = consonant.service.factories.ServiceFactory()
+        service = service_factory.service(service_url)
+
+        if not isinstance(service, consonant.store.local.store.LocalStore):
+            raise cliapp.AppException(
+                'Only local store repositories are supported '
+                'but "%s" refers to a remote repository or '
+                'web service' % self.settings['store'])
+
+        if self.settings['commit']:
+            commit = service.commit(self.settings['commit'])
+        else:
+            ref = service.ref(self.settings['ref'])
+            commit = ref.head
+
+        validator = consonant.store.local.validation.LocalCommitValidator()
+        if validator.validate(service, commit):
+            if self.settings['commit']:
+                print 'Commit %s validated successfully' % commit.sha1
+            else:
+                print 'Commit %s of ref %s validated successfully' % \
+                    (commit.sha1, self.settings['ref'])
+
+
+if __name__ == '__main__':
+    ValidateTreeishApp().run()
