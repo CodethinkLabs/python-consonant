@@ -215,6 +215,17 @@ class ReferencePropertyServiceNotAStringError(PropertyValidationError):
             self.service
 
 
+class MandatoryPropertyNotSetError(PropertyValidationError):
+
+    """Exception when a mandatory property is not set."""
+
+    def __init__(self, context, property_name):
+        PropertyValidationError.__init__(self, context, property_name)
+
+    def _msg(self):
+        return 'mandatory property is not set'
+
+
 class LoaderContext(Phase):
 
     """Contextual information about where the Loader is in the loading process.
@@ -522,11 +533,8 @@ class Loader(object):
                         context, object_entry, name, data)
                     props.append(prop)
 
-            if not props:
-                # TODO generate an error if there are non-optional properties
-                # defined for the class of the object; otherwise return an
-                # object with no properties set
-                pass
+            # catch mandatory properties that are not set
+            self._validate_mandatory_properties(context, props)
 
             return objects.Object(object_entry.name, context.klass, props)
 
@@ -677,3 +685,11 @@ class Loader(object):
                 context, object_entry, prop_def.elements, raw_value)
             values.append(value)
         return properties.ReferenceProperty(prop_def.name, values)
+
+    def _validate_mandatory_properties(self, context, props):
+        class_def = context.schema.classes[context.klass.name]
+        for prop_name, prop_def in class_def.properties.iteritems():
+            if not prop_def.optional:
+                if not any(p for p in props if p.name == prop_name):
+                    context.error(MandatoryPropertyNotSetError(
+                        context, prop_def.name))

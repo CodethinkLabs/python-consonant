@@ -166,6 +166,7 @@ created with the change applied and that no other objects were modified.
     AND      setting the action target object to action: create-new-card
     AND      setting the object properties
     AND      setting the object text property "title" to "The updated title of the new card"
+    AND      setting the object reference property "lane" to uuid: 27519b8d-8ad8-4558-8ea2-f128404e6f58
     AND      defining a commit action
     AND      setting the action target to "refs/heads/master"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
@@ -177,8 +178,9 @@ created with the change applied and that no other objects were modified.
     AND      fetching objects from the latest commit
 
     THEN     the transaction affects exactly 1 object
-    AND      the newly created object has exactly 1 properties set
+    AND      the newly created object has exactly 2 properties set
     AND      the property "title" of the newly created object is set to "The updated title of the new card"
+    AND      the property "lane" of the newly created object references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
 
 Apply a valid transaction that updates the same object twice
 ------------------------------------------------------------
@@ -214,6 +216,32 @@ as expected and that no other objects were modified.
     AND      the object "633715b8-70ea-4b06-94c6-43ee83a8df9e" has exactly 2 properties set
     AND      the property "title" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" is set to "Title 2"
     AND      the property "lane" of "633715b8-70ea-4b06-94c6-43ee83a8df9e" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+Apply an invalid transaction that creates an object but doesn't set all mandatory properties
+--------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that creates an object but doesn't set all mandatory properties
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining a create action
+    AND      setting the action id to "create-new-card"
+    AND      setting the action class to "card"
+    AND      setting the object properties
+    AND      setting the object text property "title" to "This is a new card"
+    AND      defining an update action
+    AND      setting the action target object to action: create-new-card
+    AND      setting the object properties
+    AND      setting the object text property "title" to "The updated title of the new card"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Create and update a new card"
+    AND      submitting the invalid transaction
+
+    THEN     this fails
 
 Apply an invalid transaction that updates a non-existent property
 -----------------------------------------------------------------

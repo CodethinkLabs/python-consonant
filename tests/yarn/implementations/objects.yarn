@@ -190,3 +190,18 @@ Verify that a given property of an object includes references a certain object
     assert "$MATCH_1" in object['properties']
     assert {'uuid': "$MATCH_3"} == object['properties']["$MATCH_1"]
     EOF
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of the newly created object references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
+
+    NEW_OBJECTS=$(created_objects)
+    run_python_test <<-EOF
+    new_object = eval("$NEW_OBJECTS")[0]
+    if isinstance(output_yaml, dict):
+      objects = []; [objects.extend(x) for x in output_yaml.itervalues()]
+    else:
+      objects = output_yaml
+    object = [x for x in objects if x['uuid'] == new_object][0]
+    assert "$MATCH_1" in object['properties']
+    assert {'uuid': "$MATCH_2"} == object['properties']["$MATCH_1"]
+    EOF
+
