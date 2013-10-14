@@ -145,3 +145,10 @@ class TimestampTests(unittest.TestCase):
             string = yaml.dump([timestamp])
             data = yaml.load(string)
             self.assertEqual(data, [raw])
+
+    def test_conversion_to_strings_generates_raw_representations(self):
+        """Verify that converting to strings yields raw representations."""
+
+        for args, raw, datetime_value in self.timestamps:
+            timestamp = timestamps.Timestamp(*args)
+            self.assertEqual(str(timestamp), raw)

@@ -85,6 +85,9 @@ class Timestamp(yaml.YAMLObject):
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:str', timestamp.raw())
 
+    def __str__(self):
+        return self.raw()
+
     def __eq__(self, other):
         if not isinstance(other, Timestamp):
             return False
