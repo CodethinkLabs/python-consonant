@@ -597,7 +597,7 @@ class Loader(object):
     def int_property_in_data(self, context, object_entry, prop_def, data):
         """Return an int property from an object properties dictionary."""
 
-        if not isinstance(data, int):
+        if not isinstance(data, int) or isinstance(data, bool):
             context.error(IntPropertyValueInvalidError(
                 context, prop_def.name, data))
 
