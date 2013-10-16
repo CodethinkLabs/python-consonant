@@ -31,7 +31,7 @@ For running the python-consonant test suite, the following additional
 components are required:
 
   * python-coverage-test-runner >= 1.9
-  * pep5 >= 1.4.8
+  * pep8 >= 1.4.8
   * pep257 >= 0.2.4
   * memcached >= 1.4.15
   * cmdtest >= 0.9

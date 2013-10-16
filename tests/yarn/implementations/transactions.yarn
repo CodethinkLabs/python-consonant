@@ -95,6 +95,22 @@ Setting object boolean properties
         $MATCH_1: $MATCH_2
     EOF
 
+Setting object int properties
+------------------------------
+
+    IMPLEMENTS WHEN setting the object int property "(.+)" to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1: $MATCH_2
+    EOF
+
+Setting object float properties
+------------------------------
+
+    IMPLEMENTS WHEN setting the object float property "(.+)" to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1: $MATCH_2
+    EOF
+
 Setting object text properties
 ------------------------------
 
