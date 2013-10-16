@@ -119,8 +119,23 @@ Setting object text properties
         $MATCH_1: $MATCH_2
     EOF
 
+    IMPLEMENTS WHEN setting the object single-line text property "(.+)" to a multi-line string
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1: |
+          Foo
+          Bar
+    EOF
+
+Setting object timestamp properties
+-----------------------------------
+
+    IMPLEMENTS WHEN setting the object timestamp property "(.+)" to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1: $MATCH_2
+    EOF
+
 Setting object reference properties
-------------------------------
+-----------------------------------
 
     IMPLEMENTS WHEN setting the object reference property "(.+)" to (.+)
     cat <<-EOF >> $DATADIR/transaction.yaml

@@ -331,6 +331,7 @@ class TimestampPropertyTest(unittest.TestCase):
         """Verify that the constructor sets name and value properly."""
 
         tz = timestamps.Timezone(60)
+        tz0 = timestamps.Timezone(0)
         self.timestamps = [
             ('1377170684 +0100',
              datetime.datetime(2013, 8, 22, 12, 24, 44, 0, tz)),
@@ -340,6 +341,8 @@ class TimestampPropertyTest(unittest.TestCase):
              datetime.datetime(2013, 7, 30, 16, 57, 43, 0, tz)),
             ('1374578024 +0100',
              datetime.datetime(2013, 7, 23, 12, 13, 44, 0, tz)),
+            (0,
+             datetime.datetime.fromtimestamp(float(0), tz0)),
         ]
 
         for raw_value, datetime_value in self.timestamps:

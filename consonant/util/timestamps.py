@@ -69,8 +69,14 @@ class Timestamp(yaml.YAMLObject):
     def from_raw(cls, value):
         """Parse a raw string representation("%s %z"), return a Timestamp."""
 
-        ts, tz = value.split()
-        tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
+        try:
+            ts, tz = value.split()
+        except AttributeError:
+            return Timestamp(0, 0)
+        try:
+            tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
+        except ValueError:
+            return Timestamp(0, 0)
         return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
 
     def raw(self):

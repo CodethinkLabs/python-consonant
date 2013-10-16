@@ -116,6 +116,21 @@ class TimestampTests(unittest.TestCase):
         self.assertEqual(ts2.seconds(), 94039450)
         self.assertEqual(ts2.offset(), -120)
 
+    def test_parsing_an_invalid_timestamp_zeroes_the_values(self):
+        """Verify that parsing an invalid raw timestamp zeroes the values."""
+
+        ts = timestamps.Timestamp.from_raw(12345)
+        tz = timestamps.Timezone(0)
+        self.assertEqual(ts.raw(), '0 +0000')
+        self.assertEqual(ts.value,
+                         datetime.datetime.fromtimestamp(float(0), tz))
+
+        ts = timestamps.Timestamp.from_raw('0 0')
+        tz = timestamps.Timezone(0)
+        self.assertEqual(ts.raw(), '0 +0000')
+        self.assertEqual(ts.value,
+                         datetime.datetime.fromtimestamp(float(0), tz))
+
     def test_equality_operator_is_correct(self):
         """Verify that the __eq__ operator is correct."""
 

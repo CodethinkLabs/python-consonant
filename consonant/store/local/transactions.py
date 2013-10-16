@@ -106,9 +106,14 @@ class TransactionPreparer(object):
         object_tree = self._create_object_tree(uuid, action.properties)
 
         # build new class tree with the object added
-        class_entry = tree[action.klass]
-        class_tree = self.store.repo[class_entry.oid]
-        builder = self.store.repo.TreeBuilder(class_tree)
+        try:
+            class_entry = tree[action.klass]
+            class_tree = self.store.repo[class_entry.oid]
+            builder = self.store.repo.TreeBuilder(class_tree)
+        except KeyError:
+            # this is the first object of this class in the commit, create
+            # a new tree from scratch
+            builder = self.store.repo.TreeBuilder()
         builder.insert(uuid, object_tree.oid, pygit2.GIT_FILEMODE_TREE)
         new_class_oid = builder.write()
 
