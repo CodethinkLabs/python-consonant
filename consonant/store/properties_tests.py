@@ -494,3 +494,16 @@ class ListPropertyTest(unittest.TestCase):
         self.assertEqual(len(data), 2)
         self.assertEqual(data[0], 5)
         self.assertEqual(data[1], -17)
+
+        prop = properties.ListProperty('name', [
+            properties.TextProperty('name', 'foo'),
+            properties.TextProperty('name', 'bar'),
+            properties.TextProperty('name', 'baz'),
+            ])
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 3)
+        self.assertEqual(data[0], 'foo')
+        self.assertEqual(data[1], 'bar')
+        self.assertEqual(data[2], 'baz')
