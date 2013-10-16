@@ -28,6 +28,7 @@ class Property(yaml.YAMLObject):
     """Abstract base class for property classes."""
 
     def __init__(self, name, value):
+        yaml.YAMLObject.__init__(self)
         self.obj = None
         self.name = name
         self.value = value

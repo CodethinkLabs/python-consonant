@@ -589,7 +589,7 @@ class Loader(object):
         """Return a boolean property from an object properties dictionary."""
 
         if not isinstance(data, bool):
-            context.error(IntPropertyValueInvalidError(
+            context.error(BooleanPropertyValueInvalidError(
                 context, prop_def.name, data))
 
         return properties.BooleanProperty(prop_def.name, data)

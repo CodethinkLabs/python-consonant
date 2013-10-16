@@ -218,7 +218,6 @@ class TransactionPreparer(object):
             target_action = self._validate_and_resolve_target_action(
                 schema, action)
             obj = self.action_objects[target_action]
-            print repr(obj), obj
             return obj
         else:
             objects = self.store.objects(commit)
@@ -270,8 +269,7 @@ class TransactionPreparer(object):
                 del data[prop_name]
             else:
                 data[prop_name] = prop.value
-        yaml_data = yaml.dump(
-            data, Dumper=yaml.CDumper, default_flow_style=False)
+        yaml_data = yaml.dump(data, default_flow_style=False)
 
         # generate the properties.yaml blob
         blob_oid = self.store.repo.create_blob(yaml_data)
