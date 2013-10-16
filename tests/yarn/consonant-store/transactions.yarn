@@ -704,10 +704,49 @@ Apply an invalid transaction that sets a float list property to an invalid value
 
 TODO
 
-Apply an invalid transaction that sets a text list property to an invalid value using consonant.store
------------------------------------------------------------------------------------------------------
+Apply an invalid transaction that sets a text list property to an non-list value using consonant.store
+------------------------------------------------------------------------------------------------------
 
-TODO
+    SCENARIO apply an invalid transaction that sets a text list property to a non-list value using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object text property "assignees" to "hello"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Break the assignees of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ListPropertyValueNotAListError is thrown
+
+Apply an invalid transaction that sets a text list property to a list of non-text values using consonant.store
+----------------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that sets a text list property to a list of non-text values using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object list property "assignees"
+    AND      adding a list element 12345
+    AND      adding a list element false
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Break the assignees of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a TextPropertyValueNotAStringError is thrown
 
 Apply an invalid transaction that sets a reference list property to an invalid value using consonant.store
 ----------------------------------------------------------------------------------------------------------

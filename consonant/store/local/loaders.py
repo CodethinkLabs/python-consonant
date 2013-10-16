@@ -64,7 +64,10 @@ class BooleanPropertyValueInvalidError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'boolean property value is invalid: %s' % self.value
+        if self.context.in_list_property:
+            return 'boolean value in list property is invalid: %s' % self.value
+        else:
+            return 'boolean property value is invalid: %s' % self.value
 
 
 class IntPropertyValueInvalidError(PropertyValidationError):
@@ -76,7 +79,10 @@ class IntPropertyValueInvalidError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'int property value is invalid: %s' % self.value
+        if self.context.in_list_property:
+            return 'int value in list property is invalid: %s' % self.value
+        else:
+            return 'int property value is invalid: %s' % self.value
 
 
 class FloatPropertyValueInvalidError(PropertyValidationError):
@@ -88,7 +94,10 @@ class FloatPropertyValueInvalidError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'float property value is invalid: %s' % self.value
+        if self.context.in_list_property:
+            return 'float value in list property is invalid: %s' % self.value
+        else:
+            return 'float property value is invalid: %s' % self.value
 
 
 class TextPropertyValueNotAStringError(PropertyValidationError):
@@ -100,7 +109,11 @@ class TextPropertyValueNotAStringError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'text property value is not a string: %s' % self.value
+        if self.context.in_list_property:
+            return 'text value in list property is not a string: %s' % \
+                self.value
+        else:
+            return 'text property value is not a string: %s' % self.value
 
 
 class TextPropertyValueInvalidError(PropertyValidationError):
@@ -112,7 +125,10 @@ class TextPropertyValueInvalidError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'text property value is invalid: %s' % self.value
+        if self.context.in_list_property:
+            return 'text value in list property is invalid: %s' % self.value
+        else:
+            return 'text property value is invalid: %s' % self.value
 
 
 class TimestampPropertyValueNotAStringError(PropertyValidationError):
@@ -124,7 +140,11 @@ class TimestampPropertyValueNotAStringError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'timestamp property value is not a string: %s' % self.value
+        if self.context.in_list_property:
+            return 'timestamp value in list property is not a string: %s' % \
+                self.value
+        else:
+            return 'timestamp property value is not a string: %s' % self.value
 
 
 class TimestampPropertyValueInvalidError(PropertyValidationError):
@@ -136,7 +156,11 @@ class TimestampPropertyValueInvalidError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'timestamp property value is invalid: %s' % self.value
+        if self.context.in_list_property:
+            return 'timestamp value in list property is invalid: %s' % \
+                self.value
+        else:
+            return 'timestamp property value is invalid: %s' % self.value
 
 
 class ReferencePropertyValueNotADictError(PropertyValidationError):
@@ -148,7 +172,11 @@ class ReferencePropertyValueNotADictError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'reference property is not a dictionary: %s' % self.value
+        if self.context.in_list_property:
+            return 'reference in list property is not a dictionary: %s' % \
+                self.value
+        else:
+            return 'reference property is not a dictionary: %s' % self.value
 
 
 class ReferencePropertyUUIDUndefinedError(PropertyValidationError):
@@ -160,8 +188,12 @@ class ReferencePropertyUUIDUndefinedError(PropertyValidationError):
         self.value = value
 
     def _msg(self):
-        return 'target UUID of reference property is undefined: %s' % \
-            self.value
+        if self.context.in_list_property:
+            return 'target UUID of reference in list property ' \
+                   'is undefined: %s' % self.value
+        else:
+            return 'target UUID of reference property is undefined: %s' % \
+                self.value
 
 
 class ReferencePropertyUUIDNotAStringError(PropertyValidationError):
@@ -173,8 +205,12 @@ class ReferencePropertyUUIDNotAStringError(PropertyValidationError):
         self.uuid = uuid
 
     def _msg(self):
-        return 'target UUID of reference property is not a string: %s' % \
-            self.uuid
+        if self.context.in_list_property:
+            return 'target UUID of reference in list property ' \
+                   'is not a string: %s' % self.uuid
+        else:
+            return 'target UUID of reference property is not a string: %s' % \
+                self.uuid
 
 
 class ReferencePropertyUUIDInvalidError(PropertyValidationError):
@@ -186,7 +222,12 @@ class ReferencePropertyUUIDInvalidError(PropertyValidationError):
         self.uuid = uuid
 
     def _msg(self):
-        return 'target UUID of reference property is invalid: %s' % self.uuid
+        if self.context.in_list_property:
+            return 'target UUID of reference in list property ' \
+                   'is invalid: %s' % self.uuid
+        else:
+            return 'target UUID of reference property is invalid: %s' % \
+                self.uuid
 
 
 class ReferencePropertyRefNotAStringError(PropertyValidationError):
@@ -198,8 +239,12 @@ class ReferencePropertyRefNotAStringError(PropertyValidationError):
         self.ref = ref
 
     def _msg(self):
-        return 'target ref of reference property is not a string: %s' % \
-            self.ref
+        if self.context.in_list_property:
+            return 'target ref of reference in list property ' \
+                   'is not a string: %s' % self.ref
+        else:
+            return 'target ref of reference property is not a string: %s' % \
+                self.ref
 
 
 class ReferencePropertyServiceNotAStringError(PropertyValidationError):
@@ -211,8 +256,24 @@ class ReferencePropertyServiceNotAStringError(PropertyValidationError):
         self.service = service
 
     def _msg(self):
-        return 'target service of reference property is not a string: %s' % \
-            self.service
+        if self.context.in_list_property:
+            return 'target service of reference in list property ' \
+                   'is not a string: %s' % self.service
+        else:
+            return 'target service of reference property ' \
+                   'is not a string: %s' % self.service
+
+
+class ListPropertyValueNotAListError(PropertyValidationError):
+
+    """Exception when the value of a list property is not a list."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'list property value is not a list: %s' % self.value
 
 
 class MandatoryPropertyNotSetError(PropertyValidationError):
@@ -247,6 +308,7 @@ class LoaderContext(Phase):
         self.klass = None
         self.uuid = None
         self.schema = None
+        self.in_list_property = False
 
     def set_commit(self, commit):
         """Set the commit that is currently being loaded from."""
@@ -677,13 +739,22 @@ class Loader(object):
     def list_property_in_data(self, context, object_entry, prop_def, data):
         """Return a list property from an object properties dictionary."""
 
-        element_type = prop_def.elements.property_type
-        element_func = '%s_property_in_data' % element_type
-        values = []
-        for raw_value in data:
-            value = getattr(self, element_func)(
-                context, object_entry, prop_def.elements, raw_value)
-            values.append(value)
+        if not isinstance(data, list):
+            context.error(ListPropertyValueNotAListError(
+                context, prop_def.name, data))
+
+        context.in_list_property = True
+        try:
+            element_type = prop_def.elements.property_type
+            element_func = '%s_property_in_data' % element_type
+            values = []
+            for raw_value in data:
+                value = getattr(self, element_func)(
+                    context, object_entry, prop_def.elements, raw_value)
+                values.append(value)
+        finally:
+            context.in_list_property = False
+
         return properties.ReferenceProperty(prop_def.name, values)
 
     def _validate_mandatory_properties(self, context, props):
