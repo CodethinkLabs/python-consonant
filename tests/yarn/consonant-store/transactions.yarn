@@ -751,4 +751,49 @@ Apply an invalid transaction that sets a text list property to a list of non-tex
 Apply an invalid transaction that sets a reference list property to an invalid value using consonant.store
 ----------------------------------------------------------------------------------------------------------
 
-TODO
+    SCENARIO apply an invalid transaction that sets a reference list property to a list of non-reference values using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object list property "attachments"
+    AND      adding a list element 12345
+    AND      adding a list element false
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Break the attachments of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyValueNotADictError is thrown
+
+    SCENARIO apply an invalid transaction that sets a reference list property to a list of invalid references using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object list property "attachments"
+    AND      adding a list element { ref: master }
+    AND      adding a list element { uuid: 12345 }
+    AND      adding a list element uuid: 123invalid+uuid321
+    AND      adding a list element { uuid: this-is-ok, ref: 12345 }
+    AND      adding a list element { uuid: this-is-ok, service: 12345 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Break the attachments of a card"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyUUIDUndefinedError is thrown
+    AND      a ReferencePropertyUUIDNotAStringError is thrown
+    AND      a ReferencePropertyUUIDInvalidError is thrown
+    AND      a ReferencePropertyRefNotAStringError is thrown
+    AND      a ReferencePropertyServiceNotAStringError is thrown
