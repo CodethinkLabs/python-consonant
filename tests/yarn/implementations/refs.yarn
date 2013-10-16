@@ -18,7 +18,7 @@ Verify that there are as many refs as expected
     IMPLEMENTS THEN the result contains exactly ([0-9]+) refs
 
     run_python_test <<-EOF
-    assert len(output_yaml) == 4
+    assert len(output_yaml) == $MATCH_1
     EOF
 
 Verify that a given branch/tag is included in the result

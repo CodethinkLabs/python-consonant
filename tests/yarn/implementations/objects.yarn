@@ -31,6 +31,15 @@ Fetch objects from a store
 
     fail_unknown_api
 
+    IMPLEMENTS WHEN fetching objects from the latest commit in "(.+)"
+
+    run_consonant_store <<-EOF
+    ref = store.ref("$MATCH_1")
+    print yaml.dump(store.objects(ref.head))
+    EOF
+
+    fail_unknown_api
+
 Verify that the result contains objects of a given number of classes
 --------------------------------------------------------------------
 
@@ -88,7 +97,7 @@ Verify that a given object has a certain number of properties set
 
     IMPLEMENTS THEN the newly created object has exactly ([0-9]+) properties set
 
-    NEW_OBJECTS=$(created_objects)
+    NEW_OBJECTS=$(created_objects master)
     run_python_test <<-EOF
     new_object = eval("$NEW_OBJECTS")[0]
     if isinstance(output_yaml, dict):
@@ -118,7 +127,7 @@ Verify that a given property of an object is set to a certain value
 
     IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of the newly created object is set to (.+)
 
-    NEW_OBJECTS=$(created_objects)
+    NEW_OBJECTS=$(created_objects master)
     run_python_test <<-EOF
     new_object = eval("$NEW_OBJECTS")[0]
     if isinstance(output_yaml, dict):
@@ -135,7 +144,7 @@ Verify that a given property of an object is not set
 
     IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of the newly created object is not set
 
-    NEW_OBJECTS=$(created_objects)
+    NEW_OBJECTS=$(created_objects master)
     run_python_test <<-EOF
     new_object = eval("$NEW_OBJECTS")[0]
     if isinstance(output_yaml, dict):
@@ -149,7 +158,7 @@ Verify that a given property of an object is not set
 Verify that a given property of an object has a certain number of elements
 --------------------------------------------------------------------------
 
-    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" contains exactly ([0-9]+) elements
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" contains exactly ([0-9]+) elements?
 
     run_python_test <<-EOF
     if isinstance(output_yaml, dict):
@@ -159,6 +168,21 @@ Verify that a given property of an object has a certain number of elements
     object = [x for x in objects if x['uuid'] == "$MATCH_2"][0]
     assert "$MATCH_1" in object['properties']
     assert len(object['properties']["$MATCH_1"]) == $MATCH_3
+    EOF
+
+Verify that a given property of an object includes a certain value
+------------------------------------------------------------------
+
+    IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" includes the value (.+)
+
+    run_python_test <<-EOF
+    if isinstance(output_yaml, dict):
+      objects = []; [objects.extend(x) for x in output_yaml.itervalues()]
+    else:
+      objects = output_yaml
+    object = [x for x in objects if x['uuid'] == "$MATCH_2"][0]
+    assert "$MATCH_1" in object['properties']
+    assert $MATCH_3 in object['properties']["$MATCH_1"]
     EOF
 
 Verify that a given property of an object includes a reference to a certain object
@@ -176,8 +200,8 @@ Verify that a given property of an object includes a reference to a certain obje
     assert {'uuid': "$MATCH_3"} in object['properties']["$MATCH_1"]
     EOF
 
-Verify that a given property of an object includes references a certain object
-------------------------------------------------------------------------------
+Verify that a given property of an object references a certain object
+---------------------------------------------------------------------
 
     IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
 
@@ -193,7 +217,7 @@ Verify that a given property of an object includes references a certain object
 
     IMPLEMENTS THEN the property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of the newly created object references "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])"
 
-    NEW_OBJECTS=$(created_objects)
+    NEW_OBJECTS=$(created_objects master)
     run_python_test <<-EOF
     new_object = eval("$NEW_OBJECTS")[0]
     if isinstance(output_yaml, dict):

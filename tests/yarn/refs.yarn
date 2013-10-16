@@ -10,14 +10,15 @@ Fetch a list of all refs in a store:
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     fetching all refs from the store
 
-Make sure the number of refs is as expected (2 branches, 2 tags):
+Make sure the number of refs is as expected (3 branches, 2 tags):
 
-    THEN     the result contains exactly 4 refs
+    THEN     the result contains exactly 5 refs
 
 Make sure all the expected branches are present:
 
     AND      the result includes a branch called "HEAD"
     AND      the result includes a branch called "master"
+    AND      the result includes a branch called "schema-v2"
 
     AND      the branch "HEAD" has exactly 1 alias
     AND      the branch "HEAD" has an alias "HEAD"
@@ -25,6 +26,10 @@ Make sure all the expected branches are present:
     AND      the branch "master" has exactly 2 aliases
     AND      the branch "master" has an alias "master"
     AND      the branch "master" has an alias "refs:heads:master"
+
+    AND      the branch "schema-v2" has exactly 2 aliases
+    AND      the branch "schema-v2" has an alias "schema-v2"
+    AND      the branch "schema-v2" has an alias "refs:heads:schema-v2"
 
 Make sure all the expected tags are present:
 
@@ -106,6 +111,50 @@ Fetch the branch "refs:heads:master" from a store:
     AND      the head commit subject is "Add another card to the doing lane"
     AND      the head commit has exactly 1 parent
     AND      the head commit has a left parent "9a52d24fa3c2f82a704b7227f4df29129f446ab3"
+
+Fetch the branch "schema-v2" from a store:
+
+    SCENARIO fetch the ref "schema-v2" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "schema-v2" from the store
+
+    THEN     the result is a ref of type "branch"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "schema-v2"
+    AND      the ref has an alias "refs:heads:schema-v2"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "9f3e6023ef8d60ca82e8f77a84704934398479b1"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1381747972 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1381751570 +0100"
+    AND      the head commit subject is "Switch to test schema version 2"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "5c127eaf6adf42787aa282f7e30162104885de0f"
+
+Fetch the branch "refs:heads:schema-v2" from a store:
+
+    SCENARIO fetch the ref "refs:heads:schema-v2" from a store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     fetching the ref "refs:heads:schema-v2" from the store
+
+    THEN     the result is a ref of type "branch"
+
+    AND      the ref has exactly 2 aliases
+    AND      the ref has an alias "schema-v2"
+    AND      the ref has an alias "refs:heads:schema-v2"
+
+    AND      the ref has a head commit
+    AND      the head commit SHA1 is "9f3e6023ef8d60ca82e8f77a84704934398479b1"
+    AND      the head commit author is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit author date is "1381747972 +0100"
+    AND      the head commit committer is "Jannis Pohlmann <jannis.pohlmann@codethink.co.uk>"
+    AND      the head commit committer date is "1381751570 +0100"
+    AND      the head commit subject is "Switch to test schema version 2"
+    AND      the head commit has exactly 1 parent
+    AND      the head commit has a left parent "5c127eaf6adf42787aa282f7e30162104885de0f"
 
 Fetch individual tags from a store
 ----------------------------------

@@ -134,8 +134,8 @@ created_objects()
 {
     cd $DATADIR/test-store
 
-    OLD_OBJECTS=$(git ls-tree -r master~1 | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
-    NEW_OBJECTS=$(git ls-tree -r master   | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+    OLD_OBJECTS=$(git ls-tree -r $1~1 | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+    NEW_OBJECTS=$(git ls-tree -r $1   | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
 
     python /dev/stdin <<-EOF
 old_objects = set("$OLD_OBJECTS".split())
@@ -149,7 +149,7 @@ EOF
 changed_objects()
 {
     cd $DATADIR/test-store
-    CHANGED_OBJECTS=$(git diff --name-only master~1..master | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
+    CHANGED_OBJECTS=$(git diff --name-only $1~1..$1 | grep properties.yaml | cut -d/ -f2 | tr '\n' ' ')
     python /dev/stdin <<-EOF
 print list("$CHANGED_OBJECTS".split())
 EOF

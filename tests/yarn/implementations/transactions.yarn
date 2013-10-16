@@ -87,6 +87,14 @@ Setting the target object of an action
         $MATCH_1
     EOF
 
+Setting object boolean properties
+------------------------------
+
+    IMPLEMENTS WHEN setting the object boolean property "(.+)" to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+        $MATCH_1: $MATCH_2
+    EOF
+
 Setting object text properties
 ------------------------------
 
@@ -167,7 +175,15 @@ Verify that a transaction only affects a certain number of objects
 
     IMPLEMENTS THEN the transaction affects exactly ([0-9]+) objects?
 
-    CHANGED_OBJECTS=$(changed_objects)
+    CHANGED_OBJECTS=$(changed_objects master)
+    run_python_test <<-EOF
+    changed_objects = eval("$CHANGED_OBJECTS")
+    assert len(changed_objects) == $MATCH_1
+    EOF
+
+    IMPLEMENTS THEN the transaction affects exactly ([0-9]+) objects? in "(.+)"
+
+    CHANGED_OBJECTS=$(changed_objects "$MATCH_2")
     run_python_test <<-EOF
     changed_objects = eval("$CHANGED_OBJECTS")
     assert len(changed_objects) == $MATCH_1
