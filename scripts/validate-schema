@@ -1,0 +1,50 @@
+#!/usr/bin/python
+#
+# Copyright (C) 2013 Codethink Limited.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+"""Validates a schema file (passed in as a path or a schema name)."""
+
+
+import cliapp
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+import consonant
+
+
+class ValidateSchemaApp(cliapp.Application):
+
+    def process_args(self, args):
+        if not args:
+            raise cliapp.AppException('Expecting a schema file or name '
+                                      'as the argument')
+
+        if os.path.isfile(args[0]):
+            schema_path = args[0]
+        else:
+            register = consonant.register.Register()
+            schema_path = register.schema(args[0])
+
+        with open(schema_path) as f:
+            parser = consonant.schema.parsers.SchemaParser()
+            parser.parse(f)
+
+
+if __name__ == '__main__':
+    ValidateSchemaApp().run()
