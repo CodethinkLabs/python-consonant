@@ -201,6 +201,55 @@ Submitting a transaction based on a non-existent commit
 
     fail_unknown_api
 
+Submitting a transaction with a validation hook
+-----------------------------------------------
+
+    IMPLEMENTS WHEN submitting the transaction with a validation hook that rejects card titles that begin with numbers
+
+    cat $DATADIR/transaction.yaml
+
+    run_consonant_store <<-EOF
+    from consonant.transaction import validation
+
+    class NoCardTitlesWithNumbers(validation.ValidationHook):
+        def validate(self, service, commit):
+            card_klass = service.klass(commit, 'card')
+            card_objects = service.objects(commit, card_klass)
+            for card in card_objects:
+                title = card.properties['title'].value
+                if title[0].isdigit():
+                    raise validation.ValidationError(
+                        'Card titles must not begin with digits')
+            return True
+
+    parser = consonant.transaction.parsers.TransactionParser()
+    transaction = parser.parse(open('transaction.yaml'))
+    store.apply_transaction(transaction, [NoCardTitlesWithNumbers()])
+    EOF
+
+    IMPLEMENTS WHEN submitting the invalid transaction with a validation hook that rejects card titles that begin with numbers
+
+    cat $DATADIR/transaction.yaml
+
+    run_consonant_store <<-EOF || true
+    from consonant.transaction import validation
+
+    class NoCardTitlesWithNumbers(validation.ValidationHook):
+        def validate(self, service, commit):
+            card_klass = service.klass(commit, 'card')
+            card_objects = service.objects(commit, card_klass)
+            for card in card_objects:
+                title = card.properties['title'].value
+                if title[0].isdigit():
+                    raise validation.ValidationError(
+                        'Card titles must not begin with digits')
+            return True
+
+    parser = consonant.transaction.parsers.TransactionParser()
+    transaction = parser.parse(open('transaction.yaml'))
+    store.apply_transaction(transaction, [NoCardTitlesWithNumbers()])
+    EOF
+
 Verify that a transaction only affects a certain number of objects
 ------------------------------------------------------------------
 
@@ -215,6 +264,7 @@ Verify that a transaction only affects a certain number of objects
     IMPLEMENTS THEN the transaction affects exactly ([0-9]+) objects? in "(.+)"
 
     CHANGED_OBJECTS=$(changed_objects "$MATCH_2")
+    GIT_DIR="$DATADIR/test-store/.git" git show -p "$MATCH_2"
     run_python_test <<-EOF
     changed_objects = eval("$CHANGED_OBJECTS")
     assert len(changed_objects) == $MATCH_1

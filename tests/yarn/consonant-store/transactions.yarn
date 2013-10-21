@@ -830,3 +830,54 @@ Apply an invalid transaction that sets a reference list property to an invalid v
     AND      a ReferencePropertyUUIDInvalidError is thrown
     AND      a ReferencePropertyRefNotAStringError is thrown
     AND      a ReferencePropertyServiceNotAStringError is thrown
+
+Apply a transaction that is rejected by a custom validation hook
+----------------------------------------------------------------
+
+    SCENARIO apply a transaction that is rejected by a commit validation
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object text property "title" to "91 Titles may not begin with numbers"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Break a card title"
+    AND      submitting the invalid transaction with a validation hook that rejects card titles that begin with numbers
+
+    THEN     a ValidationError is thrown
+
+Apply a transaction that is accepted by a custom validation hook
+----------------------------------------------------------------
+
+    SCENARIO apply a transaction that is accepted by a commit validation
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object text property "title" to "Titles may not begin with numbers"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Change the title of a card"
+    AND      submitting the transaction with a validation hook that rejects card titles that begin with numbers
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 1 object in "refs/heads/schema-v2"
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 6 properties set
+    AND      the property "number" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 1
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Titles may not begin with numbers"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" contains exactly 1 element
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" includes the value "jeff@yourproject.org"
+    AND      the property "estimate" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 0.5
+    AND      the property "doable" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to True
