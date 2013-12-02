@@ -727,6 +727,7 @@ Apply a transaction that sets a text list property using consonant.store
     AND      fetching objects from the latest commit in "schema-v2"
 
     THEN     the transaction affects exactly 1 object in "schema-v2"
+
     AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 6 properties set
     AND      the property "number" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 1
     AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
@@ -781,8 +782,8 @@ Apply an invalid transaction that sets a text list property to a list of non-tex
 
     THEN     a TextPropertyValueNotAStringError is thrown
 
-Apply an invalid transaction that sets a reference list property to an invalid value using consonant.store
-----------------------------------------------------------------------------------------------------------
+Apply an invalid transaction that sets a reference list property to a list of non-reference values using consonant.store
+------------------------------------------------------------------------------------------------------------------------
 
     SCENARIO apply an invalid transaction that sets a reference list property to a list of non-reference values using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
@@ -803,6 +804,9 @@ Apply an invalid transaction that sets a reference list property to an invalid v
     AND      submitting the invalid transaction
 
     THEN     a ReferencePropertyValueNotADictError is thrown
+
+Apply an invalid transaction that sets a reference list property to a list of invalid references using consonant.store
+----------------------------------------------------------------------------------------------------------------------
 
     SCENARIO apply an invalid transaction that sets a reference list property to a list of invalid references using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
@@ -830,6 +834,207 @@ Apply an invalid transaction that sets a reference list property to an invalid v
     AND      a ReferencePropertyUUIDInvalidError is thrown
     AND      a ReferencePropertyRefNotAStringError is thrown
     AND      a ReferencePropertyServiceNotAStringError is thrown
+
+Apply an invalid transaction that references a non-existent action in a reference property using consonant.store
+----------------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that references a non-existent action in a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { action: 1 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to a non-existent action in a reference property"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyActionNonExistentError is thrown
+
+Apply an invalid transaction that references a later action in a reference property using consonant.store
+---------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that references a later action in a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object reference property "lane" to { action: 1 }
+    AND      defining an update action
+    AND      setting the action id to 1
+    AND      setting the action target object to uuid: 27519b8d-8ad8-4558-8ea2-f128404e6f58
+    AND      setting the object properties
+    AND      setting the object text property "title" to "Modified backlog"
+    AND      setting the object list property "cards"
+    AND      adding a list element uuid: dd7ff995-eba8-46e0-93d4-7297a691919e
+    AND      adding a list element uuid: 86ab9538-3926-42ff-9fc7-e122a006cd4d
+    AND      adding a list element uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to a later action in a reference property"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyReferencesALaterActionError is thrown
+
+Apply an transaction that references an action in a reference property using consonant.store
+--------------------------------------------------------------------------------------------
+
+    SCENARIO apply an transaction that references an action in a reference property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action id to 1
+    AND      setting the action target object to uuid: 27519b8d-8ad8-4558-8ea2-f128404e6f58
+    AND      setting the object properties
+    AND      setting the object text property "title" to "Modified backlog"
+    AND      setting the object list property "cards"
+    AND      adding a list element uuid: dd7ff995-eba8-46e0-93d4-7297a691919e
+    AND      adding a list element uuid: 86ab9538-3926-42ff-9fc7-e122a006cd4d
+    AND      adding a list element uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object boolean property "doable" to false
+    AND      setting the object reference property "lane" to { action: 1 }
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to an action in a reference property"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 2 objects in "schema-v2"
+
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 6 properties set
+    AND      the property "number" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 1
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" contains exactly 1 element
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" includes the value "jeff@yourproject.org"
+    AND      the property "estimate" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 0.5
+    AND      the property "doable" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to False
+
+    AND      the object "27519b8d-8ad8-4558-8ea2-f128404e6f58" has exactly 2 properties set
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Modified backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
+
+Apply an invalid transaction that references a non-existent action in a reference list property using consonant.store
+---------------------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that references a non-existent action in a reference list property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object list property "attachments"
+    AND      adding a list element { action: 2 }
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to a non-existent action in a reference list property"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyActionNonExistentError is thrown
+
+Apply an invalid transaction that references a later action in a reference list property using consonant.store
+--------------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that references a later action in a reference list property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action target object to uuid: 27519b8d-8ad8-4558-8ea2-f128404e6f58
+    AND      setting the object properties
+    AND      setting the object text property "title" to "Modified backlog"
+    AND      setting the object list property "cards"
+    AND      adding a list element uuid: dd7ff995-eba8-46e0-93d4-7297a691919e
+    AND      adding a list element uuid: 86ab9538-3926-42ff-9fc7-e122a006cd4d
+    AND      adding a list element action: 1
+    AND      defining an update action
+    AND      setting the action id to 1
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object boolean property "doable" to false
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to a later action in a reference list property"
+    AND      submitting the invalid transaction
+
+    THEN     a ReferencePropertyReferencesALaterActionError is thrown
+
+Apply an transaction that references an action in a reference list property using consonant.store
+-------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an transaction that references an action in a reference list property using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an update action
+    AND      setting the action id to 1
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the object properties
+    AND      setting the object boolean property "doable" to false
+    AND      setting the action target object to uuid: 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      defining an update action
+    AND      setting the action target object to uuid: 27519b8d-8ad8-4558-8ea2-f128404e6f58
+    AND      setting the object properties
+    AND      setting the object text property "title" to "Modified backlog"
+    AND      setting the object list property "cards"
+    AND      adding a list element uuid: dd7ff995-eba8-46e0-93d4-7297a691919e
+    AND      adding a list element uuid: 86ab9538-3926-42ff-9fc7-e122a006cd4d
+    AND      adding a list element action: 1
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Refer to an action in a reference list property"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 2 objects in "schema-v2"
+
+    AND      the object "04be5c1b-0192-4e31-b4f8-39a084659738" has exactly 6 properties set
+    AND      the property "number" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 1
+    AND      the property "title" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to "Implement feature A"
+    AND      the property "lane" of "04be5c1b-0192-4e31-b4f8-39a084659738" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" contains exactly 1 element
+    AND      the property "assignees" of "04be5c1b-0192-4e31-b4f8-39a084659738" includes the value "jeff@yourproject.org"
+    AND      the property "estimate" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to 0.5
+    AND      the property "doable" of "04be5c1b-0192-4e31-b4f8-39a084659738" is set to False
+
+    AND      the object "27519b8d-8ad8-4558-8ea2-f128404e6f58" has exactly 2 properties set
+    AND      the property "title" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" is set to "Modified backlog"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" contains exactly 3 elements
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "dd7ff995-eba8-46e0-93d4-7297a691919e"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "86ab9538-3926-42ff-9fc7-e122a006cd4d"
+    AND      the property "cards" of "27519b8d-8ad8-4558-8ea2-f128404e6f58" includes the object "04be5c1b-0192-4e31-b4f8-39a084659738"
 
 Apply a transaction that is rejected by a custom validation hook
 ----------------------------------------------------------------

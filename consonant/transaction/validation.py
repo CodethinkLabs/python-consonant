@@ -98,6 +98,36 @@ class ActionReferencesALaterActionError(ActionValidationError):
         return 'Action refers to a later action: %s' % self.action_id
 
 
+class ReferencePropertyActionNonExistentError(ActionValidationError):
+
+    """Exception for when a non-exist action object reference is used."""
+
+    def __init__(self, action, schema, prop_name, action_id):
+        ActionValidationError.__init__(self, action, schema)
+        self.prop_name = prop_name
+        self.action_id = action_id
+
+    def __str__(self):
+        return 'Reference or reference list property "%s" in action ' \
+               'refers to a non-existent action: %s' % \
+               (self.prop_name, self.action_id)
+
+
+class ReferencePropertyReferencesALaterActionError(ActionValidationError):
+
+    """Exception for when a later action is referenced by a property."""
+
+    def __init__(self, action, schema, prop_name, action_id):
+        ActionValidationError.__init__(self, action, schema)
+        self.prop_name = prop_name
+        self.action_id = action_id
+
+    def __str__(self):
+        return 'Reference or reference list property "%s" in action ' \
+               'refers to a later action: %s' % \
+               (self.prop_name, self.action_id)
+
+
 class ValidationHook(object):
 
     """A hook to register with CommitValidator for extra validation."""

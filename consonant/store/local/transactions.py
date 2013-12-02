@@ -102,6 +102,10 @@ class TransactionPreparer(object):
             self._validate_object_properties_not_raw(
                 phase, action, schema, action.klass, action.properties)
 
+            # validate object references to other actions
+            self._validate_action_object_references(
+                phase, action, schema, action.klass, action.properties)
+
         uuid = self.store.generate_uuid(commit, action.klass)
         object_tree = self._create_object_tree(uuid, action.properties)
 
@@ -150,8 +154,12 @@ class TransactionPreparer(object):
             self._validate_object_properties_not_raw(
                 phase, action, schema, obj.klass.name, action.properties)
 
+            # validate object references to other actions
+            self._validate_action_object_references(
+                phase, action, schema, obj.klass.name, action.properties)
+
         # build a new object tree
-        object_tree = self._update_object_tree(obj, action.properties)
+        object_tree = self._update_object_tree(schema, obj, action.properties)
 
         # build a new class tree with the object changed
         class_entry = tree[obj.klass.name]
@@ -262,7 +270,7 @@ class TransactionPreparer(object):
         tree_oid = builder.write()
         return self.store.repo[tree_oid]
 
-    def _update_object_tree(self, obj, properties):
+    def _update_object_tree(self, schema, obj, properties):
         # generate YAML data to write into <class>/<uuid>/properties.yaml
         data = {}
         for prop_name, prop in obj.properties.iteritems():
@@ -273,7 +281,8 @@ class TransactionPreparer(object):
             if prop_name in data and prop.value is None:
                 del data[prop_name]
             else:
-                data[prop_name] = prop.value
+                data[prop_name] = self._create_property_value(
+                    schema, obj, prop)
         yaml_data = yaml.dump(data, default_flow_style=False)
 
         # generate the properties.yaml blob
@@ -284,3 +293,79 @@ class TransactionPreparer(object):
         builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
         tree_oid = builder.write()
         return self.store.repo[tree_oid]
+
+    def _validate_action_object_references(
+            self, phase, action, schema, klass, properties):
+        for name, prop in properties.iteritems():
+            klass_def = schema.classes[klass]
+            prop_def = klass_def.properties[name]
+            if isinstance(prop_def, definitions.ReferencePropertyDefinition):
+                self._validate_action_object_reference(
+                    phase, action, schema, klass_def, prop_def, prop.value)
+            else:
+                is_list = isinstance(
+                    prop_def, definitions.ListPropertyDefinition)
+                is_prop_list = is_list and isinstance(
+                    prop_def.elements, definitions.ReferencePropertyDefinition)
+                is_valid_list = is_prop_list and isinstance(prop.value, list)
+
+                if is_valid_list:
+                    for value in prop.value:
+                        self._validate_action_object_reference(
+                            phase, action, schema, klass_def,
+                            prop_def.elements, value)
+
+    def _validate_action_object_reference(
+            self, phase, action, schema, klass_def, prop_def, value):
+        if isinstance(value, dict):
+            if not 'action' in value:
+                return
+            actions = [a for a in self.transaction.actions
+                       if a.id == value['action']]
+            if not actions:
+                phase.error(validation.ReferencePropertyActionNonExistentError(
+                    action, schema, prop_def.name, value['action']))
+                return
+            target_action = actions[0]
+            if not target_action in self.action_objects:
+                phase.error(
+                    validation.ReferencePropertyReferencesALaterActionError(
+                        schema, klass_def, prop_def, value['action']))
+
+    def _create_property_value(self, schema, obj, prop):
+        klass_def = schema.classes[obj.klass.name]
+        prop_def = klass_def.properties[prop.name]
+        if isinstance(prop_def, definitions.ReferencePropertyDefinition):
+            return self._create_reference_property_value(
+                schema, obj, klass_def, prop_def, prop.value)
+        else:
+            is_list = isinstance(prop_def, definitions.ListPropertyDefinition)
+            is_prop_list = is_list and isinstance(
+                prop_def.elements, definitions.ReferencePropertyDefinition)
+            is_valid_list = is_prop_list and isinstance(prop.value, list)
+
+            if is_valid_list:
+                values = []
+                for value in prop.value:
+                    values.append(self._create_reference_property_value(
+                        schema, obj, klass_def, prop_def.elements, value))
+                return values
+            else:
+                return prop.value
+
+    def _create_reference_property_value(
+            self, schema, obj, klass_def, prop_def, value):
+        if not isinstance(value, dict):
+            return value
+        elif not 'action' in value:
+            return value
+        else:
+            actions = [a for a in self.transaction.actions
+                       if a.id == value['action']]
+            target_action = actions[0]
+
+            new_value = dict(value)
+            new_value['uuid'] = \
+                self.action_objects[target_action].uuid
+            del new_value['action']
+            return new_value
