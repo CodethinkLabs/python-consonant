@@ -22,6 +22,7 @@ import pygit2
 import re
 import yaml
 
+from consonant import store
 from consonant.schema import definitions
 from consonant.store.local import loaders
 from consonant.transaction import validation
@@ -107,7 +108,8 @@ class TransactionPreparer(object):
                 phase, action, schema, action.klass, action.properties)
 
         uuid = self.store.generate_uuid(commit, action.klass)
-        object_tree = self._create_object_tree(uuid, action.properties)
+        object_tree = self._create_object_tree(
+            schema, action.klass, uuid, action.properties)
 
         # build new class tree with the object added
         try:
@@ -253,11 +255,11 @@ class TransactionPreparer(object):
                 action, schema, action.action_id)
         return target_action
 
-    def _create_object_tree(self, uuid, properties):
+    def _create_object_tree(self, schema, klass, uuid, properties):
         # generate YAML data to write into <class>/<uuid>/properties.yaml
         data = {}
         for prop_name, prop in properties.iteritems():
-            data[prop_name] = prop.value
+            data[prop_name] = self._create_property_value(schema, klass, prop)
         yaml_data = yaml.dump(
             data, Dumper=yaml.CDumper, default_flow_style=False)
 
@@ -282,7 +284,7 @@ class TransactionPreparer(object):
                 del data[prop_name]
             else:
                 data[prop_name] = self._create_property_value(
-                    schema, obj, prop)
+                    schema, obj.klass.name, prop)
         yaml_data = yaml.dump(data, default_flow_style=False)
 
         # generate the properties.yaml blob
@@ -296,76 +298,84 @@ class TransactionPreparer(object):
 
     def _validate_action_object_references(
             self, phase, action, schema, klass, properties):
+        # validate references in all properties of the action
+        # to objects in other actions
         for name, prop in properties.iteritems():
             klass_def = schema.classes[klass]
             prop_def = klass_def.properties[name]
-            if isinstance(prop_def, definitions.ReferencePropertyDefinition):
-                self._validate_action_object_reference(
-                    phase, action, schema, klass_def, prop_def, prop.value)
-            else:
-                is_list = isinstance(
-                    prop_def, definitions.ListPropertyDefinition)
-                is_prop_list = is_list and isinstance(
-                    prop_def.elements, definitions.ReferencePropertyDefinition)
-                is_valid_list = is_prop_list and isinstance(prop.value, list)
+            self._validate_object_references_in_property(
+                phase, action, schema, klass_def, prop_def, prop.value)
 
-                if is_valid_list:
-                    for value in prop.value:
-                        self._validate_action_object_reference(
-                            phase, action, schema, klass_def,
-                            prop_def.elements, value)
+    def _validate_object_references_in_property(
+            self, phase, action, schema, klass_def, prop_def, value):
+        if isinstance(prop_def, definitions.ReferencePropertyDefinition):
+            self._validate_action_object_reference(
+                phase, action, schema, klass_def, prop_def, value)
+        elif isinstance(prop_def, definitions.ListPropertyDefinition):
+            self._validate_object_references_in_list_property(
+                phase, action, schema, klass_def, prop_def, value)
+
+    def _validate_object_references_in_list_property(
+            self, phase, action, schema, klass_def, prop_def, value):
+        if isinstance(value, list):
+            for element in value:
+                self._validate_action_object_reference(
+                    phase, action, schema, klass_def,
+                    prop_def.elements, element)
 
     def _validate_action_object_reference(
             self, phase, action, schema, klass_def, prop_def, value):
-        if isinstance(value, dict):
-            if not 'action' in value:
-                return
+        # resolve reference property objects into their dictionaries
+        if isinstance(value, store.properties.Property):
+            value = value.value
+
+        # only validate references to objects in other actions, any normal
+        # UUID references will be taken care of by the commit validators
+        if isinstance(value, dict) and 'action' in value:
+            # collect actions matching the target action ID
             actions = [a for a in self.transaction.actions
                        if a.id == value['action']]
             if not actions:
+                # the target action does not exist actions
                 phase.error(validation.ReferencePropertyActionNonExistentError(
                     action, schema, prop_def.name, value['action']))
-                return
-            target_action = actions[0]
-            if not target_action in self.action_objects:
+            elif not actions[0] in self.action_objects:
+                # the target action only comes later in the transaction
                 phase.error(
                     validation.ReferencePropertyReferencesALaterActionError(
                         schema, klass_def, prop_def, value['action']))
 
-    def _create_property_value(self, schema, obj, prop):
-        klass_def = schema.classes[obj.klass.name]
+    def _create_property_value(self, schema, klass, prop):
+        klass_def = schema.classes[klass]
         prop_def = klass_def.properties[prop.name]
         if isinstance(prop_def, definitions.ReferencePropertyDefinition):
-            return self._create_reference_property_value(
-                schema, obj, klass_def, prop_def, prop.value)
+            return self._create_reference_property_value(prop.value)
+        elif isinstance(prop_def, definitions.ListPropertyDefinition):
+            return self._create_reference_list_property_value(
+                prop_def, prop.value)
         else:
-            is_list = isinstance(prop_def, definitions.ListPropertyDefinition)
-            is_prop_list = is_list and isinstance(
-                prop_def.elements, definitions.ReferencePropertyDefinition)
-            is_valid_list = is_prop_list and isinstance(prop.value, list)
+            return prop.value
 
-            if is_valid_list:
-                values = []
-                for value in prop.value:
-                    values.append(self._create_reference_property_value(
-                        schema, obj, klass_def, prop_def.elements, value))
-                return values
-            else:
-                return prop.value
-
-    def _create_reference_property_value(
-            self, schema, obj, klass_def, prop_def, value):
-        if not isinstance(value, dict):
-            return value
-        elif not 'action' in value:
-            return value
+    def _create_reference_list_property_value(self, prop_def, value):
+        if isinstance(value, list):
+            result = []
+            for value in value:
+                result.append(self._create_reference_property_value(value))
+            return result
         else:
+            return value
+
+    def _create_reference_property_value(self, value):
+        if isinstance(value, store.properties.Property):
+            value = value.value
+        if isinstance(value, dict) and 'action' in value:
             actions = [a for a in self.transaction.actions
                        if a.id == value['action']]
             target_action = actions[0]
-
             new_value = dict(value)
             new_value['uuid'] = \
                 self.action_objects[target_action].uuid
             del new_value['action']
             return new_value
+        else:
+            return value
