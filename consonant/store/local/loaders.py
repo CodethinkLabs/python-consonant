@@ -595,6 +595,10 @@ class Loader(object):
                         context, object_entry, name, data)
                     props.append(prop)
 
+            # filter out properties that failed to load but for which
+            # we have generated errors in the loader context
+            props[:] = [p for p in props if p]
+
             # catch mandatory properties that are not set
             self._validate_mandatory_properties(context, props)
 
@@ -714,6 +718,8 @@ class Loader(object):
         if not isinstance(data, dict):
             context.error(ReferencePropertyValueNotADictError(
                 context, prop_def.name, data))
+
+            return None
         else:
             if not 'uuid' in data:
                 context.error(ReferencePropertyUUIDUndefinedError(
@@ -734,7 +740,12 @@ class Loader(object):
                     context.error(ReferencePropertyServiceNotAStringError(
                         context, prop_def.name, data['service']))
 
-        return properties.ReferenceProperty(prop_def.name, data)
+            reference = references.Reference(
+                data.get('uuid', None),
+                data.get('ref', None),
+                data.get('service', None))
+
+            return properties.ReferenceProperty(prop_def.name, reference)
 
     def list_property_in_data(self, context, object_entry, prop_def, data):
         """Return a list property from an object properties dictionary."""

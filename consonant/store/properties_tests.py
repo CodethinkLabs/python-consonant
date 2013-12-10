@@ -396,9 +396,9 @@ class ReferencePropertyTest(unittest.TestCase):
     def test_yaml_representation_has_all_expected_fields(self):
         """Verify that the YAML representation of reference props is ok."""
 
-        prop = properties.ReferenceProperty('name', {
-            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
-            })
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0', None, None))
         string = yaml.dump(prop)
         data = yaml.load(string)
         self.assertTrue(isinstance(data, dict))
@@ -406,10 +406,9 @@ class ReferencePropertyTest(unittest.TestCase):
         self.assertTrue(not 'service' in data)
         self.assertTrue(not 'ref' in data)
 
-        prop = properties.ReferenceProperty('name', {
-            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
-            'service': 'issues',
-            })
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0', 'issues', None))
         string = yaml.dump(prop)
         data = yaml.load(string)
         self.assertTrue(isinstance(data, dict))
@@ -417,11 +416,10 @@ class ReferencePropertyTest(unittest.TestCase):
         self.assertEqual(data['service'], 'issues')
         self.assertTrue(not 'ref' in data)
 
-        prop = properties.ReferenceProperty('name', {
-            'uuid': '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
-            'service': 'issues',
-            'ref': 'master'
-            })
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
+                'issues', 'master'))
         string = yaml.dump(prop)
         data = yaml.load(string)
         self.assertTrue(isinstance(data, dict))

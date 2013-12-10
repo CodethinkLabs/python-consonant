@@ -134,7 +134,13 @@ class ReferenceProperty(Property):
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of an int property."""
 
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', prop.value)
+        m = {}
+        m['uuid'] = prop.value.uuid
+        if prop.value.service:
+            m['service'] = prop.value.service
+        if prop.value.ref:
+            m['ref'] = prop.value.ref
+        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
 
 
 class ListProperty(Property):
