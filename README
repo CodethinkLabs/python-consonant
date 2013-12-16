@@ -14,7 +14,7 @@ service-oriented Git object store and corresponding web API.
 
 The Consonant specification is hosted on
 
-  https://github.com/consonant/consonant-specification
+  https://github.com/CodethinkLabs/consonant
 
 
 Dependencies
@@ -78,17 +78,17 @@ from the root directory of the source tree.
 Contributing
 ------------
 
-The development of python-consonant takes place within the Consonant
-project on GitHub:
+The development of python-consonant takes place within the Codethink
+Labs project on GitHub:
 
-  https://github.com/consonant
+  https://github.com/CodethinkLabs/python-consonant
 
 Anyone interested in improving python-consonant or Consonant itself is
 welcome to clone the project repositories and send pull requests.
 
-We also use the `python-consonant-dev@consonant-project.org`
-mailinglist for discussions involving the development of
-python-consonant.
+We currently have no public mailing list set up for discussions around
+python-consonant. Feel free to contact jannis.pohlmann@codethink.co.uk
+with ideas or comments, however.
 
 
 License
