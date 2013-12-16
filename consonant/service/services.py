@@ -62,6 +62,10 @@ class Service(object):  # pragma: no cover
         """Return the object with the given UUID in the given commit."""
         raise NotImplementedError
 
+    def resolve_reference(self, reference):
+        """Resolve an object reference into an object and return it."""
+        raise NotImplementedError
+
     def create_ref(self, type, commit, author, committer, message):
         """Create a new Git ref in the store."""
         raise NotImplementedError
@@ -127,3 +131,12 @@ class ObjectNotFoundError(RuntimeError):
         else:
             return 'Commit %s: object %s not found' % (
                 self.commit.sha1, self.uuid)
+
+
+class ExternalReferenceError(RuntimeError):
+
+    """Exception for when a service tries to resolve an external reference."""
+
+    def __init__(self, service, reference):
+        self.service = service
+        self.reference = reference

@@ -126,6 +126,24 @@ class LocalStore(services.Service):
 
         return self.loader.object(commit, uuid, klass)
 
+    def resolve_reference(self, reference, commit=None):
+        """Resolve an object reference into an object and return it."""
+
+        # throw an error if the reference is to another store
+        if reference.service:
+            raise services.ExternalReferenceError(self, reference)
+
+        if reference.ref:
+            try:
+                ref = self.ref(reference.ref)
+                commit = ref.head
+            except services.RefNotFoundError:
+                commit = self.commit(reference.ref)
+        else:
+            if not commit:
+                commit = self.ref('master').head
+        return self.object(commit, reference.uuid)
+
     def _list_refs(self):
         head = self.repo.lookup_reference('HEAD')
         yield head
