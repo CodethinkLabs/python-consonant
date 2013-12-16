@@ -1,0 +1,33 @@
+Fetch individual objects and check the result
+=============================================
+
+Define an object reference
+--------------------------
+
+    IMPLEMENTS WHEN defining an object reference
+
+    touch $DATADIR/object-reference.yaml
+
+Set an object reference field to something
+------------------------------------------
+
+    IMPLEMENTS WHEN setting the object reference (.+) to (.+)
+    cat <<-EOF >> $DATADIR/object-reference.yaml
+    $MATCH_1: $MATCH_2
+    EOF
+
+Resolve an object reference
+---------------------------
+
+    IMPLEMENTS WHEN resolving the object reference
+
+    run_consonant_store <<-EOF
+    data = yaml.load(open('$DATADIR/object-reference.yaml'))
+    assert isinstance(data, dict)
+    reference = consonant.store.references.Reference(
+        data.get('uuid', None),
+        data.get('service', None),
+        data.get('ref', None))
+    object = store.resolve_reference(reference)
+    print yaml.dump(object)
+    EOF
