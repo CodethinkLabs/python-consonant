@@ -1,0 +1,43 @@
+Resolving references in a store using consonant.store
+-----------------------------------------------------
+
+Resolve a reference in a store using consonant.store
+----------------------------------------------------
+
+    SCENARIO resolve a reference in a local store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     defining an object reference
+    AND      setting the reference uuid to 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the reference ref to 5c127eaf6adf42787aa282f7e30162104885de0f
+    AND      resolving the reference
+    THEN     the result is a single object
+    AND      the object has the UUID "633715b8-70ea-4b06-94c6-43ee83a8df9e"
+    AND      the object has the class "card"
+    AND      the object has exactly 2 properties set
+    AND      the property "title" is set to "Write tests for feature C"
+    AND      the property "lane" references "71bd32d7-f02c-4cdd-9f91-1e73ba9a9527"
+
+    SCENARIO resolve a different reference in a local store using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     defining an object reference
+    AND      setting the reference uuid to 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the reference ref to 5c127eaf6adf42787aa282f7e30162104885de0f
+    AND      resolving the reference
+    THEN     the result is a single object
+    AND      the object has the UUID "04be5c1b-0192-4e31-b4f8-39a084659738"
+    AND      the object has the class "card"
+    AND      the object has exactly 2 properties set
+    AND      the property "title" is set to "Implement feature A"
+    AND      the property "lane" references "27519b8d-8ad8-4558-8ea2-f128404e6f58"
+
+Fail to resolve an external reference
+-------------------------------------
+
+    SCENARIO fail to resolve an external reference
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     defining an object reference
+    AND      setting the reference uuid to 04be5c1b-0192-4e31-b4f8-39a084659738
+    AND      setting the reference ref to 5c127eaf6adf42787aa282f7e30162104885de0f
+    AND      setting the reference service to foo
+    AND      resolving the external reference
+    THEN     an ExternalReferenceError is thrown
