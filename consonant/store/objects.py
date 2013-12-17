@@ -54,7 +54,8 @@ class Object(yaml.YAMLObject):
 
     yaml_tag = u'!Object'
 
-    def __init__(self, uuid, klass, properties):
+    def __init__(self, hash_value, uuid, klass, properties):
+        self.hash_value = hash_value
         self.uuid = uuid
         self.klass = klass
         self.properties = dict((p.name, p) for p in properties)
@@ -65,9 +66,16 @@ class Object(yaml.YAMLObject):
     def __eq__(self, other):
         if not isinstance(other, Object):
             return False
-        return self.uuid == other.uuid \
-            and self.klass == other.klass \
-            and self.properties == other.properties
+        return self.hash_value == other.hash_value
+
+    def __cmp__(self, other):
+        if not isinstance(other, Object):
+            return -1
+        else:
+            return cmp(self.hash_value, other.hash_value)
+
+    def __hash__(self):
+        return hash(self.hash_value)
 
     @classmethod
     def to_yaml(cls, dumper, object):  # pragma: no cover

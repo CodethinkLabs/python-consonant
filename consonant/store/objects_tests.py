@@ -122,9 +122,9 @@ class ObjectTests(unittest.TestCase):
         """Initialise helper variables for the tests."""
 
         self.test_input = [
-            ('5e27f17c-ff22-4c49-82d9-6549f2800d1a',
+            ('hash1', '5e27f17c-ff22-4c49-82d9-6549f2800d1a',
              objects.ObjectClass('someclass', []), []),
-            ('ad791799-4c3a-4cac-a07d-43493baab121',
+            ('hash2', 'ad791799-4c3a-4cac-a07d-43493baab121',
              objects.ObjectClass('someclass', []), [
                  properties.TextProperty('title', 'Title'),
                  properties.TextProperty('info', 'Info'),
@@ -146,9 +146,9 @@ class ObjectTests(unittest.TestCase):
     def test_constructor_sets_uuid_class_and_properties_correctly(self):
         """Verify that the constructor sets the uuid and properties."""
 
-        for uuid, klass, props in self.test_input:
+        for hash_value, uuid, klass, props in self.test_input:
             props_dict = dict((x.name, x) for x in props)
-            obj = objects.Object(uuid, klass, props)
+            obj = objects.Object(hash_value, uuid, klass, props)
             self.assertEqual(obj.uuid, uuid)
             self.assertEqual(obj.klass, klass)
             self.assertEqual(obj.properties, props_dict)
@@ -156,41 +156,41 @@ class ObjectTests(unittest.TestCase):
     def test_constructor_sets_object_property_of_properties(self):
         """Verify that the constructor sets the object of properties."""
 
-        for uuid, klass, props in self.test_input:
-            obj = objects.Object(uuid, klass, props)
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
             for name, prop in obj.properties.iteritems():
                 self.assertEqual(prop.obj, obj)
 
     def test_equality_operator_is_correct(self):
         """Verify that the __eq__ operator is correct."""
 
-        for uuid, klass, props in self.test_input:
-            obj1 = objects.Object(uuid, klass, props)
-            obj2 = objects.Object(uuid, klass, props)
+        for hash_value, uuid, klass, props in self.test_input:
+            obj1 = objects.Object(hash_value, uuid, klass, props)
+            obj2 = objects.Object(hash_value, uuid, klass, props)
             self.assertEqual(obj1, obj2)
             self.assertTrue(obj1 == obj2)
 
         for data1, data2 in itertools.permutations(self.test_input, 2):
-            uuid1, klass1, props1 = data1
-            uuid2, klass2, props2 = data2
-            obj1 = objects.Object(uuid1, klass1, props1)
-            obj2 = objects.Object(uuid2, klass2, props2)
+            hash1, uuid1, klass1, props1 = data1
+            hash2, uuid2, klass2, props2 = data2
+            obj1 = objects.Object(hash1, uuid1, klass1, props1)
+            obj2 = objects.Object(hash2, uuid2, klass2, props2)
             self.assertNotEqual(obj1, obj2)
             self.assertFalse(obj1 == obj2)
 
         for data1, data2 in itertools.permutations(self.test_input, 2):
-            uuid1, klass1, props1 = data1
-            uuid2, klass2, _ = data2
-            obj1 = objects.Object(uuid1, klass1, props1)
-            obj2 = objects.Object(uuid2, klass2, props1)
+            hash1, uuid1, klass1, props1 = data1
+            hash2, uuid2, klass2, _ = data2
+            obj1 = objects.Object(hash1, uuid1, klass1, props1)
+            obj2 = objects.Object(hash2, uuid2, klass2, props1)
             self.assertNotEqual(obj1, obj2)
             self.assertFalse(obj1 == obj2)
 
         for data1, data2 in itertools.permutations(self.test_input, 2):
-            uuid1, klass1, props1 = data1
-            uuid2, _, props2 = data2
-            obj1 = objects.Object(uuid1, klass1, props1)
-            obj2 = objects.Object(uuid2, klass1, props1)
+            hash1, uuid1, klass1, props1 = data1
+            hash2, uuid2, _, props2 = data2
+            obj1 = objects.Object(hash1, uuid1, klass1, props1)
+            obj2 = objects.Object(hash2, uuid2, klass1, props1)
             self.assertNotEqual(obj1, obj2)
             self.assertFalse(obj1 == obj2)
 
@@ -198,3 +198,16 @@ class ObjectTests(unittest.TestCase):
                             self.test_input[0])
         self.assertFalse(
             objects.Object(*self.test_input[0]) == self.test_input[0])
+
+    def test_hashing_objects_works_as_expected(self):
+        """Verify that hashing objects works as expected."""
+
+        # verify that adding two objects with the same hash to a set
+        # results in only one object in the set
+        for hash_value, uuid, klass, props in self.test_input:
+            object1 = objects.Object(hash_value, uuid, klass, props)
+            object2 = objects.Object(hash_value, uuid, klass, props)
+            object_set = set()
+            object_set.add(object1)
+            object_set.add(object2)
+            self.assertEqual(len(object_set), 1)

@@ -602,7 +602,11 @@ class Loader(object):
             # catch mandatory properties that are not set
             self._validate_mandatory_properties(context, props)
 
-            return objects.Object(object_entry.name, context.klass, props)
+            hash_value = \
+                (object_entry.name, context.klass.name, object_entry.oid.hex)
+
+            return objects.Object(
+                hash_value, object_entry.name, context.klass, props)
 
     def properties_data_in_tree(self, context, object_entry):
         """Return the property dict of the given object entry in the store."""
