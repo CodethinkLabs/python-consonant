@@ -10,16 +10,16 @@ python:
 env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib
 before_install:
   - sudo apt-get install cmake
-install:
   - "./.travis-libgit2.sh"
+install:
   - pip install pygit2
-  - pip install coverage
-  - pip install git+git://git.liw.fi/coverage-test-runner
   - pip install pylibmc
   - pip install PyYAML
   - pip install pep8
   - pip install pep257
-  - pip install cliapp
+  - pip install coverage
+  - pip install git+git://git.liw.fi/coverage-test-runner
+  - pip install git+git://git.liw.fi/cliapp
   - pip install git+git://git.liw.fi/cmdtest
 script:
   - python setup.py check
