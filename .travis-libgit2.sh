@@ -8,6 +8,9 @@ ls .
 cd libgit2
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DBUILD_CLAR=OFF
+cmake .. \
+  -DCMAKE_INSTALL_PREFIX=../_install \
+  -DBUILD_CLAR=OFF \
+  -DBUILD_SHARED_LIBS:BOOLEAN=OFF
 cmake --build . --target install
 ls ..
