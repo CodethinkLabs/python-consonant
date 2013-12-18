@@ -7,12 +7,11 @@ Prepare access to test stores
     git clone $TEST_REPO_BASE_URL/consonant-test-schemas $DATADIR/test-schemas
     git clone $TEST_REPO_BASE_URL/$MATCH_1               $DATADIR/test-store
 
-    pushd $DATADIR/test-store
+    cd $DATADIR/test-store
     for ref in $(git show-ref | grep refs/remotes | cut -d' ' -f2); do
         git checkout $(echo $ref | sed 's;refs/remotes/origin/;;g')
     done
     git checkout master
-    popd
 
     mkdir -p $DATADIR/system-config-dir/consonant
     cat > $DATADIR/system-config-dir/consonant/register.yaml <<-EOF
