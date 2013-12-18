@@ -1,9 +1,7 @@
 language: python
 python:
   - "2.7"
-env:
-  - LIBGIT2=~/libgit2/_install/
-  - LD_LIBRARY_PATH=~/libgit2/_install/lib
+env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib
 install:
   - sudo apt-get install cmake
   - >
