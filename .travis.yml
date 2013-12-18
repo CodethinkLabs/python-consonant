@@ -19,6 +19,7 @@ install:
   - pip install pep257
   - pip install coverage
   - pip install git+git://git.liw.fi/coverage-test-runner
+  - pip install git+git://git.liw.fi/ttystatus
   - pip install git+git://git.liw.fi/cliapp
   - pip install git+git://git.liw.fi/cmdtest
 script:
