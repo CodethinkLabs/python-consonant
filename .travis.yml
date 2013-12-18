@@ -7,7 +7,7 @@ notifications:
     on_failure: always
 python:
   - "2.7"
-env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib TEST_REPO_BASE_URL=git://github.com/CodethinkLabs CFLAGS=-fPIC
+env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib TEST_REPO_BASE_URL=git://github.com/CodethinkLabs CFLAGS=-fPIC LDFLAGS=-lrt
 before_install:
   - sudo apt-get install cmake
   - "./.travis-libgit2.sh"
