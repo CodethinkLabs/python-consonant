@@ -4,7 +4,7 @@ python:
 env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib
 install:
   - sudo apt-get install cmake
-  - |
+  - >
     cd ~
     && git clone --depth=1 -b master https://github.com/libgit2/libgit2.git
     && ls .
