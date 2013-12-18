@@ -19,6 +19,7 @@ install:
   - pip install pep8
   - pip install pep257
   - pip install coverage
+  - pip install Markdown
   - pip install git+git://git.liw.fi/coverage-test-runner
   - pip install git+git://git.liw.fi/ttystatus
   - pip install git+git://git.liw.fi/cliapp
