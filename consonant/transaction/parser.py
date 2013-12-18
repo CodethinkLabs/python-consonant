@@ -23,7 +23,7 @@ import json
 import yaml
 
 from consonant.store import properties
-from consonant.transaction import actions, transactions
+from consonant.transaction import actions, transaction
 from consonant.util import expressions
 from consonant.util.phase import Phase
 
@@ -408,7 +408,7 @@ class ActionRawPropertyContentTypeUndefinedError(ActionError):
 
 class TransactionParser(object):
 
-    """Parser for multipart/mixed transactions."""
+    """Parser for multipart/mixed transaction."""
 
     def parse(self, data):
         """Parse a transaction and return a Transaction object."""
@@ -432,7 +432,7 @@ class TransactionParser(object):
             parts = message.get_payload()
             _actions = self._parse_actions(phase, parts)
             self._validate_action_ids(phase, _actions)
-            return transactions.Transaction(_actions)
+            return transaction.Transaction(_actions)
 
     def _parse_actions(self, phase, parts):
         begin = self._parse_begin_action(phase, parts[0])

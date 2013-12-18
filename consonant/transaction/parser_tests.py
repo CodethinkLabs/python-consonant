@@ -23,7 +23,7 @@ import unittest
 from StringIO import StringIO
 
 from consonant.store import properties
-from consonant.transaction import actions, parsers, transactions
+from consonant.transaction import actions, parser, transaction
 
 
 class TransactionParserTests(unittest.TestCase):
@@ -33,12 +33,12 @@ class TransactionParserTests(unittest.TestCase):
     def setUp(self):
         """Initialise a parser instance and other helper variables."""
 
-        self.parser = parsers.TransactionParser()
+        self.parser = parser.TransactionParser()
 
     def test_parsing_fails_if_input_is_not_a_string_or_stream(self):
         """Verify that parsing fails if the input is not a string/stream."""
 
-        self.assertRaises(parsers.ParserPhaseError, self.parser.parse, 5)
+        self.assertRaises(parser.ParserPhaseError, self.parser.parse, 5)
 
     def test_streams_and_strings_are_parsed_equally(self):
         """Verify that streams and strings are parsed equally."""
@@ -72,7 +72,7 @@ message: hello
         """Verify that parsing fails when parsing invalid multipart data."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'TransactionNotMultipartMixedError: '
             'Transaction is not a multipart/mixed message'
@@ -84,7 +84,7 @@ message: hello
         """Verify that parsing fails when actions lack a content type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionWithoutContentTypeError: '
             'Action has no Content-Type header: '
@@ -104,7 +104,7 @@ source: 7c338ed2840d2bf55f9f5e4eed04f66c80840eb3
         """Verify that parsing fails when actions are invalid YAML."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionInvalidYAMLError: '
             'Action is invalid YAML: '
@@ -125,7 +125,7 @@ action: foo: bar
         """Verify that parsing fails when actions are invalid JSON."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionInvalidJSONError: '
             'Action is invalid JSON: '
@@ -147,7 +147,7 @@ Content-Type: application/json
         """Verify that parsing fails when first action lacks action type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionNoBeginActionError: '
             'First action is not a begin action: '
@@ -167,7 +167,7 @@ source: 7c338ed2840d2bf55f9f5e4eed04f66c80840eb3
         """Verify that parsing fails when the first action is not a begin."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionNoBeginActionError: '
             'First action is not a begin action: '
@@ -188,7 +188,7 @@ source: ab9d674ea00ba40828b12763e745e239399ecfc0
         """Verify parsing fails if the last action has no action type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionNoCommitActionError: '
             'Last action is not a commit action: '
@@ -223,7 +223,7 @@ message: 123
         """Verify parsing fails when an action has an unknown content type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionUnsupportedContentTypeError: '
             'Action has an unsupported content type: text/plain'
@@ -243,7 +243,7 @@ source: ab9d674ea00ba40828b12763e745e239399ecfc0
         """Verify that parsing fails when begin action has no source commit."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionSourceCommitUndefinedError: '
             'Begin action defines no source commit: '
@@ -263,7 +263,7 @@ action: begin
         """Verify parsing fails when a begin action has an invalid commit."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionSourceCommitInvalidError: '
             'Begin action defines an invalid source commit: hello'
@@ -283,7 +283,7 @@ source: hello
         """Verify that parsing fails if there is only a begin action."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionNoCommitActionError: '
             'Last action is not a commit action: '
@@ -304,7 +304,7 @@ source: 8c1abcdc914e174d040e151015aecc89445fa110
         """Verify that parsing fails if commit action defines no target ref."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionTargetRefUndefinedError: '
             'Commit action defines no "target" ref: '
@@ -339,7 +339,7 @@ message: hello
         """Verify that parsing fails if commit has a non-string target."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionTargetRefNotAStringError: '
             'Commit action defines a non-string target ref: '
@@ -376,7 +376,7 @@ message: hello
         """Verify that parsing fails if commit action defines no author."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionAuthorUndefinedError: '
             'Commit action defines no author: '
@@ -407,7 +407,7 @@ message: hello
         """Verify parsing fails if commit action defines an invalid author."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionAuthorInvalidError: '
             'Commit action defines an invalid author: foo'
@@ -437,7 +437,7 @@ message: hello
         """Verify that parsing fails if commit action defines no committer."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitterUndefinedError: '
             'Commit action defines no committer: '
@@ -472,7 +472,7 @@ message: hello
         """Verify parsing fails if commit action defines invalid committer."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitterInvalidError: '
             'Commit action defines an invalid committer: bar'
@@ -502,7 +502,7 @@ message: hello
         """Verify that parsing fails if commit action has no author date."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionAuthorDateUndefinedError: '
             'Commit action defines no author date: '
@@ -537,7 +537,7 @@ message: hello
         """Verify parsing fails if commit action has an invalid author date."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionAuthorDateInvalidError: '
             'Commit action defines an invalid author date: foo'
@@ -567,7 +567,7 @@ message: hello
         """Verify that parsing fails if commit action has no committer date."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitterDateUndefinedError: '
             'Commit action defines no committer date: '
@@ -602,7 +602,7 @@ message: hello
         """Verify parsing fails if commit action has invalid committer date."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitterDateInvalidError: '
             'Commit action defines an invalid committer date: foo'
@@ -632,7 +632,7 @@ message: hello
         """Verify that parsing fails if a commit action defines no message."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitMessageUndefinedError: '
             'Commit action defines no commit message: '
@@ -667,7 +667,7 @@ committer-date: 1379947345 +0100
         """Verify parsing fails if a commit action has a non-string message."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionCommitMessageNotAStringError: '
             'Commit action defines a non-string commit message: '
@@ -704,7 +704,7 @@ message: 123
         """Verify parsing fails if an action has no content type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionWithoutContentTypeError: '
             'Action has no Content-Type header: '
@@ -738,7 +738,7 @@ message: hello
         """Verify parsing fails if an action is invalid YAML."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionInvalidYAMLError: '
             'Action is invalid YAML: '
@@ -775,7 +775,7 @@ message: hello
         """Verify parsing fails if an action defines no action type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionWithoutActionTypeError: '
             'Action is lacking an "action": foo: bar'
@@ -809,7 +809,7 @@ message: hello
         """Verify parsing fails if two actions have the same ID."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'TransactionDuplicateActionIDError: '
             'Transaction has multiple actions with the same ID: foo'
@@ -841,7 +841,7 @@ message: Some commit
         """Verify parsing fails if an action has an unsupported action type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionUnsupportedActionTypeError: '
             'Action type is unsupported: foo'
@@ -875,7 +875,7 @@ message: hello
         """Verify parsing fails if a create action defines no class."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionClassUndefinedError: '
             'Action defines no object class: '
@@ -914,7 +914,7 @@ message: hello
         """Verify parsing fails if a create action defines an invalid class."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionClassInvalidError: '
             'Action defines an invalid object class: foo bar'
@@ -951,7 +951,7 @@ message: hello
         """Verify parsing fails if a create action has non-dict properties."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertiesNotADictError: '
             'Action defines non-dict properties: a string'
@@ -1013,7 +1013,7 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
-        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertTrue(isinstance(t, transaction.Transaction))
         self.assertEqual(len(t.actions), 3)
         self.assertEqual(t.actions[0], actions.BeginAction(
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))
@@ -1029,7 +1029,7 @@ message: hello
         """Verify parsing fails if an update action defines no object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectUndefinedError: '
             'Action defines no object: '
@@ -1068,7 +1068,7 @@ message: hello
         """Verify parsing fails if an update action has an invalid object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1106,7 +1106,7 @@ message: hello
             ''')
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1149,7 +1149,7 @@ message: hello
         """Verify parsing fails if an update action has an ambiguous object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectAmbiguousError: '
             'Action refers to an object via a UUID and '
@@ -1195,7 +1195,7 @@ message: hello
         """Verify parsing fails if an update action has non-dict properties."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertiesNotADictError: '
             'Action defines non-dict properties: hello'
@@ -1259,7 +1259,7 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
-        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertTrue(isinstance(t, transaction.Transaction))
         self.assertEqual(len(t.actions), 3)
         self.assertEqual(t.actions[0], actions.BeginAction(
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))
@@ -1276,7 +1276,7 @@ message: hello
         """Verify parsing fails if a delete action defines no object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectUndefinedError: '
             'Action defines no object: '
@@ -1311,7 +1311,7 @@ message: hello
         """Verify parsing fails if a delete action has an invalid object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1345,7 +1345,7 @@ message: hello
             ''')
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1384,7 +1384,7 @@ message: hello
         """Verify parsing fails if a delete action has an ambiguous object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectAmbiguousError: '
             'Action refers to an object via a UUID and '
@@ -1451,7 +1451,7 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
-        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertTrue(isinstance(t, transaction.Transaction))
         self.assertEqual(len(t.actions), 3)
         self.assertEqual(t.actions[0], actions.BeginAction(
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))
@@ -1467,7 +1467,7 @@ message: hello
         """Verify parsing fails if a unset raw action defines no object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectUndefinedError: '
             'Action defines no object: '
@@ -1504,7 +1504,7 @@ message: hello
         """Verify parsing fails if an unset raw action has invalid object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1540,7 +1540,7 @@ message: hello
             ''')
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1581,7 +1581,7 @@ message: hello
         """Verify parsing fails if a unset raw action has ambiguous object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectAmbiguousError: '
             'Action refers to an object via a UUID and '
@@ -1625,7 +1625,7 @@ message: hello
         """Verify parsing fails if a unset raw prop act has non-str prop."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertyNotAStringError: '
             'Action defines a non-string property: 12345'
@@ -1662,7 +1662,7 @@ message: hello
         """Verify parsing fails if a unset raw prop act has invalid prop."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertyInvalidError: '
             'Action defines an invalid property: 123-foo'
@@ -1725,7 +1725,7 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
-        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertTrue(isinstance(t, transaction.Transaction))
         self.assertEqual(len(t.actions), 3)
         self.assertEqual(t.actions[0], actions.BeginAction(
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))
@@ -1741,7 +1741,7 @@ message: hello
         """Verify parsing fails if a update raw action defines no object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectUndefinedError: '
             'Action defines no object: '
@@ -1782,7 +1782,7 @@ message: hello
         """Verify parsing fails if an update raw action has invalid object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1822,7 +1822,7 @@ message: hello
             ''')
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectInvalidError: '
             'Action does not refer to an object via a UUID or an action ID: '
@@ -1867,7 +1867,7 @@ message: hello
         """Verify parsing fails if a update raw action has ambiguous object."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionObjectAmbiguousError: '
             'Action refers to an object via a UUID and '
@@ -1915,7 +1915,7 @@ message: hello
         """Verify parsing fails if a update raw prop act has non-str prop."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertyNotAStringError: '
             'Action defines a non-string property: 12345'
@@ -1956,7 +1956,7 @@ message: hello
         """Verify parsing fails if a update raw prop act has invalid prop."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionPropertyInvalidError: '
             'Action defines an invalid property: 123-foo'
@@ -1997,7 +1997,7 @@ message: hello
         """Verify parsing fails if an update raw prop act has no prop data."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionRawPropertyDataMissingError: '
             'Raw property update action is not followed by raw property data: '
@@ -2038,7 +2038,7 @@ message: hello
         """Verify parsing fails if raw property data has no content type."""
 
         self.assertRaisesRegexp(
-            parsers.ParserPhaseError,
+            parser.ParserPhaseError,
             '^'
             'ActionRawPropertyContentTypeUndefinedError: '
             'Raw property data following action has no Content-Type header: '
@@ -2112,7 +2112,7 @@ committer-date: 1379947345 +0100
 message: hello
             ''')
 
-        self.assertTrue(isinstance(t, transactions.Transaction))
+        self.assertTrue(isinstance(t, transaction.Transaction))
         self.assertEqual(len(t.actions), 3)
         self.assertEqual(t.actions[0], actions.BeginAction(
             None, '8c1abcdc914e174d040e151015aecc89445fa110'))

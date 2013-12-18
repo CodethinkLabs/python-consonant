@@ -9,7 +9,7 @@ consonant/store/local/__init__.py
 consonant/store/local/loaders.py
 consonant/store/local/store.py
 consonant/store/local/transactions.py
-consonant/store/local/validation.py
+consonant/store/local/validate.py
 consonant/store/remote.py
 consonant/transaction/__init__.py
 consonant/transaction/validation.py

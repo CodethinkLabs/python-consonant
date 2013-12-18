@@ -15,13 +15,13 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Unit tests for classes representing transactions."""
+"""Unit tests for classes representing transaction."""
 
 
 import unittest
 
 from consonant.store import properties
-from consonant.transaction import actions, transactions
+from consonant.transaction import actions, transaction
 
 
 class TransactionTests(unittest.TestCase):
@@ -31,10 +31,10 @@ class TransactionTests(unittest.TestCase):
     def test_constructor_sets_actions(self):
         """Verify that the constructor sets actions."""
 
-        transaction = transactions.Transaction([])
-        self.assertEqual(transaction.actions, [])
+        t = transaction.Transaction([])
+        self.assertEqual(t.actions, [])
 
-        transaction = transactions.Transaction([
+        t = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -47,7 +47,7 @@ class TransactionTests(unittest.TestCase):
                 'committer', '1379683379 +0100',
                 'message'),
             ])
-        self.assertEqual(transaction.actions, [
+        self.assertEqual(t.actions, [
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -64,12 +64,12 @@ class TransactionTests(unittest.TestCase):
     def test_transaction_and_non_transaction_are_not_equal(self):
         """Verify that a Transaction and a non-Transaction are not equal."""
 
-        self.assertFalse(transactions.Transaction([]) == [])
+        self.assertFalse(transaction.Transaction([]) == [])
 
     def test_begin_action_matches_first_action(self):
         """Verify that equal transactions are equal."""
 
-        transaction1 = transactions.Transaction([
+        transaction1 = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -85,7 +85,7 @@ class TransactionTests(unittest.TestCase):
 
         self.assertEqual(transaction1.begin(), transaction1.actions[0])
 
-        transaction2 = transactions.Transaction([
+        transaction2 = transaction.Transaction([
             actions.BeginAction(
                 'foo', 'ab8465d7b4b3ee5929d8a1b5df854fb21552f5c5'),
             actions.UpdateAction(
@@ -104,7 +104,7 @@ class TransactionTests(unittest.TestCase):
     def test_commit_action_matches_first_action(self):
         """Verify that equal transactions are equal."""
 
-        transaction1 = transactions.Transaction([
+        transaction1 = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -120,7 +120,7 @@ class TransactionTests(unittest.TestCase):
 
         self.assertEqual(transaction1.commit(), transaction1.actions[2])
 
-        transaction2 = transactions.Transaction([
+        transaction2 = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -139,7 +139,7 @@ class TransactionTests(unittest.TestCase):
     def test_equal_transactions_are_equal(self):
         """Verify that equal transactions are equal."""
 
-        transaction1 = transactions.Transaction([
+        transaction1 = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(
@@ -153,7 +153,7 @@ class TransactionTests(unittest.TestCase):
                 'message'),
             ])
 
-        transaction2 = transactions.Transaction([
+        transaction2 = transaction.Transaction([
             actions.BeginAction(
                 '1', '7926b7228356b3b79b77fe5c8617a33a6fcf5849'),
             actions.UpdateAction(

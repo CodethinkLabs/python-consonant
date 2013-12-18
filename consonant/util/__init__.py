@@ -19,6 +19,6 @@
 
 
 import expressions
-import git
+import gitcli
 import phase
 import timestamps

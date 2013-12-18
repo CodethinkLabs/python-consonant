@@ -19,16 +19,13 @@
 
 
 import pygit2
-import urllib2
 import uuid
-import yaml
 
-from consonant import schema
 from consonant import util
 from consonant.service import services
-from consonant.store import git, objects, properties, references
-from consonant.store.local import transactions, loaders, validation
-from consonant.transaction import validation as tvalidation
+from consonant.store import git
+from consonant.store.local import transactions, loaders, validate
+from consonant.transaction import validation
 from consonant.util import timestamps
 
 
@@ -170,8 +167,8 @@ class LocalStore(services.Service):
         """Validate and apply a transaction. Return the resulting commit."""
 
         commit = self._prepare_transaction(transaction)
-        validator = tvalidation.CommitValidator()
-        validator.add_hook(validation.LocalCommitValidator())
+        validator = validation.CommitValidator()
+        validator.add_hook(validate.LocalCommitValidator())
         for hook in hooks:
             validator.add_hook(hook)
         return self._commit_transaction(transaction, commit, validator)
@@ -197,7 +194,7 @@ class LocalStore(services.Service):
                 # it hasn't changed, attempt to just update the ref from the
                 # source commit to the transaction commit; if this fails,
                 # we'll just throw an exception and give up
-                util.git.subcommand(
+                util.gitcli.subcommand(
                     self.repo,
                     ['update-ref', transaction.commit().target,
                      commit.sha1, transaction.begin().source])

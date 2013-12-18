@@ -164,7 +164,7 @@ Submitting a transaction
     cat $DATADIR/transaction.yaml
 
     run_consonant_store <<-EOF
-    parser = consonant.transaction.parsers.TransactionParser()
+    parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction)
     EOF
@@ -179,7 +179,7 @@ Submitting an invalid transaction
     cat $DATADIR/transaction.yaml
 
     run_consonant_store <<-EOF || true
-    parser = consonant.transaction.parsers.TransactionParser()
+    parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction)
     EOF
@@ -194,7 +194,7 @@ Submitting a transaction based on a non-existent commit
     cat $DATADIR/transaction.yaml
 
     run_consonant_store <<-EOF || true
-    parser = consonant.transaction.parsers.TransactionParser()
+    parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction)
     EOF
@@ -222,7 +222,7 @@ Submitting a transaction with a validation hook
                         'Card titles must not begin with digits')
             return True
 
-    parser = consonant.transaction.parsers.TransactionParser()
+    parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction, [NoCardTitlesWithNumbers()])
     EOF
@@ -245,7 +245,7 @@ Submitting a transaction with a validation hook
                         'Card titles must not begin with digits')
             return True
 
-    parser = consonant.transaction.parsers.TransactionParser()
+    parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction, [NoCardTitlesWithNumbers()])
     EOF

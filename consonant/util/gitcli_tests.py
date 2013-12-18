@@ -25,7 +25,7 @@ import subprocess
 import tempfile
 import unittest
 
-from consonant.util import git
+from consonant.util import gitcli
 
 
 class SubcommandTests(unittest.TestCase):
@@ -65,19 +65,19 @@ class SubcommandTests(unittest.TestCase):
     def test_subcommand_works_in_general(self):
         """Verify that git subcommand works in general."""
 
-        output = git.subcommand(self.repo1,
-                                ['cat-file', 'blob', 'master:file1'])
+        output = gitcli.subcommand(self.repo1,
+                                   ['cat-file', 'blob', 'master:file1'])
         self.assertEqual(output.strip(), 'this is file1')
 
-        output = git.subcommand(self.repo2,
-                                ['cat-file', 'blob', 'master:file2'])
+        output = gitcli.subcommand(self.repo2,
+                                   ['cat-file', 'blob', 'master:file2'])
         self.assertEqual(output.strip(), 'this is file2')
 
     def test_subcommand_allows_repo_path_to_be_overriden(self):
         """Verify that git subcommand allows the repo path to be overridden."""
 
         # we pass in repo1 (with file1) but set the cwd to repo2
-        output = git.subcommand(self.repo1,
-                                ['cat-file', 'blob', 'master:file2'],
-                                cwd=self.repo2.path)
+        output = gitcli.subcommand(self.repo1,
+                                   ['cat-file', 'blob', 'master:file2'],
+                                   cwd=self.repo2.path)
         self.assertEqual(output.strip(), 'this is file2')
