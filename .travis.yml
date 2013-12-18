@@ -2,19 +2,8 @@ language: python
 python:
   - "2.7"
 env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib
-install:
-  - sudo apt-get install cmake
-  - >
-    cd ~
-    && git clone --depth=1 -b master https://github.com/libgit2/libgit2.git
-    && ls .
-    && cd libgit2
-    && mkdir build
-    && cd build
-    && cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DBUILD_CLAR=OFF
-    && cmake --build . --target install
-    && ls ..
-  - pip install pygit2
+before_install:
+  - "./.travis.sh"
   - pip install coverage
   - pip install git+git://git.liw.fi/coverage-test-runner
   - pip install pylibmc
