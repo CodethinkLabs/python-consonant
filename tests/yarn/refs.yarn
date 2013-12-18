@@ -12,13 +12,15 @@ Fetch a list of all refs in a store:
 
 Make sure the number of refs is as expected (3 branches, 2 tags):
 
-    THEN     the result contains exactly 5 refs
+    THEN     the result contains exactly 7 refs
 
 Make sure all the expected branches are present:
 
     AND      the result includes a branch called "HEAD"
     AND      the result includes a branch called "master"
     AND      the result includes a branch called "schema-v2"
+    AND      the result includes a branch called "invalid-consonant-yaml"
+    AND      the result includes a branch called "valid-and-invalid-service-aliases"
 
     AND      the branch "HEAD" has exactly 1 alias
     AND      the branch "HEAD" has an alias "HEAD"
@@ -30,6 +32,14 @@ Make sure all the expected branches are present:
     AND      the branch "schema-v2" has exactly 2 aliases
     AND      the branch "schema-v2" has an alias "schema-v2"
     AND      the branch "schema-v2" has an alias "refs:heads:schema-v2"
+
+    AND      the branch "invalid-consonant-yaml" has exactly 2 aliases
+    AND      the branch "invalid-consonant-yaml" has an alias "invalid-consonant-yaml"
+    AND      the branch "invalid-consonant-yaml" has an alias "refs:heads:invalid-consonant-yaml"
+
+    AND      the branch "valid-and-invalid-service-aliases" has exactly 2 aliases
+    AND      the branch "valid-and-invalid-service-aliases" has an alias "valid-and-invalid-service-aliases"
+    AND      the branch "valid-and-invalid-service-aliases" has an alias "refs:heads:valid-and-invalid-service-aliases"
 
 Make sure all the expected tags are present:
 
