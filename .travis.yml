@@ -23,5 +23,8 @@ install:
   - pip install git+git://git.liw.fi/ttystatus
   - pip install git+git://git.liw.fi/cliapp
   - pip install git+git://git.liw.fi/cmdtest
+before_script:
+  - git config --global user.name "Test user"
+  - git config --global user.email "test.user@project.org"
 script:
   - python setup.py check
