@@ -1,11 +1,20 @@
 language: python
 python:
   - "2.7"
+env: LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib
 install:
+  - sudo apt-get install cmake
+  - cd ~ \
+    && git clone --depth=1 -b master https://github.com/libgit2/libgit2.git \
+    && cd libgit2 \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DBUILD_CLAR=OFF \
+    && cmake --build . --target install
+  - pip install pygit2
   - pip install coverage
   - pip install git+git://git.liw.fi/coverage-test-runner
   - pip install pylibmc
   - pip install PyYAML
-  - pip install pygit2
 script:
   - python setup.py check
