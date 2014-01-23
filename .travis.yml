@@ -2,7 +2,7 @@ language: python
 notifications:
   email:
     recipients:
-      - jannis.pohlmann@codethink.co.uk
+      - ct142-internal@lists.codethink.co.uk
     on_success: change
     on_failure: always
 python:
