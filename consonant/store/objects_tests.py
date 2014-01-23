@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -211,3 +211,29 @@ class ObjectTests(unittest.TestCase):
             object_set.add(object1)
             object_set.add(object2)
             self.assertEqual(len(object_set), 1)
+
+    def test_iterating_over_properties_yields_all_set_properties(self):
+        """Verify that iterating over properties yields all set properties."""
+
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
+            for name, prop in obj:
+                self.assertTrue(name in obj.properties)
+                self.assertEqual(obj.properties[name], prop)
+
+    def test_accessing_properties_directly_returns_property_values(self):
+        """Verify that accessing properties directly returns their values."""
+
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
+            for name, prop in obj:
+                self.assertEqual(obj[name], prop.value)
+
+    def test_property_containment_checks_work_correctly(self):
+        """Verify that property containment checks work correctly."""
+
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
+            for name, prop in obj:
+                self.assertTrue(name in obj)
+            self.assertFalse('nonexistentproperty' in obj)

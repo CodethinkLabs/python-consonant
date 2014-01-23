@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -76,6 +76,15 @@ class Object(yaml.YAMLObject):
 
     def __hash__(self):
         return hash(self.hash_value)
+
+    def __getitem__(self, key):
+        return self.properties[key].value
+
+    def __iter__(self):
+        return self.properties.iteritems()
+
+    def __contains__(self, key):
+        return key in self.properties
 
     @classmethod
     def to_yaml(cls, dumper, object):  # pragma: no cover
