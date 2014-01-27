@@ -237,3 +237,19 @@ class ObjectTests(unittest.TestCase):
             for name, prop in obj:
                 self.assertTrue(name in obj)
             self.assertFalse('nonexistentproperty' in obj)
+
+    def test_property_get_returns_property_values(self):
+        """Verify that property get returns property values."""
+
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
+            for name, prop in obj:
+                self.assertEqual(obj.get(name, None), obj[name])
+
+    def test_property_get_returns_fallback_if_property_not_set(self):
+        """Verify that property get returns fallback if property unset."""
+
+        for hash_value, uuid, klass, props in self.test_input:
+            obj = objects.Object(hash_value, uuid, klass, props)
+            for name in ('asdasda', 'idonotexist'):
+                self.assertEqual(obj.get(name, 'yeah, no'), 'yeah, no')
