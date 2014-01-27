@@ -86,6 +86,10 @@ class Object(yaml.YAMLObject):
     def __contains__(self, key):
         return key in self.properties
 
+    def get(self, key, fallback_value):
+        """Return the property value or fallback value if not set."""
+        return self[key] if key in self else fallback_value
+
     @classmethod
     def to_yaml(cls, dumper, object):  # pragma: no cover
         """Return a YAML representation for an Object."""
