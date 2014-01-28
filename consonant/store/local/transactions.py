@@ -84,7 +84,7 @@ class TransactionPreparer(object):
     def _apply_action(self, action, commit, schema, tree):
         class_name = action.__class__.__name__
         normalised_name = class_name.replace('Action', '')
-        normalised_name = re.sub(r'.+([A-Z])', r'_\1', normalised_name)
+        normalised_name = re.sub(r'([A-Z])', r'_\1', normalised_name)[1:]
         normalised_name = normalised_name.lower()
         apply_func = '_apply_%s_action' % normalised_name
         return getattr(self, apply_func)(action, commit, schema, tree)
