@@ -60,6 +60,28 @@ Define an update action
     action: update
     EOF
 
+Define an update-raw-property action
+----------------------
+
+    IMPLEMENTS WHEN defining an update-raw-property action
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    --CONSONANT
+    Content-Type: application/x-yaml
+
+    action: update-raw-property
+    EOF
+
+Define raw property data with a given content type
+--------------------------------------------------
+
+    IMPLEMENTS WHEN defining raw property data with the content type "(.+)"
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    --CONSONANT
+    Content-Type: $MATCH_1
+
+    some data
+    EOF
+
 Define object properties
 ------------------------
 
