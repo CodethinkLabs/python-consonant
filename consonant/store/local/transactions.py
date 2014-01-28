@@ -96,7 +96,8 @@ class TransactionPreparer(object):
         with Phase() as phase:
             # make sure properties to be set exist in the new object's class
             self._validate_object_properties(
-                phase, action, schema, action.klass, action.properties)
+                phase, action, schema, action.klass,
+                action.properties.keys())
 
             # make sure none of the properties to set are raw properties
             # as we have separate actions for them
@@ -149,7 +150,8 @@ class TransactionPreparer(object):
         with Phase() as phase:
             # make sure properties to be set exist in the object's class
             self._validate_object_properties(
-                phase, action, schema, obj.klass.name, action.properties)
+                phase, action, schema, obj.klass.name,
+                action.properties.keys())
 
             # make sure none of the properties to set are raw properties
             # as we have separate actions for them
@@ -212,11 +214,11 @@ class TransactionPreparer(object):
             raise validation.ActionClassUnknownError(action, schema, klass)
 
     def _validate_object_properties(
-            self, phase, action, schema, klass, properties):
-        for prop_name in properties.iterkeys():
-            if not prop_name in schema.classes[klass].properties:
+            self, phase, action, schema, klass, property_names):
+        for name in property_names:
+            if not name in schema.classes[klass].properties:
                 phase.error(validation.ActionPropertyUnknownError(
-                    action, schema, klass, prop_name))
+                    action, schema, klass, name))
 
     def _validate_object_properties_not_raw(
             self, phase, action, schema, klass, properties):
