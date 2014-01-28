@@ -128,6 +128,48 @@ class ReferencePropertyReferencesALaterActionError(ActionValidationError):
                (self.prop_name, self.action_id)
 
 
+class ActionIllegalRawPropertyChangeError(ActionValidationError):
+
+    """Exception for when a raw property is changed incorrectly.
+
+    This exception applies to updating raw properties in create
+    and update actions rather than update-raw-property and
+    unset-raw-property actions.
+
+    """
+
+    def __init__(self, action, schema, klass, prop_name):
+        ActionValidationError.__init__(self, action, schema)
+        self.klass = klass
+        self.prop_name = prop_name
+
+    def __str__(self):
+        return 'Action illegally tries to change the raw property ' \
+               '"%s" of class "%s"": %s' % \
+               (self.prop_name, self.klass, self.action.id)
+
+
+class ActionIllegalNonRawPropertyChangeError(ActionValidationError):
+
+    """Exception for when a non-raw property is changed incorrectly.
+
+    This exception applies to updating non-raw properties in
+    update-raw-property and unset-raw-property actions rather than
+    in create and update actions.
+
+    """
+
+    def __init__(self, action, schema, klass, prop_name):
+        ActionValidationError.__init__(self, action, schema)
+        self.klass = klass
+        self.prop_name = prop_name
+
+    def __str__(self):
+        return 'Action illegally tries to change the non-raw property ' \
+               '"%s" of class "%s"": %s' % \
+               (self.prop_name, self.klass, self.action.id)
+
+
 class ValidationHook(object):
 
     """A hook to register with CommitValidator for extra validation."""

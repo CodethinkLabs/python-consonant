@@ -191,6 +191,49 @@ class TransactionPreparer(object):
 
         return updated_obj, new_tree
 
+    def _apply_update_raw_property_action(self, action, commit, schema, tree):
+        # load the object from the commit or from a previous action
+        obj = self._validate_and_resolve_target_object(schema, action, commit)
+
+        with Phase() as phase:
+            # make sure the property to be updated exists in the object's class
+            self._validate_object_properties(
+                phase, action, schema, obj.klass.name, [action.property])
+
+            # make sure the properties to update is a raw property
+            self._validate_object_properties_raw(
+                phase, action, schema, obj.klass.name, [action.property])
+
+        # build a new object tree
+        object_tree = self._update_raw_property(
+            schema, obj, action.property, action.content_type, action.data)
+
+        # build a new class tree with the object changed
+        class_entry = tree[obj.klass.name]
+        class_tree = self.store.repo[class_entry.oid]
+        builder = self.store.repo.TreeBuilder(class_tree)
+        builder.insert(obj.uuid, object_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        new_class_oid = builder.write()
+
+        # build and return a new overall store tree
+        builder = self.store.repo.TreeBuilder(tree)
+        builder.insert(obj.klass.name, new_class_oid, pygit2.GIT_FILEMODE_TREE)
+        new_tree_oid = builder.write()
+        new_tree = self.store.repo[new_tree_oid]
+
+        # load the updated class from the new tree
+        context = loaders.LoaderContext(self.store)
+        context.set_tree(new_tree)
+        new_class_entry = new_tree[obj.klass.name]
+        updated_class = self.loader.class_in_tree(context, new_class_entry)
+
+        # load the updated object from the updated class
+        context.set_class(updated_class)
+        context.set_uuid(obj.uuid)
+        updated_obj = self.loader.object_in_tree(context)
+
+        return updated_obj, new_tree
+
     def _apply_delete_action(self, action, commit, schema, tree):
         # load the object from the commit or from a previous action
         obj = self._validate_and_resolve_target_object(schema, action, commit)
@@ -228,6 +271,16 @@ class TransactionPreparer(object):
                 if isinstance(prop, definitions.RawPropertyDefinition):
                     phase.error(
                         validation.ActionIllegalRawPropertyChangeError(
+                            action, schema, klass, prop_name))
+
+    def _validate_object_properties_raw(
+            self, phase, action, schema, klass, property_names):
+        for prop_name in property_names:
+            if prop_name in schema.classes[klass].properties:
+                prop = schema.classes[klass].properties[prop_name]
+                if not isinstance(prop, definitions.RawPropertyDefinition):
+                    phase.error(
+                        validation.ActionIllegalNonRawPropertyChangeError(
                             action, schema, klass, prop_name))
 
     def _validate_and_resolve_target_object(self, schema, action, commit):
