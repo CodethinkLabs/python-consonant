@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -285,6 +285,53 @@ class MandatoryPropertyNotSetError(PropertyValidationError):
 
     def _msg(self):
         return 'mandatory property is not set'
+
+
+class RawPropertyContentTypeNotAStringError(PropertyValidationError):
+
+    """Exception when the content type of a raw property is not a string."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'raw property content type is not a string: %s' % self.value
+
+
+class RawPropertyContentTypeInvalidError(PropertyValidationError):
+
+    """Exception when the content type of a raw property is invalid."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'raw property content type is invalid: %s' % self.value
+
+
+class RawPropertyEntriesMissingError(PropertyValidationError):
+
+    """Exception when raw/ directory is missing for an object."""
+
+    def __init__(self, context, property_name):
+        PropertyValidationError.__init__(self, context, property_name)
+
+    def _msg(self):
+        return 'raw property entries are missing despite a raw ' \
+               'property being set'
+
+
+class RawPropertyDataMissingError(PropertyValidationError):
+
+    """Exception when the data file of a raw property is missing."""
+
+    def __init__(self, context, property_name):
+        PropertyValidationError.__init__(self, context, property_name)
+
+    def _msg(self):
+        return 'raw property data is missing'
 
 
 class LoaderContext(Phase):
@@ -712,6 +759,25 @@ class Loader(object):
 
     def raw_property_in_data(self, context, object_entry, prop_def, data):
         """Return a raw property from an object properties dictionary."""
+
+        if not isinstance(data, basestring):
+            context.error(RawPropertyContentTypeNotAStringError(
+                context, prop_def.name, data))
+        else:
+            if prop_def.expressions:
+                if not any(x.match(data) for x in prop_def.expressions):
+                    context.error(RawPropertyContentTypeInvalidError(
+                        context, prop_def.name, data))
+
+        object_tree = self.repo[object_entry.oid]
+        if not 'raw' in object_tree:
+            context.error(RawPropertyEntriesMissingError(
+                context, prop_def.name))
+        else:
+            raw_tree = self.repo[object_tree['raw'].oid]
+            if not prop_def.name in raw_tree:
+                context.error(RawPropertyDataMissingError(
+                    context, prop_def.name, data))
 
         return properties.RawProperty(prop_def.name, data)
 
