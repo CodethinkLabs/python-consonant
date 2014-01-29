@@ -1092,13 +1092,13 @@ Apply an invalid transaction that updates a raw property of a non-existent objec
 
     SCENARIO apply an invalid transaction that updates a raw property of a non-existent object using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     starting a transaction based on commit 5c127eaf
+    WHEN     starting a transaction based on commit 9f3e6023
     AND      defining an update-raw-property action
     AND      setting the action target object to uuid: i-do-not-exist
     AND      setting the action property to "something"
     AND      defining raw property data with the content type "text/plain"
     AND      defining a commit action
-    AND      setting the action target to "refs/heads/master"
+    AND      setting the action target to "refs/heads/schema-v2"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
     AND      setting the action author-date to "1380539061 +0100"
     AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
@@ -1112,13 +1112,13 @@ Apply an invalid transaction that updates a raw property of a non-existent actio
 
     SCENARIO apply an invalid transaction that updates a raw property of a non-existent action using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     starting a transaction based on commit 5c127eaf
+    WHEN     starting a transaction based on commit 9f3e6023
     AND      defining an update-raw-property action
     AND      setting the action target object to action: i-do-not-exist
     AND      setting the action property to "something"
     AND      defining raw property data with the content type "text/plain"
     AND      defining a commit action
-    AND      setting the action target to "refs/heads/master"
+    AND      setting the action target to "refs/heads/schema-v2"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
     AND      setting the action author-date to "1380539061 +0100"
     AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
@@ -1132,7 +1132,7 @@ Apply an invalid transaction that updates a raw property of an object only creat
 
     SCENARIO apply an invalid transaction that updates a raw property of an object only created later using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     starting a transaction based on commit 5c127eaf
+    WHEN     starting a transaction based on commit 9f3e6023
     AND      defining an update-raw-property action
     AND      setting the action target object to action: create-attachment
     AND      setting the action property to "data"
@@ -1141,7 +1141,7 @@ Apply an invalid transaction that updates a raw property of an object only creat
     AND      setting the action id to "create-attachment"
     AND      setting the action class to "attachment"
     AND      defining a commit action
-    AND      setting the action target to "refs/heads/master"
+    AND      setting the action target to "refs/heads/schema-v2"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
     AND      setting the action author-date to "1380539061 +0100"
     AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
@@ -1155,7 +1155,7 @@ Apply an invalid transaction with a raw property update that lacks a property na
 
     SCENARIO apply an invalid transaction with a raw property update that lacks a property name using consonant.store
     GIVEN    the standard test store "consonant-test-store-01"
-    WHEN     starting a transaction based on commit 5c127eaf
+    WHEN     starting a transaction based on commit 9f3e6023
     AND      defining a create action
     AND      setting the action id to "create-attachment"
     AND      setting the action class to "attachment"
@@ -1163,7 +1163,7 @@ Apply an invalid transaction with a raw property update that lacks a property na
     AND      setting the action target object to action: create-attachment
     AND      defining raw property data with the content type "text/plain"
     AND      defining a commit action
-    AND      setting the action target to "refs/heads/master"
+    AND      setting the action target to "refs/heads/schema-v2"
     AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
     AND      setting the action author-date to "1380539061 +0100"
     AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
@@ -1191,4 +1191,27 @@ Apply an invalid transaction that updates a non-raw property like a raw property
     AND      setting the action message to "Update the title of a card as if it was a raw property"
     AND      submitting the invalid transaction
     THEN     an ActionIllegalNonRawPropertyChangeError is thrown
+
+Apply an invalid transaction that updates a raw property to an invalid content type using consonant.store
+---------------------------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that updates a raw property to an invalid content-type using consonant.store
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining an update-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining raw property data with the content type "invalid/content-type"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Set invalid content type of raw property"
+    AND      submitting the invalid transaction
+    THEN     a RawPropertyContentTypeInvalidError is thrown
 
