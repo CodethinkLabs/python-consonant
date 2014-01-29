@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -508,3 +508,37 @@ class ListPropertyTest(unittest.TestCase):
         self.assertEqual(data[0], 'foo')
         self.assertEqual(data[1], 'bar')
         self.assertEqual(data[2], 'baz')
+
+
+class RawPropertyTest(unittest.TestCase):
+
+    """Unit tests for the RawProperty class."""
+
+    def test_constructor_sets_property_name_and_value_properly(self):
+        """Verify that the constructor sets property name and value."""
+
+        test_input = [
+            ('property1', 'text/plain'),
+            ('property2', 'application/x-json'),
+            ('property3', 'image/png'),
+        ]
+
+        for name, value in test_input:
+            raw_property = properties.RawProperty(name, value)
+            self.assertEqual(raw_property.name, name)
+            self.assertEqual(raw_property.value, value)
+
+    def test_yaml_representation_has_all_expected_fields(self):
+        """Verify that the YAML representation of raw properties is ok."""
+
+        prop = properties.RawProperty('name', 'text/plain')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'text/plain')
+
+        prop = properties.RawProperty('name', 'image/png')
+        string = yaml.dump(prop)
+        data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'image/png')
