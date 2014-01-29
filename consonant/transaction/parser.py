@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -384,7 +384,7 @@ class ActionRawPropertyUndefinedError(ActionError):
         ActionError.__init__(self, phase, part)
 
     def __str__(self):
-        return 'Action defines an no property name'
+        return 'Action defines no raw property to update or unset'
 
 
 class ActionPropertyInvalidError(ActionError):

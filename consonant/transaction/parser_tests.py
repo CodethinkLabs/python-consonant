@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1895,6 +1895,46 @@ object:
   uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
   action: 1
 property: title
+--CONSONANT
+Content-Type: image/png
+
+PNG IMAGE DATA
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: commit
+target: refs/heads/master
+author: Samuel Bartlett <samuel@yourproject.org>
+author-date: 1379947345 +0100
+committer: Samuel Bartlett <samuel@yourproject.org>
+committer-date: 1379947345 +0100
+message: hello
+            ''')
+
+    def test_parsing_fails_if_an_update_raw_prop_defines_no_property(self):
+        """Verify parsing fails if a update raw action defines no property."""
+
+        self.assertRaisesRegexp(
+            parser.ParserPhaseError,
+            '^'
+            'ActionRawPropertyUndefinedError: '
+            'Action defines no raw property to update or unset'
+            '$',
+            self.parser.parse,
+            '''\
+Content-Type: multipart/mixed; boundary=CONSONANT
+
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: begin
+source: 8c1abcdc914e174d040e151015aecc89445fa110
+--CONSONANT
+Content-Type: application/x-yaml
+
+action: update-raw-property
+object:
+  uuid: 505aca2c-9892-4da6-943d-f3e869f6fbee
 --CONSONANT
 Content-Type: image/png
 
