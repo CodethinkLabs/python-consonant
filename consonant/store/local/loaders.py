@@ -463,6 +463,29 @@ class Loader(object):
                         commit, uuid))
             return object
 
+    def raw_property_data(self, commit, object, property):
+        """Return raw data for an object property in a given commit."""
+
+        with LoaderContext(self) as context:
+            context.set_commit(commit)
+            context.set_class(object.klass)
+            context.set_uuid(object.uuid)
+
+            return self.raw_property_data_in_tree(context, property)
+
+    def raw_property_data_in_tree(self, context, property):
+        """Return raw data for an object property in a tree of the store."""
+
+        class_entry = context.tree[context.klass.name]
+        class_tree = self.repo[class_entry.oid]
+        object_entry = class_tree[context.uuid]
+        object_tree = self.repo[object_entry.oid]
+        raw_entry = object_tree['raw']
+        raw_tree = self.repo[raw_entry.oid]
+        data_entry = raw_tree[property]
+        data_blob = self.repo[data_entry.oid]
+        return data_blob.data
+
     def _metadata_in_tree(self, context):
         """Return the raw meta data in the given tree of the store."""
 

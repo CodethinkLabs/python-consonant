@@ -62,6 +62,10 @@ class Service(object):  # pragma: no cover
         """Return the object with the given UUID in the given commit."""
         raise NotImplementedError
 
+    def raw_property_data(self, commit, object, property):
+        """Return raw data for an object property in a given commit."""
+        raise NotImplementedError
+
     def resolve_reference(self, reference):
         """Resolve an object reference into an object and return it."""
         raise NotImplementedError
