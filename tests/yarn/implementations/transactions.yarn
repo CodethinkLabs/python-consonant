@@ -79,7 +79,14 @@ Define raw property data with a given content type
     --CONSONANT
     Content-Type: $MATCH_1
 
-    some data
+    EOF
+
+Set raw property data
+---------------------
+
+    IMPLEMENTS WHEN setting the raw property data to (.+)
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    $MATCH_1
     EOF
 
 Define object properties
