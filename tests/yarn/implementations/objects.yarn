@@ -34,8 +34,23 @@ Fetch objects from a store
     IMPLEMENTS WHEN fetching objects from the latest commit in "(.+)"
 
     run_consonant_store <<-EOF
+    import itertools
+
     ref = store.ref("$MATCH_1")
-    print yaml.dump(store.objects(ref.head))
+    objects = store.objects(ref.head)
+    print yaml.dump(objects, default_flow_style=False)
+    print '---'
+    raw = {}
+    for class_objects in itertools.chain(objects.itervalues()):
+        for object in class_objects:
+            raw[object.uuid] = {}
+            for property in object.properties.itervalues():
+                if isinstance(
+                        property, consonant.store.properties.RawProperty):
+                    prop_data = store.raw_property_data(
+                        ref.head, object, property.name)
+                    raw[object.uuid][property.name] = prop_data
+    print yaml.dump(raw, default_flow_style=False)
     EOF
 
     fail_unknown_api
