@@ -334,6 +334,21 @@ class RawPropertyDataMissingError(PropertyValidationError):
         return 'raw property data is missing'
 
 
+class PropertyNowRawError(LoaderError):
+
+    """Exception for when a non-raw property is treated as a raw property."""
+
+    def __init__(self, context, property_name):
+        LoaderError.__init__(self, context)
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Commit "%s", object "%s": ' \
+               'property "%s" is not a raw property' % \
+               (self.context.commit.sha1, self.context.uuid,
+                self.property_name)
+
+
 class LoaderContext(Phase):
 
     """Contextual information about where the Loader is in the loading process.
@@ -462,6 +477,33 @@ class Loader(object):
                     context.error(services.ObjectNotFoundError(
                         commit, uuid))
             return object
+
+    def raw_property_data(self, commit, object, property):
+        """Return raw data for an object property in a given commit."""
+
+        with LoaderContext(self) as context:
+            context.set_commit(commit)
+            context.set_class(object.klass)
+            context.set_uuid(object.uuid)
+
+            prop = object.properties[property]
+            if not isinstance(prop, properties.RawProperty):
+                raise PropertyNowRawError(context, property)
+
+            return self.raw_property_data_in_tree(context, property)
+
+    def raw_property_data_in_tree(self, context, property):
+        """Return raw data for an object property in a tree of the store."""
+
+        class_entry = context.tree[context.klass.name]
+        class_tree = self.repo[class_entry.oid]
+        object_entry = class_tree[context.uuid]
+        object_tree = self.repo[object_entry.oid]
+        raw_entry = object_tree['raw']
+        raw_tree = self.repo[raw_entry.oid]
+        data_entry = raw_tree[property]
+        data_blob = self.repo[data_entry.oid]
+        return data_blob.data
 
     def _metadata_in_tree(self, context):
         """Return the raw meta data in the given tree of the store."""
