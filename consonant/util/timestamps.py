@@ -79,6 +79,29 @@ class Timestamp(yaml.YAMLObject):
             return Timestamp(0, 0)
         return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
 
+    @classmethod
+    def from_string(cls, date_string):
+        """Parse a string representing a date (yyyy-mm-dd)."""
+
+        try:
+            ymd, tz = date_string.split()
+        except AttributeError:
+            ymd, tz = (date_string, '+0000')
+
+        try:
+            year, month, day = ymd.split('-')
+        except AttributeError:
+            return Timestamp(0, 0)
+
+        try:
+            tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
+        except ValueError:
+            return Timestamp(0, 0)
+
+        date = datetime.datetime(year, month, day)
+        ts = calendar.timegm(date.utctimetuple())
+        return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
+
     def raw(self):
         """Return a raw string representation ("%s %z") of the timestamp."""
 
