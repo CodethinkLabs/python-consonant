@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ class Timestamp(yaml.YAMLObject):
 
     @classmethod
     def from_string(cls, date_string):
-        """Parse a string representing a date (yyyy-mm-dd)."""
+        """Parse a string representing a date, return a Timestamp."""
 
         try:
             ymd, tz = date_string.split()
@@ -100,6 +100,18 @@ class Timestamp(yaml.YAMLObject):
 
         date = datetime.datetime(year, month, day)
         ts = calendar.timegm(date.utctimetuple())
+        return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
+
+    @classmethod
+    def now(cls, tz="+0000"):
+        """Return a Timestamp at the current time in the given timezone."""
+
+        date = datetime.datetime.now()
+        ts = calendar.timegm(date.utctimetuple())
+        try:
+            tz_offset = int(tz[1:3]) * 60 + int(tz[3:])
+        except ValueError:
+            return Timestamp(ts, 0)
         return Timestamp(ts, tz_offset if tz[0] == '+' else -tz_offset)
 
     def raw(self):
