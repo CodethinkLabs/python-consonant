@@ -611,8 +611,8 @@ Apply an invalid transaction where the raw property data is missing
     AND      submitting the invalid transaction
     THEN     this fails
 
-Apply an invalid transaction where the raw property data is missing
--------------------------------------------------------------------
+Apply a valid transaction that updates a raw property
+-----------------------------------------------------
 
     SCENARIO apply a valid transaction that updates a raw property
     GIVEN    the standard test store "consonant-test-store-01"
@@ -639,3 +639,37 @@ Apply an invalid transaction where the raw property data is missing
     AND      the newly created object in "schema-v2" has exactly 1 property set
     AND      the property "data" of the newly created object in "schema-v2" is set to "text/plain"
     AND      the data of the raw property "data" of the newly created object in "schema-v2" is set to "foo"
+
+Apply a valid transaction that updates a raw property twice
+-----------------------------------------------------------
+
+    SCENARIO apply a valid transaction that updates a raw property twice
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining an update-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining raw property data with the content type "text/plain"
+    AND      setting the raw property data to "foo"
+    AND      defining an update-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining raw property data with the content type "text/plain"
+    AND      setting the raw property data to "bar"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Create attachment"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 1 object in "schema-v2"
+    AND      the newly created object in "schema-v2" has exactly 1 property set
+    AND      the property "data" of the newly created object in "schema-v2" is set to "text/plain"
+    AND      the data of the raw property "data" of the newly created object in "schema-v2" is set to "bar"
