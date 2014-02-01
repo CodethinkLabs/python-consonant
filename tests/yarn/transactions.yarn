@@ -89,12 +89,6 @@ Apply an invalid transaction that creates a new object with a non-existent prope
     AND      submitting the invalid transaction
     THEN     this fails
 
-Apply an invalid transaction that modifies a raw property in a create action
-----------------------------------------------------------------------------
-
-TODO - the example schema has no raw property definitions yet, so we
-cannot test this at the moment.
-
 Apply an invalid transaction that creates a new object that references a non-existent object
 --------------------------------------------------------------------------------------------
 
