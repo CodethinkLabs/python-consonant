@@ -41,12 +41,6 @@ Apply an invalid transaction that creates a new object with a non-existent prope
     AND      submitting the invalid transaction
     THEN     an ActionPropertyUnknownError is thrown
 
-Apply an invalid transaction that modifies a raw property in a create action using consonant.store
---------------------------------------------------------------------------------------------------
-
-TODO - the example schema has no raw property definitions yet, so we
-cannot test this at the moment.
-
 Apply an invalid transaction that creates a new object that references a non-existent object using consonant.store
 ------------------------------------------------------------------------------------------------------------------
 
@@ -557,11 +551,6 @@ Apply an invalid transaction that sets a timestamp property to an invalid value 
     AND      submitting the invalid transaction
 
     THEN     a TimestampPropertyValueInvalidError is thrown
-
-Apply an invalid transaction that sets a raw property to an invalid value using consonant.store
------------------------------------------------------------------------------------------------
-
-TODO
 
 Apply an invalid transaction that sets a reference property to a non-dict value using consonant.store
 -----------------------------------------------------------------------------------------------------

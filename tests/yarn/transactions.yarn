@@ -459,8 +459,6 @@ Apply an invalid transaction that deletes an object created in a later action
     AND      submitting the invalid transaction
     THEN     this fails
 
-////////////////////
-
 Apply an invalid transaction that updates a raw property of a non-existent object
 ---------------------------------------------------------------------------------
 
