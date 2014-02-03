@@ -205,7 +205,7 @@ class TransactionPreparer(object):
             self._validate_object_properties(
                 phase, action, schema, obj.klass.name, [action.property])
 
-            # make sure the properties to update is a raw property
+            # make sure the property to update is a raw property
             self._validate_object_properties_raw(
                 phase, action, schema, obj.klass.name, [action.property])
 
