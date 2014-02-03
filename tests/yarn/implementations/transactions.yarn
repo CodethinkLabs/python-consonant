@@ -61,7 +61,7 @@ Define an update action
     EOF
 
 Define an update-raw-property action
-----------------------
+------------------------------------
 
     IMPLEMENTS WHEN defining an update-raw-property action
     cat <<-EOF >> $DATADIR/transaction.yaml
@@ -69,6 +69,17 @@ Define an update-raw-property action
     Content-Type: application/x-yaml
 
     action: update-raw-property
+    EOF
+
+Define an unset-raw-property action
+-----------------------------------
+
+    IMPLEMENTS WHEN defining an unset-raw-property action
+    cat <<-EOF >> $DATADIR/transaction.yaml
+    --CONSONANT
+    Content-Type: application/x-yaml
+
+    action: unset-raw-property
     EOF
 
 Define raw property data with a given content type
