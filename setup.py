@@ -177,7 +177,7 @@ setup(
     author='Codethink Limited',
     author_email='jannis.pohlmann@codethink.co.uk',
     url='http://github.com/CodethinkLabs/python-consonant',
-    scripts=[],
+    scripts=['python-consonant-server'],
     packages=['consonant'],
     package_data={},
     data_files=[],
