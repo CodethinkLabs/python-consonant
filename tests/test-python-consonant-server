@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#
+# Copyright (C) 2014 Codethink Limited.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+
+
+set -e
+
+
+if [[ -z "$1" ]]; then
+  echo "Usage: $0 http://HOST[:PORT]"
+  exit 1
+fi
+
+
+HOST="http://$1"
+
+
+request()
+{
+  REQUEST="$1"
+  for TYPE in "application/x-yaml"; do
+    CMD="curl -f -s -S -H \"Accept: $TYPE\" \"$HOST$REQUEST\""
+    echo "> $CMD:"
+    echo "------------------------------------------------------------------------"
+    OUTPUT=$(eval $CMD)
+    echo "$OUTPUT"
+    echo
+  done
+}
+
+
+request '/name'
+request '/schema'
+request '/services'
+request '/refs'
+request '/classes'
+request '/classes/lane'
+request '/classes/lane/objects'
+request '/classes/lane/objects/180fb21679d54b29964bea26e3760665'
+request '/classes/lane/objects/180fb21679d54b29964bea26e3760665/class'
+request '/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties'
+request '/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties/name'
+request '/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties/views'
+request '/objects'
+request '/objects/180fb21679d54b29964bea26e3760665'
+request '/objects/180fb21679d54b29964bea26e3760665/class'
+request '/objects/180fb21679d54b29964bea26e3760665/properties'
+request '/objects/180fb21679d54b29964bea26e3760665/properties/name'
+request '/objects/180fb21679d54b29964bea26e3760665/properties/views'
+request '/refs/master'
+request '/refs/master/name'
+request '/refs/master/schema'
+request '/refs/master/services'
+request '/refs/master/refs'
+request '/refs/master/classes'
+request '/refs/master/classes/lane'
+request '/refs/master/classes/lane/objects'
+request '/refs/master/classes/lane/objects/180fb21679d54b29964bea26e3760665'
+request '/refs/master/classes/lane/objects/180fb21679d54b29964bea26e3760665/class'
+request '/refs/master/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties'
+request '/refs/master/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties/name'
+request '/refs/master/classes/lane/objects/180fb21679d54b29964bea26e3760665/properties/views'
+request '/refs/master/objects'
+request '/refs/master/objects/180fb21679d54b29964bea26e3760665'
+request '/refs/master/objects/180fb21679d54b29964bea26e3760665/class'
+request '/refs/master/objects/180fb21679d54b29964bea26e3760665/properties'
+request '/refs/master/objects/180fb21679d54b29964bea26e3760665/properties/name'
+request '/refs/master/objects/180fb21679d54b29964bea26e3760665/properties/views'
