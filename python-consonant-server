@@ -26,6 +26,11 @@ import consonant
 
 class PythonConsonantServer(cliapp.Application):
 
+    def add_settings(self):
+        self.settings.string(['memcached'],
+                             'memcached server to use for caching (optional)',
+                             metavar='HOST[:PORT]')
+
     def process_args(self, args):
         if len(args) < 2:
             raise cliapp.AppException('Usage: %s REPOSITORY PORT' %
@@ -37,6 +42,11 @@ class PythonConsonantServer(cliapp.Application):
         # obtain a Consonant service to operate against the repository
         factory = consonant.service.factories.ServiceFactory()
         store = factory.service(repository)
+
+        # use memcached if requested
+        if 'memcached' in self.settings and self.settings['memcached']:
+            store.set_cache(consonant.store.caches.MemcachedObjectCache(
+                [self.settings['memcached']]))
 
         # instantiate and run a web service to service the store repository
         service = consonant.web.services.SimpleWebService(store)
