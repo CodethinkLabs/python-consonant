@@ -101,6 +101,51 @@ EOF
 }
 
 
+run_consonant_web_service()
+{
+    if [ "$API" != "consonant.web.service" ]; then
+        return
+    fi
+
+    trap dump_output 0
+    cd $DATADIR
+    CODE=$(cat | sed -e 's/^\(.*\)/    \1/g')
+    python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+import os
+import subprocess
+import time
+import urllib2
+
+def http_get_yaml(path):
+    url = 'http://localhost:42000%s' % path
+    request = urllib2.Request(url)
+    request.add_header('Accept', 'application/x-yaml')
+    handle = urllib2.urlopen(request)
+    return handle.read()
+
+executable = os.path.join("$SRCDIR", "python-consonant-server")
+args = []
+if os.path.exists('use-memcached'):
+    args.append('--memcached=127.0.0.1')
+store = os.path.join("$DATADIR", "test-store")
+p = subprocess.Popen([executable, store, "42000"] + args)
+ready = False
+while not ready:
+    try:
+        http_get_yaml('/name')
+        ready = True
+    except:
+        pass
+try:
+    $CODE
+finally:
+    p.terminate()
+EOF
+    echo $? > $DATADIR/exit-code
+    exit 0
+}
+
+
 fail_unknown_api()
 {
     echo "Not implemented for API \"$API\" yet"

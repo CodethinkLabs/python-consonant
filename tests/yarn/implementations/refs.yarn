@@ -10,6 +10,10 @@ Fetch all refs from a store
     print yaml.dump(store.refs())
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/refs")
+    EOF
+
     fail_unknown_api
 
 Verify that there are as many refs as expected

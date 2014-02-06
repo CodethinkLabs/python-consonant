@@ -11,6 +11,10 @@ Fetch objects from a store
     print yaml.dump(store.objects(commit))
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_1/objects")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching objects from the non-existent commit ([abcdef0-9]{8})
@@ -20,6 +24,10 @@ Fetch objects from a store
     print yaml.dump(store.objects(commit))
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_1/objects")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching objects from the latest commit
@@ -27,6 +35,10 @@ Fetch objects from a store
     run_consonant_store <<-EOF
     ref = store.ref('refs/heads/master')
     print yaml.dump(store.objects(ref.head))
+    EOF
+
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/objects")
     EOF
 
     fail_unknown_api
@@ -51,6 +63,11 @@ Fetch objects from a store
                         ref.head, object, property.name)
                     raw[object.uuid][property.name] = prop_data
     print yaml.dump(raw, default_flow_style=False)
+    EOF
+
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/refs/$MATCH_1/objects")
+    # TODO: Fetch raw properties as well
     EOF
 
     fail_unknown_api

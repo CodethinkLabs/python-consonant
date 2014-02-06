@@ -12,6 +12,10 @@ Fetch an object from a commit
     print yaml.dump(object)
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_2/objects/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from the non-existent commit ([abcdef0-9]{8})
@@ -22,6 +26,10 @@ Fetch an object from a commit
     print yaml.dump(object)
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_2/objects/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching the non-existent object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" from commit ([abcdef0-9]{8})
@@ -30,6 +38,10 @@ Fetch an object from a commit
     commit = store.commit("$MATCH_2")
     object = store.object(commit, "$MATCH_1")
     print yaml.dump(object)
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_2/objects/$MATCH_1")
     EOF
 
     fail_unknown_api
@@ -46,6 +58,10 @@ Fetch an object of a class from a commit
     print yaml.dump(object)
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_3/classes/$MATCH_2/objects/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of class "(.+)" from the non-existent commit ([abcdef0-9]{8})
@@ -55,6 +71,10 @@ Fetch an object of a class from a commit
     klass = store.klass(commit, "$MATCH_2")
     object = store.object(commit, "$MATCH_1", klass)
     print yaml.dump(object)
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_3/classes/$MATCH_2/objects/$MATCH_1")
     EOF
 
     fail_unknown_api
@@ -68,6 +88,10 @@ Fetch an object of a class from a commit
     print yaml.dump(object)
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_3/classes/$MATCH_2/objects/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of the non-existent class "(.+)" from commit ([abcdef0-9]{8})
@@ -79,6 +103,10 @@ Fetch an object of a class from a commit
     print yaml.dump(object)
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_3/classes/$MATCH_2/objects/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching object "([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])" of the wrong class "(.+)" from commit ([abcdef0-9]{8})
@@ -88,6 +116,10 @@ Fetch an object of a class from a commit
     klass = store.klass(commit, "$MATCH_2")
     object = store.object(commit, "$MATCH_1", klass)
     print yaml.dump(object)
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_3/classes/$MATCH_2/objects/$MATCH_1")
     EOF
 
     fail_unknown_api
