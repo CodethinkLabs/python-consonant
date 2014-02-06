@@ -671,3 +671,167 @@ Apply a valid transaction that updates a raw property twice
     AND      the newly created object in "schema-v2" has exactly 1 property set
     AND      the property "data" of the newly created object in "schema-v2" is set to "text/plain"
     AND      the data of the raw property "data" of the newly created object in "schema-v2" is set to "bar"
+
+Apply an invalid transaction that unsets a raw property of a non-existent object
+--------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that unsets a raw property of a non-existent object
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to uuid: i-do-not-exist
+    AND      setting the action property to "something"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Unset a raw property of a non-existent object"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction that unsets a raw property of a non-existent action
+--------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that unsets a raw property of a non-existent action
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: i-do-not-exist
+    AND      setting the action property to "something"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Unset a raw property of a non-existent action"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction that unsets a raw property of an object only created later
+---------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that unsets a raw property of an object only created later
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Create and modify an attachment in an invalid way"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction unsetting a raw property without defining a property name
+--------------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction unsetting a raw property without defining a property name
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      defining raw property data with the content type "text/plain"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Unset a raw property without providing its name"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply an invalid transaction that unsets a non-raw property like a raw property
+-------------------------------------------------------------------------------
+
+    SCENARIO apply an invalid transaction that unsets a non-raw property like a raw property
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 5c127eaf
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to uuid: 633715b8-70ea-4b06-94c6-43ee83a8df9e
+    AND      setting the action property to "title"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/master"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Unset the title of a card as if it was a raw property"
+    AND      submitting the invalid transaction
+    THEN     this fails
+
+Apply a valid transaction that unsets a raw property
+----------------------------------------------------
+
+    SCENARIO apply a valid transaction that unsets a raw property
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining an update-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining raw property data with the content type "text/plain"
+    AND      setting the raw property data to "foo"
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Create attachment and unset its data property"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 1 object in "schema-v2"
+    AND      the newly created object in "schema-v2" has exactly 0 properties set
+
+Apply a valid transaction that unsets a raw property twice
+----------------------------------------------------------
+
+    SCENARIO apply a valid transaction that unsets a raw property twice
+    GIVEN    the standard test store "consonant-test-store-01"
+    WHEN     starting a transaction based on commit 9f3e6023
+    AND      defining a create action
+    AND      setting the action id to "create-attachment"
+    AND      setting the action class to "attachment"
+    AND      defining an update-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining raw property data with the content type "text/plain"
+    AND      setting the raw property data to "foo"
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining an unset-raw-property action
+    AND      setting the action target object to action: create-attachment
+    AND      setting the action property to "data"
+    AND      defining a commit action
+    AND      setting the action target to "refs/heads/schema-v2"
+    AND      setting the action author to "Samuel Bartlett <samuel@yourproject.org>"
+    AND      setting the action author-date to "1380539061 +0100"
+    AND      setting the action committer to "IRC Code Review Bot <reviewbot@yourproject.org>"
+    AND      setting the action committer-date to "1380539061 +0100"
+    AND      setting the action message to "Create attachment and unset its data property twice"
+    AND      submitting the transaction
+    AND      fetching objects from the latest commit in "schema-v2"
+
+    THEN     the transaction affects exactly 1 object in "schema-v2"
+    AND      the newly created object in "schema-v2" has exactly 0 properties set

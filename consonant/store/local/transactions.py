@@ -205,7 +205,7 @@ class TransactionPreparer(object):
             self._validate_object_properties(
                 phase, action, schema, obj.klass.name, [action.property])
 
-            # make sure the properties to update is a raw property
+            # make sure the property to update is a raw property
             self._validate_object_properties_raw(
                 phase, action, schema, obj.klass.name, [action.property])
 
@@ -215,6 +215,51 @@ class TransactionPreparer(object):
         object_tree = self._update_raw_property(
             schema, obj, action.property, action.content_type, action.data,
             old_object_tree)
+
+        # build a new class tree with the object changed
+        class_entry = tree[obj.klass.name]
+        class_tree = self.store.repo[class_entry.oid]
+        builder = self.store.repo.TreeBuilder(class_tree)
+        builder.insert(obj.uuid, object_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        new_class_oid = builder.write()
+
+        # build and return a new overall store tree
+        builder = self.store.repo.TreeBuilder(tree)
+        builder.insert(obj.klass.name, new_class_oid, pygit2.GIT_FILEMODE_TREE)
+        new_tree_oid = builder.write()
+        new_tree = self.store.repo[new_tree_oid]
+
+        # load the updated class from the new tree
+        context = loaders.LoaderContext(self.store)
+        context.set_tree(new_tree)
+        new_class_entry = new_tree[obj.klass.name]
+        updated_class = self.loader.class_in_tree(context, new_class_entry)
+
+        # load the updated object from the updated class
+        context.set_class(updated_class)
+        context.set_uuid(obj.uuid)
+        updated_obj = self.loader.object_in_tree(context)
+
+        return updated_obj, new_tree
+
+    def _apply_unset_raw_property_action(self, action, commit, schema, tree):
+        # load the object from the commit or from a previous action
+        obj = self._validate_and_resolve_target_object(schema, action, commit)
+
+        with Phase() as phase:
+            # make sure the property to be unset exists in the object's class
+            self._validate_object_properties(
+                phase, action, schema, obj.klass.name, [action.property])
+
+            # make sure the property to unset is a raw property
+            self._validate_object_properties_raw(
+                phase, action, schema, obj.klass.name, [action.property])
+
+        # build a new object tree
+        old_object_entry = tree[obj.klass.name]
+        old_object_tree = self.store.repo[old_object_entry.oid]
+        object_tree = self._unset_raw_property(
+            schema, obj, action.property, old_object_tree)
 
         # build a new class tree with the object changed
         class_entry = tree[obj.klass.name]
@@ -369,6 +414,29 @@ class TransactionPreparer(object):
         tree_oid = builder.write()
         return self.store.repo[tree_oid]
 
+    def _unset_raw_property(self, schema, obj, prop_name, old_object_tree):
+        # generate YAML data to write into <class>/<uuid>/properties.yaml
+        props_data = self._merge_property_values(
+            schema, obj, obj.properties, {})
+        if prop_name in props_data:
+            del props_data[prop_name]
+        yaml_data = yaml.dump(props_data, default_flow_style=False)
+
+        # generate the properties.yaml blob
+        blob_oid = self.store.repo.create_blob(yaml_data)
+
+        # generate the new object tree
+        builder = self.store.repo.TreeBuilder()
+        builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        raw_tree = self._update_raw_tree(obj, prop_name, None, old_object_tree)
+        if raw_tree:
+            builder.insert('raw', raw_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        else:
+            if 'raw' in old_object_tree:
+                builder.remove('raw')
+        tree_oid = builder.write()
+        return self.store.repo[tree_oid]
+
     def _merge_property_values(self, schema, obj, old_props, new_props):
         # generate dictionary with property values and update the
         # content type of the raw property
@@ -394,6 +462,7 @@ class TransactionPreparer(object):
             builder = self.store.repo.TreeBuilder(raw_tree)
         else:
             builder = self.store.repo.TreeBuilder()
+            raw_tree = None
 
         # create a new blob with the new raw property data or delete it
         # if the property was unset (data == None)
@@ -401,7 +470,8 @@ class TransactionPreparer(object):
             blob_oid = self.store.repo.create_blob(data)
             builder.insert(prop_name, blob_oid, pygit2.GIT_FILEMODE_BLOB)
         else:
-            builder.remove(prop_name)
+            if raw_tree and prop_name in raw_tree:
+                builder.remove(prop_name)
 
         # write the tree but return None if it's empty
         tree_oid = builder.write()
