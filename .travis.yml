@@ -17,7 +17,7 @@ before_install:
   - sudo apt-get install cmake
   - "./.travis-libgit2.sh"
 install:
-  - sudo apt-get install memcached
+  - pip install twisted
   - pip install pygit2
   - pip install pylibmc
   - pip install PyYAML
