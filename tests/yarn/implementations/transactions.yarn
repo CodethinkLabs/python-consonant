@@ -209,6 +209,13 @@ Submitting a transaction
     store.apply_transaction(transaction)
     EOF
 
+    run_consonant_web_service <<-EOF
+    parser = consonant.transaction.parser.TransactionParser()
+        transaction_data = open('transaction.yaml').read()
+        print transaction_data
+        print http_post('/transactions', 'multipart/mixed', transaction_data)
+    EOF
+
     fail_unknown_api
 
 Submitting an invalid transaction
@@ -224,6 +231,12 @@ Submitting an invalid transaction
     store.apply_transaction(transaction)
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    parser = consonant.transaction.parser.TransactionParser()
+        transaction_data = open('transaction.yaml').read()
+        print http_post('/transactions', 'multipart/mixed', transaction_data)
+    EOF
+
     fail_unknown_api
 
 Submitting a transaction based on a non-existent commit
@@ -237,6 +250,12 @@ Submitting a transaction based on a non-existent commit
     parser = consonant.transaction.parser.TransactionParser()
     transaction = parser.parse(open('transaction.yaml'))
     store.apply_transaction(transaction)
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    parser = consonant.transaction.parser.TransactionParser()
+        transaction_data = open('transaction.yaml').read()
+        print http_post('/transactions', 'multipart/mixed', transaction_data)
     EOF
 
     fail_unknown_api

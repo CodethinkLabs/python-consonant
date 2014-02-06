@@ -17,5 +17,5 @@ Test for the result value
 
     IMPLEMENTS THEN the result is "(.+)"
     run_python_test <<-EOF
-    assert output_stripped == "$MATCH_1"
+    assert str(output_yaml) == "$MATCH_1"
     EOF

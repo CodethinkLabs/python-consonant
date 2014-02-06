@@ -10,12 +10,20 @@ Fetch a commit from a store
     print yaml.dump(store.commit("$MATCH_1"))
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_1")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching the non-existent commit ([abcdef0-9]{8}) from the store
 
     run_consonant_store <<-EOF || true
     print yaml.dump(store.commit("$MATCH_1"))
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_1")
     EOF
 
     fail_unknown_api

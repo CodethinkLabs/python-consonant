@@ -68,6 +68,7 @@ class Check(Command):
         suites = {
             'consonant.register': (),
             'consonant.store': ('local',),
+            'consonant.web.service': ('local',),
         }
 
         for suite, locations in suites.iteritems():
