@@ -34,8 +34,23 @@ Fetch objects from a store
     IMPLEMENTS WHEN fetching objects from the latest commit in "(.+)"
 
     run_consonant_store <<-EOF
+    import itertools
+
     ref = store.ref("$MATCH_1")
-    print yaml.dump(store.objects(ref.head))
+    objects = store.objects(ref.head)
+    print yaml.dump(objects, default_flow_style=False)
+    print '---'
+    raw = {}
+    for class_objects in itertools.chain(objects.itervalues()):
+        for object in class_objects:
+            raw[object.uuid] = {}
+            for property in object.properties.itervalues():
+                if isinstance(
+                        property, consonant.store.properties.RawProperty):
+                    prop_data = store.raw_property_data(
+                        ref.head, object, property.name)
+                    raw[object.uuid][property.name] = prop_data
+    print yaml.dump(raw, default_flow_style=False)
     EOF
 
     fail_unknown_api
@@ -95,7 +110,7 @@ Verify that a given object has a certain number of properties set
     assert len(object['properties']) == $MATCH_2
     EOF
 
-    IMPLEMENTS THEN the newly created object has exactly ([0-9]+) properties set
+    IMPLEMENTS THEN the newly created object has exactly ([0-9]+) propert(y|ies) set
 
     NEW_OBJECTS=$(created_objects master)
     run_python_test <<-EOF
@@ -110,7 +125,7 @@ Verify that a given object has a certain number of properties set
     assert len(object['properties']) == $MATCH_1
     EOF
 
-    IMPLEMENTS THEN the newly created object in "(.+)" has exactly ([0-9]+) properties set
+    IMPLEMENTS THEN the newly created object in "(.+)" has exactly ([0-9]+) propert(y|ies) set
 
     NEW_OBJECTS=$(created_objects $MATCH_1)
     run_python_test <<-EOF
@@ -166,6 +181,24 @@ Verify that a given property of an object is set to a certain value
     object = [x for x in objects if x['uuid'] == new_object][0]
     assert "$MATCH_1" in object['properties']
     assert object['properties']["$MATCH_1"] == eval('$MATCH_3')
+    EOF
+
+    IMPLEMENTS THEN the data of the raw property "([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9])" of the newly created object in "(.+)" is set to (.+)
+
+    NEW_OBJECTS=$(created_objects $MATCH_2)
+    run_python_test <<-EOF
+    new_object = eval("$NEW_OBJECTS")[0]
+    if isinstance(output_yaml, dict):
+      objects = []; [objects.extend(x) for x in output_yaml.itervalues()]
+    else:
+      objects = output_yaml
+    object = [x for x in objects if x['uuid'] == new_object][0]
+    assert "$MATCH_1" in object['properties']
+
+    assert output_raw_properties is not None
+    assert new_object in output_raw_properties
+    assert "$MATCH_1" in output_raw_properties[new_object]
+    assert output_raw_properties[new_object]["$MATCH_1"] == '$MATCH_3'
     EOF
 
 Verify that a given property of an object is not set

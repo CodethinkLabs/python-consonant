@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -287,6 +287,68 @@ class MandatoryPropertyNotSetError(PropertyValidationError):
         return 'mandatory property is not set'
 
 
+class RawPropertyContentTypeNotAStringError(PropertyValidationError):
+
+    """Exception when the content type of a raw property is not a string."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'raw property content type is not a string: %s' % self.value
+
+
+class RawPropertyContentTypeInvalidError(PropertyValidationError):
+
+    """Exception when the content type of a raw property is invalid."""
+
+    def __init__(self, context, property_name, value):
+        PropertyValidationError.__init__(self, context, property_name)
+        self.value = value
+
+    def _msg(self):
+        return 'raw property content type is invalid: %s' % self.value
+
+
+class RawPropertyEntriesMissingError(PropertyValidationError):
+
+    """Exception when raw/ directory is missing for an object."""
+
+    def __init__(self, context, property_name):
+        PropertyValidationError.__init__(self, context, property_name)
+
+    def _msg(self):
+        return 'raw property entries are missing despite a raw ' \
+               'property being set'
+
+
+class RawPropertyDataMissingError(PropertyValidationError):
+
+    """Exception when the data file of a raw property is missing."""
+
+    def __init__(self, context, property_name):
+        PropertyValidationError.__init__(self, context, property_name)
+
+    def _msg(self):
+        return 'raw property data is missing'
+
+
+class PropertyNowRawError(LoaderError):
+
+    """Exception for when a non-raw property is treated as a raw property."""
+
+    def __init__(self, context, property_name):
+        LoaderError.__init__(self, context)
+        self.property_name = property_name
+
+    def __str__(self):
+        return 'Commit "%s", object "%s": ' \
+               'property "%s" is not a raw property' % \
+               (self.context.commit.sha1, self.context.uuid,
+                self.property_name)
+
+
 class LoaderContext(Phase):
 
     """Contextual information about where the Loader is in the loading process.
@@ -415,6 +477,33 @@ class Loader(object):
                     context.error(services.ObjectNotFoundError(
                         commit, uuid))
             return object
+
+    def raw_property_data(self, commit, object, property):
+        """Return raw data for an object property in a given commit."""
+
+        with LoaderContext(self) as context:
+            context.set_commit(commit)
+            context.set_class(object.klass)
+            context.set_uuid(object.uuid)
+
+            prop = object.properties[property]
+            if not isinstance(prop, properties.RawProperty):
+                raise PropertyNowRawError(context, property)
+
+            return self.raw_property_data_in_tree(context, property)
+
+    def raw_property_data_in_tree(self, context, property):
+        """Return raw data for an object property in a tree of the store."""
+
+        class_entry = context.tree[context.klass.name]
+        class_tree = self.repo[class_entry.oid]
+        object_entry = class_tree[context.uuid]
+        object_tree = self.repo[object_entry.oid]
+        raw_entry = object_tree['raw']
+        raw_tree = self.repo[raw_entry.oid]
+        data_entry = raw_tree[property]
+        data_blob = self.repo[data_entry.oid]
+        return data_blob.data
 
     def _metadata_in_tree(self, context):
         """Return the raw meta data in the given tree of the store."""
@@ -712,6 +801,25 @@ class Loader(object):
 
     def raw_property_in_data(self, context, object_entry, prop_def, data):
         """Return a raw property from an object properties dictionary."""
+
+        if not isinstance(data, basestring):
+            context.error(RawPropertyContentTypeNotAStringError(
+                context, prop_def.name, data))
+        else:
+            if prop_def.expressions:
+                if not any(x.match(data) for x in prop_def.expressions):
+                    context.error(RawPropertyContentTypeInvalidError(
+                        context, prop_def.name, data))
+
+        object_tree = self.repo[object_entry.oid]
+        if not 'raw' in object_tree:
+            context.error(RawPropertyEntriesMissingError(
+                context, prop_def.name))
+        else:
+            raw_tree = self.repo[object_tree['raw'].oid]
+            if not prop_def.name in raw_tree:
+                context.error(RawPropertyDataMissingError(
+                    context, prop_def.name, data))
 
         return properties.RawProperty(prop_def.name, data)
 

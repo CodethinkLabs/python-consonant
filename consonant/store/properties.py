@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -164,3 +164,16 @@ class ListProperty(Property):
         """Return a YAML representation of an int property."""
 
         return dumper.represent_sequence(u'tag:yaml.org,2002:seq', prop.value)
+
+
+class RawProperty(Property):
+
+    """Object property of type `raw`."""
+
+    yaml_tag = u'!RawProperty'
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of an int property."""
+
+        return dumper.represent_scalar(u'tag:yaml.org,2002:str', prop.value)

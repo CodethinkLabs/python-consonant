@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ class TransactionPreparer(object):
     def _apply_action(self, action, commit, schema, tree):
         class_name = action.__class__.__name__
         normalised_name = class_name.replace('Action', '')
-        normalised_name = re.sub(r'.+([A-Z])', r'_\1', normalised_name)
+        normalised_name = re.sub(r'([A-Z])', r'_\1', normalised_name)[1:]
         normalised_name = normalised_name.lower()
         apply_func = '_apply_%s_action' % normalised_name
         return getattr(self, apply_func)(action, commit, schema, tree)
@@ -96,7 +96,8 @@ class TransactionPreparer(object):
         with Phase() as phase:
             # make sure properties to be set exist in the new object's class
             self._validate_object_properties(
-                phase, action, schema, action.klass, action.properties)
+                phase, action, schema, action.klass,
+                action.properties.keys())
 
             # make sure none of the properties to set are raw properties
             # as we have separate actions for them
@@ -149,7 +150,8 @@ class TransactionPreparer(object):
         with Phase() as phase:
             # make sure properties to be set exist in the object's class
             self._validate_object_properties(
-                phase, action, schema, obj.klass.name, action.properties)
+                phase, action, schema, obj.klass.name,
+                action.properties.keys())
 
             # make sure none of the properties to set are raw properties
             # as we have separate actions for them
@@ -160,8 +162,59 @@ class TransactionPreparer(object):
             self._validate_action_object_references(
                 phase, action, schema, obj.klass.name, action.properties)
 
+        # obtain the class and object tree from the store
+        old_class_entry = tree[obj.klass.name]
+        old_class_tree = self.store.repo[old_class_entry.oid]
+        old_object_entry = old_class_tree[obj.uuid]
+        old_object_tree = self.store.repo[old_object_entry.oid]
+
         # build a new object tree
-        object_tree = self._update_object_tree(schema, obj, action.properties)
+        object_tree = self._update_object_tree(
+            schema, obj, action.properties, old_object_tree)
+
+        # build a new class tree with the object changed
+        builder = self.store.repo.TreeBuilder(old_class_tree)
+        builder.insert(obj.uuid, object_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        new_class_oid = builder.write()
+
+        # build and return a new overall store tree
+        builder = self.store.repo.TreeBuilder(tree)
+        builder.insert(obj.klass.name, new_class_oid, pygit2.GIT_FILEMODE_TREE)
+        new_tree_oid = builder.write()
+        new_tree = self.store.repo[new_tree_oid]
+
+        # load the updated class from the new tree
+        context = loaders.LoaderContext(self.store)
+        context.set_tree(new_tree)
+        new_class_entry = new_tree[obj.klass.name]
+        updated_class = self.loader.class_in_tree(context, new_class_entry)
+
+        # load the updated object from the updated class
+        context.set_class(updated_class)
+        context.set_uuid(obj.uuid)
+        updated_obj = self.loader.object_in_tree(context)
+
+        return updated_obj, new_tree
+
+    def _apply_update_raw_property_action(self, action, commit, schema, tree):
+        # load the object from the commit or from a previous action
+        obj = self._validate_and_resolve_target_object(schema, action, commit)
+
+        with Phase() as phase:
+            # make sure the property to be updated exists in the object's class
+            self._validate_object_properties(
+                phase, action, schema, obj.klass.name, [action.property])
+
+            # make sure the properties to update is a raw property
+            self._validate_object_properties_raw(
+                phase, action, schema, obj.klass.name, [action.property])
+
+        # build a new object tree
+        old_object_entry = tree[obj.klass.name]
+        old_object_tree = self.store.repo[old_object_entry.oid]
+        object_tree = self._update_raw_property(
+            schema, obj, action.property, action.content_type, action.data,
+            old_object_tree)
 
         # build a new class tree with the object changed
         class_entry = tree[obj.klass.name]
@@ -212,11 +265,11 @@ class TransactionPreparer(object):
             raise validation.ActionClassUnknownError(action, schema, klass)
 
     def _validate_object_properties(
-            self, phase, action, schema, klass, properties):
-        for prop_name in properties.iterkeys():
-            if not prop_name in schema.classes[klass].properties:
+            self, phase, action, schema, klass, property_names):
+        for name in property_names:
+            if not name in schema.classes[klass].properties:
                 phase.error(validation.ActionPropertyUnknownError(
-                    action, schema, klass, prop_name))
+                    action, schema, klass, name))
 
     def _validate_object_properties_not_raw(
             self, phase, action, schema, klass, properties):
@@ -226,6 +279,16 @@ class TransactionPreparer(object):
                 if isinstance(prop, definitions.RawPropertyDefinition):
                     phase.error(
                         validation.ActionIllegalRawPropertyChangeError(
+                            action, schema, klass, prop_name))
+
+    def _validate_object_properties_raw(
+            self, phase, action, schema, klass, property_names):
+        for prop_name in property_names:
+            if prop_name in schema.classes[klass].properties:
+                prop = schema.classes[klass].properties[prop_name]
+                if not isinstance(prop, definitions.RawPropertyDefinition):
+                    phase.error(
+                        validation.ActionIllegalNonRawPropertyChangeError(
                             action, schema, klass, prop_name))
 
     def _validate_and_resolve_target_object(self, schema, action, commit):
@@ -272,12 +335,47 @@ class TransactionPreparer(object):
         tree_oid = builder.write()
         return self.store.repo[tree_oid]
 
-    def _update_object_tree(self, schema, obj, properties):
+    def _update_object_tree(self, schema, obj, properties, old_object_tree):
         # generate YAML data to write into <class>/<uuid>/properties.yaml
+        data = self._merge_property_values(
+            schema, obj, obj.properties, properties)
+        yaml_data = yaml.dump(data, default_flow_style=False)
+
+        # generate the properties.yaml blob
+        blob_oid = self.store.repo.create_blob(yaml_data)
+
+        # generate and return the object tree
+        builder = self.store.repo.TreeBuilder(old_object_tree)
+        builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        tree_oid = builder.write()
+        return self.store.repo[tree_oid]
+
+    def _update_raw_property(
+            self, schema, obj, prop_name, content_type, data, old_object_tree):
+        # generate YAML data to write into <class>/<uuid>/properties.yaml
+        props_data = self._merge_property_values(
+            schema, obj, obj.properties, {})
+        props_data[prop_name] = content_type
+        yaml_data = yaml.dump(props_data, default_flow_style=False)
+
+        # generate the properties.yaml blob
+        blob_oid = self.store.repo.create_blob(yaml_data)
+
+        # generate the new object tree
+        builder = self.store.repo.TreeBuilder()
+        builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        raw_tree = self._update_raw_tree(obj, prop_name, data, old_object_tree)
+        builder.insert('raw', raw_tree.oid, pygit2.GIT_FILEMODE_TREE)
+        tree_oid = builder.write()
+        return self.store.repo[tree_oid]
+
+    def _merge_property_values(self, schema, obj, old_props, new_props):
+        # generate dictionary with property values and update the
+        # content type of the raw property
         data = {}
-        for prop_name, prop in obj.properties.iteritems():
+        for prop_name, prop in old_props.iteritems():
             data[prop_name] = prop.value
-        for prop_name, prop in properties.iteritems():
+        for prop_name, prop in new_props.iteritems():
             # delete properties that are set to None in the action,
             # overwrite the others
             if prop_name in data and prop.value is None:
@@ -285,16 +383,33 @@ class TransactionPreparer(object):
             else:
                 data[prop_name] = self._create_property_value(
                     schema, obj.klass.name, prop)
-        yaml_data = yaml.dump(data, default_flow_style=False)
+        return data
 
-        # generate the properties.yaml blob
-        blob_oid = self.store.repo.create_blob(yaml_data)
+    def _update_raw_tree(self, obj, prop_name, data, old_object_tree):
+        # create a fresh builder or one based on the current raw
+        # properties tree
+        if 'raw' in old_object_tree:
+            raw_tree_oid = old_object_tree['raw'].oid
+            raw_tree = self.store.repo[raw_tree_oid]
+            builder = self.store.repo.TreeBuilder(raw_tree)
+        else:
+            builder = self.store.repo.TreeBuilder()
 
-        # generate and return the object tree
-        builder = self.store.repo.TreeBuilder()
-        builder.insert('properties.yaml', blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        # create a new blob with the new raw property data or delete it
+        # if the property was unset (data == None)
+        if data is not None:
+            blob_oid = self.store.repo.create_blob(data)
+            builder.insert(prop_name, blob_oid, pygit2.GIT_FILEMODE_BLOB)
+        else:
+            builder.remove(prop_name)
+
+        # write the tree but return None if it's empty
         tree_oid = builder.write()
-        return self.store.repo[tree_oid]
+        tree = self.store.repo[tree_oid]
+        if len(tree) > 0:
+            return tree
+        else:
+            return None
 
     def _validate_action_object_references(
             self, phase, action, schema, klass, properties):

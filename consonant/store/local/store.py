@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -122,6 +122,11 @@ class LocalStore(services.Service):
         """Return the object with the given UUID from a commit of the store."""
 
         return self.loader.object(commit, uuid, klass)
+
+    def raw_property_data(self, commit, object, property):
+        """Return raw data for an object property in a given commit."""
+
+        return self.loader.raw_property_data(commit, object, property)
 
     def resolve_reference(self, reference, commit=None):
         """Resolve an object reference into an object and return it."""

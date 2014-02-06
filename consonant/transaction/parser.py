@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -376,6 +376,17 @@ class ActionPropertyNotAStringError(ActionError):
         return 'Action defines a non-string property: %s' % self.prop
 
 
+class ActionRawPropertyUndefinedError(ActionError):
+
+    """Error for when a raw property action defines no property name."""
+
+    def __init__(self, phase, part):
+        ActionError.__init__(self, phase, part)
+
+    def __str__(self):
+        return 'Action defines no raw property to update or unset'
+
+
 class ActionPropertyInvalidError(ActionError):
 
     """Error for when a raw property action defines an invalid property."""
@@ -701,13 +712,16 @@ class TransactionParser(object):
         return obj
 
     def _load_raw_property_name(self, phase, part, data):
-        prop = data.get('property', '')
-        if not isinstance(prop, basestring):
-            phase.error(ActionPropertyNotAStringError(phase, part, prop))
+        if not 'property' in data:
+            phase.error(ActionRawPropertyUndefinedError(phase, part))
         else:
-            if not expressions.property_name.match(prop):
-                phase.error(ActionPropertyInvalidError(phase, part, prop))
-        return prop
+            prop = data.get('property', '')
+            if not isinstance(prop, basestring):
+                phase.error(ActionPropertyNotAStringError(phase, part, prop))
+            else:
+                if not expressions.property_name.match(prop):
+                    phase.error(ActionPropertyInvalidError(phase, part, prop))
+            return prop
 
     def _validate_action_ids(self, phase, actions):
         ids = set()

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -118,7 +118,15 @@ import yaml
 
 output_raw = open('stdout').read()
 output_stripped = open('stdout').read().strip()
-output_yaml = yaml.load(open('stdout'))
+yaml_documents = list(yaml.load_all(open('stdout')))
+if not yaml_documents:
+    output_yaml = None
+else:
+    output_yaml = yaml_documents[0]
+if len(yaml_documents) < 2:
+    output_raw_properties = None
+else:
+    output_raw_properties = yaml_documents[1]
 
 print output_yaml
 
