@@ -47,7 +47,6 @@ Fetch classes from a commit in a store
     GIVEN    the standard test store "consonant-test-store-01"
     WHEN     fetching classes from the non-existent commit 12345678
     THEN     this fails
-    THEN     a CommitNotFoundError is thrown
 
 Fetch individual classes from a commit in a store
 -------------------------------------------------
