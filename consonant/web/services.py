@@ -300,7 +300,6 @@ class CommitPage(Page):
         self.putChild('commits', CommitsPage(self.context))
 
 
-
 class SimpleWebService(object):
 
     """A simple Consonant web service.
