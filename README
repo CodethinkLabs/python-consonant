@@ -26,6 +26,8 @@ python-consonant depends on the following software components:
   * PyYAML >= 3.10 (with libyaml support)
   * pygit2 >= 0.19.0
   * pylibmc >= 1.2.2
+  * python-twisted >= 11.1.0
+  * python-twisted-web >= 11.1.0
 
 For running the python-consonant test suite, the following additional
 components are required:
