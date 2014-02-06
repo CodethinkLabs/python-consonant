@@ -98,6 +98,7 @@ class RefPage(Page):
         self.putChild('classes', ClassesPage(self.context))
         self.putChild('objects', ObjectsPage(self.context))
         self.putChild('refs', RefsPage(self.context))
+        self.putChild('commits', CommitsPage(self.context))
 
 
 class NamePage(Page):
@@ -107,7 +108,7 @@ class NamePage(Page):
     def render_GET(self, request):
         """Return a response for a /name request."""
 
-        name = self.context.store.name(self.context.ref.head)
+        name = self.context.store.name(self.context.commit)
         return self.respond(request, name)
 
 
@@ -118,7 +119,7 @@ class SchemaPage(Page):
     def render_GET(self, request):
         """Return a response for a /schema request."""
 
-        schema = self.context.store.schema(self.context.ref.head)
+        schema = self.context.store.schema(self.context.commit)
         return self.respond(request, schema)
 
 
@@ -129,7 +130,7 @@ class ServicesPage(Page):
     def render_GET(self, request):
         """Return a response for a /services request."""
 
-        services = self.context.store.services(self.context.ref.head)
+        services = self.context.store.services(self.context.commit)
         return self.respond(request, services)
 
 
@@ -140,13 +141,13 @@ class ClassesPage(Page):
     def render_GET(self, request):
         """Return a response for a /classes request."""
 
-        classes = self.context.store.classes(self.context.ref.head)
+        classes = self.context.store.classes(self.context.commit)
         return self.respond(request, classes)
 
     def getChild(self, name, request):
         """Return a subpage to handle /classes/:name."""
 
-        klass = self.context.store.klass(self.context.ref.head, name)
+        klass = self.context.store.klass(self.context.commit, name)
         context = self.context.extend(klass=klass)
         return ClassPage(context)
 
@@ -174,14 +175,14 @@ class ObjectsPage(Page):
         """Return a response for an /objects request."""
 
         objects = self.context.store.objects(
-            self.context.ref.head, self.context.klass)
+            self.context.commit, self.context.klass)
         return self.respond(request, objects)
 
     def getChild(self, name, request):
         """Return a subpage to handle /objects or /class/:name/objects."""
 
         object = self.context.store.object(
-            self.context.ref.head, name, self.context.klass)
+            self.context.commit, name, self.context.klass)
         return ObjectPage(self.context.extend(object=object))
 
 
@@ -265,8 +266,39 @@ class RefsPage(Page):
         """Return a subpage to handle /refs/:name."""
 
         ref = self.context.store.ref(name)
-        context = self.context.extend(ref=ref)
+        context = self.context.extend(ref=ref, commit=ref.head)
         return RefPage(context)
+
+
+class CommitsPage(Page):
+
+    """Renders /commits, /refs/:ref/commits etc."""
+
+    def getChild(self, name, request):
+        """Return a subpage to handle /commits/:sha1."""
+
+        commit = self.context.store.commit(name)
+        context = self.context.extend(commit=commit)
+        return CommitPage(context)
+
+
+class CommitPage(Page):
+
+    """Renders /commits/:sha1, /refs/:ref/commits/:sha1 etc."""
+
+    def render_GET(self, request):
+        # TODO Implement this according to the specification
+        return ''
+
+    def put_children(self):
+        self.putChild('name', NamePage(self.context))
+        self.putChild('schema', SchemaPage(self.context))
+        self.putChild('services', ServicesPage(self.context))
+        self.putChild('classes', ClassesPage(self.context))
+        self.putChild('objects', ObjectsPage(self.context))
+        self.putChild('refs', RefsPage(self.context))
+        self.putChild('commits', CommitsPage(self.context))
+
 
 
 class SimpleWebService(object):
@@ -284,8 +316,9 @@ class SimpleWebService(object):
     def run(self, port):
         """Serve a Consonant web service over the given port."""
 
+        master = self.store.ref('master')
         context = PageContext().extend(
-            store=self.store, ref=self.store.ref('master'))
+            store=self.store, ref=master, commit=master.head)
         resource = RefPage(context)
         factory = Site(resource)
         reactor.listenTCP(port, factory)
