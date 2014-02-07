@@ -290,8 +290,7 @@ class CommitPage(Page):
     """Renders /commits/:sha1, /refs/:ref/commits/:sha1 etc."""
 
     def render_GET(self, request):
-        # TODO Implement this according to the specification
-        return ''
+        return self.respond(request, self.context.commit)
 
     def put_children(self):
         self.putChild('name', NamePage(self.context))
