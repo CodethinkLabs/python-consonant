@@ -109,17 +109,27 @@ run_consonant_web_service()
 
     trap dump_output 0
     cd $DATADIR
-    CODE=$(cat | sed -e 's/^\(.*\)/    \1/g')
+    CODE=$(cat)
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
 import os
 import subprocess
 import time
 import urllib2
 
+import consonant
+
 def http_get_yaml(path):
     url = 'http://localhost:42000%s' % path
     request = urllib2.Request(url)
     request.add_header('Accept', 'application/x-yaml')
+    handle = urllib2.urlopen(request)
+    return handle.read()
+
+def http_post(path, content_type, data):
+    url = 'http://localhost:42000%s' % path
+    print url
+    request = urllib2.Request(url, data=data)
+    request.add_header('Content-Type', content_type)
     handle = urllib2.urlopen(request)
     return handle.read()
 
