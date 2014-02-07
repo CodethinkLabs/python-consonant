@@ -63,20 +63,31 @@ class Page(Resource):
         """Construction hook to add statically routed subpages."""
         pass
 
-    def respond(self, request, data):
+    def respond(self, request, data, content_type=None):
         """Convert data to return an appropriate response to a request."""
 
-        accept = request.getHeader('Accept') or 'application/json'
-        if accept == 'application/json':
-            request.setHeader('Content-Type', 'application/json')
-            return json.dumps(data)
-        elif accept == 'application/x-yaml':
-            request.setHeader('Content-Type', 'application/x-yaml')
-            return yaml.dump(data, default_flow_style=False)
+        if content_type is not None:
+            accept = request.getHeader('Accept')
+            if not accept or accept == content_type:
+                request.setHeader('Content-Type', content_type)
+                return data
+            else:
+                # the content type and the accept type don't match
+                request.setResponseCode(406)
+                return ''
         else:
-            # the accept header is unsupported, we only support JSON and YAML
-            request.setResponseCode(406)
-            return ''
+            accept = request.getHeader('Accept') or 'application/json'
+            if accept == 'application/json':
+                request.setHeader('Content-Type', 'application/json')
+                return json.dumps(data)
+            elif accept == 'application/x-yaml':
+                request.setHeader('Content-Type', 'application/x-yaml')
+                return yaml.dump(data, default_flow_style=False)
+            else:
+                # the accept header is unsupported, we only support
+                # JSON and YAML
+                request.setResponseCode(406)
+                return ''
 
 
 class RefPage(Page):
@@ -243,16 +254,14 @@ class PropertyPage(Page):
     def render_GET(self, request):
         """Return a response for a /object/:uuid/properties/:name request."""
 
-        # TODO: We need to generate responses for raw properties with
-        # their content type instead of YAML/JSON and need to return
-        # the raw property data as the response body. In the master
-        # branch of python-consonant, this is not supported yet.
-        #
-        # if isinstance(self.context.property,
-        #               consonant.store.properties.RawProperty):
-        #     raise NotImplementedError
-        # else:
-        return self.respond(request, self.context.property.value)
+        if isinstance(self.context.property,
+                      consonant.store.properties.RawProperty):
+            data = self.context.store.raw_property_data(
+                self.context.commit, self.context.object,
+                self.context.property.name)
+            return self.respond(request, data, self.context.property.value)
+        else:
+            return self.respond(request, self.context.property.value)
 
 
 class RefsPage(Page):
