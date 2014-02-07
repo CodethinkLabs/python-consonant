@@ -26,6 +26,8 @@ from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.web.resource import Resource
 
+import consonant
+
 
 class PageContext(object):
 
@@ -99,6 +101,7 @@ class RefPage(Page):
         self.putChild('objects', ObjectsPage(self.context))
         self.putChild('refs', RefsPage(self.context))
         self.putChild('commits', CommitsPage(self.context))
+        self.putChild('transactions', TransactionsPage(self.context))
 
 
 class NamePage(Page):
@@ -298,6 +301,22 @@ class CommitPage(Page):
         self.putChild('objects', ObjectsPage(self.context))
         self.putChild('refs', RefsPage(self.context))
         self.putChild('commits', CommitsPage(self.context))
+
+
+class TransactionsPage(Page):
+
+    """Renders /transactions."""
+
+    def render_POST(self, request):
+        if not request.getHeader('Content-Type') == 'multipart/mixed':
+            request.setResponseCode(406)
+            return ''
+        else:
+            body = request.content.read()
+            parser = consonant.transaction.parser.TransactionParser()
+            transaction = parser.parse(body)
+            self.context.store.apply_transaction(transaction)
+            return ''
 
 
 class SimpleWebService(object):
