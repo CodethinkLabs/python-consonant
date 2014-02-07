@@ -66,8 +66,22 @@ Fetch objects from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/refs/$MATCH_1/objects")
-    # TODO: Fetch raw properties as well
+    objects = yaml.load(http_get_yaml("/refs/$MATCH_1/objects"))
+        print objects
+        print '---'
+        schema = yaml.load(http_get_yaml("/refs/$MATCH_1/schema"))
+        raw = {}
+        for klass, klass_objects in objects.iteritems():
+            for object in klass_objects:
+                raw[object['uuid']] = {}
+                for prop_name, value in object['properties'].iteritems():
+                    prop_def = schema['classes'][klass]['properties'][prop_name]
+                    if prop_def['type'] == 'raw':
+                        prop_data = http_get(
+                            '/refs/$MATCH_1/objects/%s/properties/%s' % \
+                                (object['uuid'], prop_name))
+                        raw[object['uuid']][prop_name] = prop_data
+        print yaml.dump(raw, default_flow_style=False)
     EOF
 
     fail_unknown_api

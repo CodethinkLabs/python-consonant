@@ -115,6 +115,7 @@ import os
 import subprocess
 import time
 import urllib2
+import yaml
 
 import consonant
 
@@ -122,6 +123,12 @@ def http_get_yaml(path):
     url = 'http://localhost:42000%s' % path
     request = urllib2.Request(url)
     request.add_header('Accept', 'application/x-yaml')
+    handle = urllib2.urlopen(request)
+    return handle.read()
+
+def http_get(path):
+    url = 'http://localhost:42000%s' % path
+    request = urllib2.Request(url)
     handle = urllib2.urlopen(request)
     return handle.read()
 
