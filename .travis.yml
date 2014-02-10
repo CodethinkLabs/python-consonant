@@ -22,7 +22,7 @@ install:
   - pip install pylibmc
   - pip install PyYAML
   - pip install pep8
-  - pip install pep257
+  - pip install -Iv https://github.com/GreenSteam/pep257/archive/0.2.4.tar.gz
   - pip install coverage
   - pip install Markdown
   - pip install git+git://git.liw.fi/coverage-test-runner
