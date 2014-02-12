@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ class Check(Command):
         suites = {
             'consonant.register': (),
             'consonant.store': ('local',),
+            'consonant.web.service': ('local',),
         }
 
         for suite, locations in suites.iteritems():
@@ -177,7 +178,7 @@ setup(
     author='Codethink Limited',
     author_email='jannis.pohlmann@codethink.co.uk',
     url='http://github.com/CodethinkLabs/python-consonant',
-    scripts=[],
+    scripts=['python-consonant-server'],
     packages=['consonant'],
     package_data={},
     data_files=[],

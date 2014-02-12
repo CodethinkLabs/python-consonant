@@ -17,12 +17,12 @@ before_install:
   - sudo apt-get install cmake
   - "./.travis-libgit2.sh"
 install:
-  - sudo apt-get install memcached
+  - pip install twisted
   - pip install pygit2
   - pip install pylibmc
   - pip install PyYAML
   - pip install pep8
-  - pip install pep257
+  - pip install -Iv https://github.com/GreenSteam/pep257/archive/0.2.4.tar.gz
   - pip install coverage
   - pip install Markdown
   - pip install git+git://git.liw.fi/coverage-test-runner

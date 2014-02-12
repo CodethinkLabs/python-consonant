@@ -11,6 +11,10 @@ Fetch the schema name from a store
     print yaml.dump(store.schema(commit))
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_1/schema")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching the schema from the non-existent commit ([abcdef0-9]{8})
@@ -18,6 +22,10 @@ Fetch the schema name from a store
     run_consonant_store <<-EOF || true
     commit = store.commit("$MATCH_1")
     print yaml.dump(store.schema(commit))
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_1/schema")
     EOF
 
     fail_unknown_api
@@ -32,6 +40,10 @@ Fetch service aliases from a store
     print yaml.dump(store.services(commit))
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_1/services")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching the service aliases from the non-existent commit ([abcdef0-9]{8})
@@ -39,6 +51,10 @@ Fetch service aliases from a store
     run_consonant_store <<-EOF || true
     commit = store.commit("$MATCH_1")
     print yaml.dump(store.services(commit))
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_1/services")
     EOF
 
     fail_unknown_api
@@ -53,6 +69,10 @@ Fetch the store name from a store
     print store.name(commit)
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_1/name")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching the store name from the non-existent commit ([abcdef0-9]{8})
@@ -60,6 +80,10 @@ Fetch the store name from a store
     run_consonant_store <<-EOF || true
     commit = store.commit("$MATCH_1")
     print store.name(commit)
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_1/name")
     EOF
 
     fail_unknown_api

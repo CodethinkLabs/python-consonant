@@ -12,6 +12,10 @@ Fetch objects of a given class from a store
     print yaml.dump(store.objects(commit, klass))
     EOF
 
+    run_consonant_web_service <<-EOF
+    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching objects of class "(.+)" from the non-existent commit ([abcdef0-9]{8})
@@ -22,6 +26,10 @@ Fetch objects of a given class from a store
     print yaml.dump(store.objects(commit, klass))
     EOF
 
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
+    EOF
+
     fail_unknown_api
 
     IMPLEMENTS WHEN fetching objects of non-existent class "(.+)" from commit ([abcdef0-9]{8})
@@ -30,6 +38,10 @@ Fetch objects of a given class from a store
     commit = store.commit("$MATCH_2")
     klass = store.klass(commit, "$MATCH_1")
     print yaml.dump(store.objects(commit, klass))
+    EOF
+
+    run_consonant_web_service <<-EOF || true
+    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
     EOF
 
     fail_unknown_api

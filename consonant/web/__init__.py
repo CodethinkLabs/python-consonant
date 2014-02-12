@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2014 Codethink Limited.
+# Copyright (C) 2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,13 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""An implementation of Consonant written in Python."""
+"""Consonant web services and clients."""
 
 
-import register
-import schema
-import service
-import store
-import transaction
-import util
-import web
+import services
