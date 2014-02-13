@@ -37,15 +37,26 @@ class ObjectClass(yaml.YAMLObject):
         return self.name == other.name \
             and self.objects == other.objects
 
+    def to_dict(self):
+        """Return a dictionary representation of the object class."""
+
+        return {
+            'name': self.name,
+            'objects': list(sorted(self.objects))
+            }
+
     @classmethod
     def to_yaml(cls, dumper, klass):
         """Return a YAML representation of the object class."""
 
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'name': klass.name,
-                'objects': list(sorted(klass.objects)),
-                })
+            u'tag:yaml.org,2002:map', klass.to_dict())
+
+    @classmethod
+    def to_json(cls, klass):
+        """Return a JSON repreentation of the object class."""
+
+        return klass.to_dict()
 
 
 class Object(yaml.YAMLObject):

@@ -19,10 +19,12 @@
 
 
 import itertools
+import json
 import unittest
 import yaml
 
 from consonant.store import objects, properties, references
+from consonant.util.converters import JSONObjectEncoder
 
 
 class ObjectClassTests(unittest.TestCase):
@@ -109,6 +111,30 @@ class ObjectClassTests(unittest.TestCase):
                 reference_list.append(d)
 
             self.assertEqual(yaml_data, {
+                'name': class_name,
+                'objects': reference_list,
+                })
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of ObjectClass objects is ok."""
+
+        for class_name, raw_references in self.test_input:
+            object_references = \
+                set(references.Reference(*x) for x in raw_references)
+            klass = objects.ObjectClass(class_name, object_references)
+            string = json.dumps(klass, cls=JSONObjectEncoder)
+            json_data = json.loads(string)
+
+            reference_list = []
+            for reference in sorted(object_references):
+                d = {'uuid': reference.uuid}
+                if reference.service:
+                    d['service'] = reference.service
+                if reference.ref:
+                    d['ref'] = reference.ref
+                reference_list.append(d)
+
+            self.assertEqual(json_data, {
                 'name': class_name,
                 'objects': reference_list,
                 })
