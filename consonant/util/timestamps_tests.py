@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@
 
 import datetime
 import itertools
+import json
 import unittest
 import yaml
 
 from consonant.util import timestamps
+from consonant.util.converters import JSONObjectEncoder
 
 
 class TimezoneTests(unittest.TestCase):
@@ -159,6 +161,15 @@ class TimestampTests(unittest.TestCase):
             timestamp = timestamps.Timestamp(*args)
             string = yaml.dump([timestamp])
             data = yaml.load(string)
+            self.assertEqual(data, [raw])
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of Timestamp objects is ok."""
+
+        for args, raw, datetime_value in self.timestamps:
+            timestamp = timestamps.Timestamp(*args)
+            string = json.dumps([timestamp], cls=JSONObjectEncoder)
+            data = json.loads(string)
             self.assertEqual(data, [raw])
 
     def test_conversion_to_strings_generates_raw_representations(self):
