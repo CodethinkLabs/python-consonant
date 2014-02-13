@@ -943,3 +943,25 @@ class ClassDefinition(unittest.TestCase):
         self.assertFalse('optional' in yaml_data['properties']['title'])
         self.assertEqual(yaml_data['properties']['number']['type'], 'int')
         self.assertTrue(yaml_data['properties']['number']['optional'])
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of class definitions is ok."""
+
+        props = [
+            definitions.TextPropertyDefinition('title', False, []),
+            definitions.IntPropertyDefinition('number', True),
+            ]
+        klass = definitions.ClassDefinition('card', props)
+
+        string = json.dumps(klass, cls=JSONObjectEncoder)
+        json_data = json.loads(string)
+
+        self.assertTrue(isinstance(json_data, dict))
+        self.assertEqual(json_data['name'], 'card')
+        self.assertEqual(len(json_data['properties']), 2)
+        self.assertTrue('title' in json_data['properties'])
+        self.assertTrue('number' in json_data['properties'])
+        self.assertEqual(json_data['properties']['title']['type'], 'text')
+        self.assertFalse('optional' in json_data['properties']['title'])
+        self.assertEqual(json_data['properties']['number']['type'], 'int')
+        self.assertTrue(json_data['properties']['number']['optional'])

@@ -224,16 +224,26 @@ class ClassDefinition(yaml.YAMLObject):
             return False
         return self.name == other.name and self.properties == other.properties
 
+    def to_dict(self):
+        """Return a dictionary representation of the class definition."""
+
+        properties_mapping = {}
+        for name, prop in sorted(self.properties.iteritems()):
+            properties_mapping[name] = prop
+        return {
+            'name': self.name,
+            'properties': properties_mapping
+            }
+
     @classmethod
     def to_yaml(cls, dumper, klass):
         """Return a YAML representation of the class definition."""
 
-        properties_mapping = {}
-        for name, prop in sorted(klass.properties.iteritems()):
-            properties_mapping[name] = prop
-
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'name': klass.name,
-                'properties': properties_mapping,
-                })
+            u'tag:yaml.org,2002:map', klass.to_dict())
+
+    @classmethod
+    def to_json(cls, klass):
+        """Return a JSON representation of the class definition."""
+
+        return klass.to_dict()
