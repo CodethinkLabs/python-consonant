@@ -20,12 +20,14 @@
 
 import datetime
 import itertools
+import json
 import random
 import unittest
 import yaml
 
 from consonant.store import properties, references
 from consonant.util import timestamps
+from consonant.util.converters import JSONObjectEncoder
 
 
 class PropertyTests(unittest.TestCase):
@@ -140,6 +142,17 @@ class IntPropertyTest(unittest.TestCase):
         self.assertTrue(isinstance(data, int))
         self.assertEqual(data, 32)
 
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON representation of int properties is correct."""
+
+        prop = properties.IntProperty('name', 5)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), 5)
+
+        prop = properties.IntProperty('name', -8)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), -8)
+
 
 class FloatPropertyTest(unittest.TestCase):
 
@@ -206,6 +219,17 @@ class FloatPropertyTest(unittest.TestCase):
         self.assertTrue(isinstance(data, float))
         self.assertEqual(data, 32.37123)
 
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON repr of float properties is correct."""
+
+        prop = properties.FloatProperty('name', 5.123)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), 5.123)
+
+        prop = properties.FloatProperty('name', -73.503)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), -73.503)
+
 
 class BooleanPropertyTest(unittest.TestCase):
 
@@ -262,6 +286,17 @@ class BooleanPropertyTest(unittest.TestCase):
         data = yaml.load(string)
         self.assertTrue(isinstance(data, bool))
         self.assertEqual(data, False)
+
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON repr of boolean properties is correct."""
+
+        prop = properties.BooleanProperty('name', False)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), False)
+
+        prop = properties.BooleanProperty('name', True)
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), True)
 
 
 class TextPropertyTest(unittest.TestCase):
@@ -322,6 +357,18 @@ class TextPropertyTest(unittest.TestCase):
         self.assertTrue(isinstance(data, basestring))
         self.assertEqual(data, 'foo\nbar\nbaz')
 
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON repr of text properties is correct."""
+
+        prop = properties.TextProperty('name', "a string")
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)), 'a string')
+
+        prop = properties.TextProperty('name', "a two\nline string")
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)),
+            'a two\nline string')
+
 
 class TimestampPropertyTest(unittest.TestCase):
 
@@ -366,6 +413,19 @@ class TimestampPropertyTest(unittest.TestCase):
         data = yaml.load(string)
         self.assertTrue(isinstance(data, basestring))
         self.assertEqual(data, '1379608009 +0500')
+
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON repr of timestamp properties is correct."""
+
+        prop = properties.TimestampProperty('name', '1379698303 +0100')
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)),
+            '1379698303 +0100')
+
+        prop = properties.TextProperty('name', '1379608009 +0500')
+        self.assertEquals(
+            json.loads(json.dumps(prop, cls=JSONObjectEncoder)),
+            '1379608009 +0500')
 
 
 class ReferencePropertyTest(unittest.TestCase):
@@ -422,6 +482,40 @@ class ReferencePropertyTest(unittest.TestCase):
                 'issues', 'master'))
         string = yaml.dump(prop)
         data = yaml.load(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertEqual(data['service'], 'issues')
+        self.assertEqual(data['ref'], 'master')
+
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON repr of reference properties is correct."""
+
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0', None, None))
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertTrue(not 'service' in data)
+        self.assertTrue(not 'ref' in data)
+
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0', 'issues', None))
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, dict))
+        self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
+        self.assertEqual(data['service'], 'issues')
+        self.assertTrue(not 'ref' in data)
+
+        prop = properties.ReferenceProperty(
+            'name', references.Reference(
+                '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0',
+                'issues', 'master'))
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
         self.assertTrue(isinstance(data, dict))
         self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
         self.assertEqual(data['service'], 'issues')
@@ -509,6 +603,39 @@ class ListPropertyTest(unittest.TestCase):
         self.assertEqual(data[1], 'bar')
         self.assertEqual(data[2], 'baz')
 
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of list properties is ok."""
+
+        prop = properties.ListProperty('name', [])
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 0)
+
+        prop = properties.ListProperty('name', [
+            properties.IntProperty('name', 5),
+            properties.IntProperty('name', -17),
+            ])
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0], 5)
+        self.assertEqual(data[1], -17)
+
+        prop = properties.ListProperty('name', [
+            properties.TextProperty('name', 'foo'),
+            properties.TextProperty('name', 'bar'),
+            properties.TextProperty('name', 'baz'),
+            ])
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 3)
+        self.assertEqual(data[0], 'foo')
+        self.assertEqual(data[1], 'bar')
+        self.assertEqual(data[2], 'baz')
+
 
 class RawPropertyTest(unittest.TestCase):
 
@@ -519,7 +646,7 @@ class RawPropertyTest(unittest.TestCase):
 
         test_input = [
             ('property1', 'text/plain'),
-            ('property2', 'application/x-json'),
+            ('property2', 'application/json'),
             ('property3', 'image/png'),
         ]
 
@@ -540,5 +667,20 @@ class RawPropertyTest(unittest.TestCase):
         prop = properties.RawProperty('name', 'image/png')
         string = yaml.dump(prop)
         data = yaml.load(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'image/png')
+
+    def test_json_representation_is_correct(self):
+        """Verify that the JSON representation of raw properties is ok."""
+
+        prop = properties.RawProperty('name', 'text/plain')
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertTrue(isinstance(data, basestring))
+        self.assertEqual(data, 'text/plain')
+
+        prop = properties.RawProperty('name', 'image/png')
+        string = json.dumps(prop, cls=JSONObjectEncoder)
+        data = json.loads(string)
         self.assertTrue(isinstance(data, basestring))
         self.assertEqual(data, 'image/png')
