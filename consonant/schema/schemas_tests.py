@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,10 +18,12 @@
 """Unit tests for classes representing schemas."""
 
 
+import json
 import unittest
 import yaml
 
 from consonant.schema import definitions, schemas
+from consonant.util.converters import JSONObjectEncoder
 
 
 class SchemaTest(unittest.TestCase):
@@ -148,6 +150,50 @@ class SchemaTest(unittest.TestCase):
         self.assertTrue(card_data['properties']['number']['optional'])
 
         lane_data = yaml_data['classes']['lane']
+        self.assertEqual(len(lane_data['properties']), 1)
+        self.assertTrue('cards' in lane_data['properties'])
+        self.assertEqual(lane_data['properties']['cards']['type'], 'list')
+        self.assertTrue(lane_data['properties']['cards']['optional'])
+        self.assertEqual(lane_data['properties']['cards']['elements']['type'],
+                         'reference')
+        self.assertEqual(lane_data['properties']['cards']['elements']['class'],
+                         'card')
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of schemas is ok."""
+
+        klasses = [
+            definitions.ClassDefinition('card', [
+                definitions.TextPropertyDefinition('title', False, []),
+                definitions.IntPropertyDefinition('number', True),
+                ]),
+            definitions.ClassDefinition('lane', [
+                definitions.ListPropertyDefinition(
+                    'cards', True, definitions.ReferencePropertyDefinition(
+                        'cards', False, 'card', None, None))
+                ]),
+            ]
+        schema = schemas.Schema('schema.1', klasses)
+
+        string = json.dumps(schema, cls=JSONObjectEncoder)
+        json_data = json.loads(string)
+
+        self.assertTrue(isinstance(json_data, dict))
+        self.assertEqual(json_data['name'], 'schema.1')
+        self.assertEqual(len(json_data['classes']), 2)
+        self.assertTrue('card' in json_data['classes'])
+        self.assertTrue('lane' in json_data['classes'])
+
+        card_data = json_data['classes']['card']
+        self.assertEqual(len(card_data['properties']), 2)
+        self.assertTrue('title' in card_data['properties'])
+        self.assertTrue('number' in card_data['properties'])
+        self.assertEqual(card_data['properties']['title']['type'], 'text')
+        self.assertFalse('optional' in card_data['properties']['title'])
+        self.assertEqual(card_data['properties']['number']['type'], 'int')
+        self.assertTrue(card_data['properties']['number']['optional'])
+
+        lane_data = json_data['classes']['lane']
         self.assertEqual(len(lane_data['properties']), 1)
         self.assertTrue('cards' in lane_data['properties'])
         self.assertEqual(lane_data['properties']['cards']['type'], 'list')

@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,16 +38,23 @@ class Schema(yaml.YAMLObject):
             return False
         return self.name == other.name and self.classes == other.classes
 
+    def to_dict(self):
+        """Return a dictionary representation of the schema."""
+
+        classes_mapping = {}
+        for name, klass in sorted(self.classes.iteritems()):
+            classes_mapping[name] = klass
+        return {'name': self.name, 'classes': classes_mapping}
+
     @classmethod
     def to_yaml(cls, dumper, schema):
         """Return a YAML representation of the given schema."""
 
-        classes_mapping = {}
-        for name, klass in sorted(schema.classes.iteritems()):
-            classes_mapping[name] = klass
-
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'name': schema.name,
-                'classes': classes_mapping,
-                })
+            u'tag:yaml.org,2002:map', schema.to_dict())
+
+    @classmethod
+    def to_json(cls, schema):
+        """Return a JSON representation of the given schema."""
+
+        return schema.to_dict()
