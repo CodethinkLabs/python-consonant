@@ -11,7 +11,7 @@ Fetch a ref from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/refs/$MATCH_1")
+    print http_get_json_or_yaml("/refs/$MATCH_1")
     EOF
 
     fail_unknown_api
@@ -23,7 +23,7 @@ Fetch a ref from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/refs/$MATCH_1")
+    print http_get_json_or_yaml("/refs/$MATCH_1")
     EOF
 
     fail_unknown_api
