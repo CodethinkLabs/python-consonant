@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,11 +18,13 @@
 """Unit tests for Git helper classes."""
 
 
+import json
 import unittest
 import yaml
 
 from consonant.store import git
 from consonant.util import timestamps
+from consonant.util.converters import JSONObjectEncoder
 
 
 class _DummyCommit(object):  # pragma: no cover
@@ -63,6 +65,19 @@ class RefTests(unittest.TestCase):
 
         string = yaml.dump([git.Ref('branch', 'refs/heads/master', None)])
         data = yaml.load(string)
+        self.assertEqual(data, [{
+            'type': 'branch',
+            'url-aliases': ['master', 'refs:heads:master'],
+            'head': None,
+            }])
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of Ref objects is ok."""
+
+        string = json.dumps(
+            [git.Ref('branch', 'refs/heads/master', None)],
+            cls=JSONObjectEncoder)
+        data = json.loads(string)
         self.assertEqual(data, [{
             'type': 'branch',
             'url-aliases': ['master', 'refs:heads:master'],
@@ -184,6 +199,31 @@ Unit tests for all these classes are included.''')
             string = yaml.dump([commit])
             yaml_data = yaml.load(string)
             self.assertEqual(yaml_data, [{
+                'sha1': sha1,
+                'author': data['author'],
+                'author-date': data['author-date'],
+                'committer': data['committer'],
+                'committer-date': data['committer-date'],
+                'subject': data['message'].splitlines(True)[0].strip(),
+                'parents': data['parents'],
+                }])
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of Commit objects is ok."""
+
+        for sha1, data in self.test_input.iteritems():
+            commit = git.Commit(
+                sha1,
+                data['author'],
+                timestamps.Timestamp.from_raw(data['author-date']),
+                data['committer'],
+                timestamps.Timestamp.from_raw(data['committer-date']),
+                data['message'],
+                data['parents'])
+
+            string = json.dumps([commit], cls=JSONObjectEncoder)
+            json_data = json.loads(string)
+            self.assertEqual(json_data, [{
                 'sha1': sha1,
                 'author': data['author'],
                 'author-date': data['author-date'],
