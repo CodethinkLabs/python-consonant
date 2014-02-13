@@ -39,15 +39,26 @@ class Reference(yaml.YAMLObject):
             and self.service == other.service \
             and self.ref == other.ref
 
-    @classmethod
-    def to_yaml(cls, dumper, reference):
-        """Return a YAML reprensentation of the given Reference."""
+    def to_dict(self):
+        """Return a dictionary reprensetation of the reference."""
 
         mapping = {}
-        mapping['uuid'] = reference.uuid
-        if reference.service:
-            mapping['service'] = reference.service
-        if reference.ref:
-            mapping['ref'] = reference.ref
+        mapping['uuid'] = self.uuid
+        if self.service:
+            mapping['service'] = self.service
+        if self.ref:
+            mapping['ref'] = self.ref
+        return mapping
 
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', mapping)
+    @classmethod
+    def to_yaml(cls, dumper, reference):
+        """Return a YAML reprensentation of the given reference."""
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', reference.to_dict())
+
+    @classmethod
+    def to_json(cls, reference):
+        """Return a JSON representation of the given reference."""
+
+        return reference.to_dict()

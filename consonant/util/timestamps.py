@@ -91,6 +91,12 @@ class Timestamp(yaml.YAMLObject):
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:str', timestamp.raw())
 
+    @classmethod
+    def to_json(cls, timestamp):
+        """Return a JSON representation of the given Timestamp."""
+
+        return timestamp.raw()
+
     def __str__(self):
         return self.raw()
 
