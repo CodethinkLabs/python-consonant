@@ -68,7 +68,8 @@ class Check(Command):
         suites = (
             ('consonant.register', ()),
             ('consonant.store', ('local',)),
-            ('consonant.web.service', ('local',)),
+            ('consonant.web.service.json', ('local',)),
+            ('consonant.web.service.yaml', ('local',)),
         )
 
         for suite in suites:

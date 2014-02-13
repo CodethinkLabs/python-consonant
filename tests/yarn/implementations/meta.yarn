@@ -12,7 +12,7 @@ Fetch the schema name from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_1/schema")
+    print http_get_json_or_yaml("/commits/$MATCH_1/schema")
     EOF
 
     fail_unknown_api
@@ -25,7 +25,7 @@ Fetch the schema name from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_1/schema")
+    print http_get_json_or_yaml("/commits/$MATCH_1/schema")
     EOF
 
     fail_unknown_api
@@ -41,7 +41,7 @@ Fetch service aliases from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_1/services")
+    print http_get_json_or_yaml("/commits/$MATCH_1/services")
     EOF
 
     fail_unknown_api
@@ -54,7 +54,7 @@ Fetch service aliases from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_1/services")
+    print http_get_json_or_yaml("/commits/$MATCH_1/services")
     EOF
 
     fail_unknown_api
@@ -70,7 +70,7 @@ Fetch the store name from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_1/name")
+    print http_get_json_or_yaml("/commits/$MATCH_1/name")
     EOF
 
     fail_unknown_api
@@ -83,7 +83,7 @@ Fetch the store name from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_1/name")
+    print http_get_json_or_yaml("/commits/$MATCH_1/name")
     EOF
 
     fail_unknown_api

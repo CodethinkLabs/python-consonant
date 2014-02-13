@@ -12,7 +12,7 @@ Fetch classes from a commit in a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_1/classes")
+    print http_get_json_or_yaml("/commits/$MATCH_1/classes")
     EOF
 
     fail_unknown_api
@@ -25,7 +25,7 @@ Fetch classes from a commit in a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_1/classes")
+    print http_get_json_or_yaml("/commits/$MATCH_1/classes")
     EOF
 
     fail_unknown_api
@@ -41,7 +41,7 @@ Fetch invidiual clases from a commit in a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1")
     EOF
 
     fail_unknown_api
@@ -54,7 +54,7 @@ Fetch invidiual clases from a commit in a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1")
     EOF
 
     fail_unknown_api
@@ -67,7 +67,7 @@ Fetch invidiual clases from a commit in a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1")
     EOF
 
     fail_unknown_api

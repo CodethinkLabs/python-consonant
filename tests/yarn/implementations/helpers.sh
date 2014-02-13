@@ -103,7 +103,9 @@ EOF
 
 run_consonant_web_service()
 {
-    if [ "$API" != "consonant.web.service" ]; then
+    if [ "$API" != "consonant.web.service.json" ] && \
+       [ "$API" != "consonant.web.service.yaml" ]
+    then
         return
     fi
 
@@ -119,18 +121,22 @@ import yaml
 
 import consonant
 
-def http_get_yaml(path):
+def http_get(path, accept=None):
     url = 'http://localhost:42000%s' % path
     request = urllib2.Request(url)
-    request.add_header('Accept', 'application/x-yaml')
+    if accept:
+        request.add_header('Accept', accept)
     handle = urllib2.urlopen(request)
     return handle.read()
 
-def http_get(path):
-    url = 'http://localhost:42000%s' % path
-    request = urllib2.Request(url)
-    handle = urllib2.urlopen(request)
-    return handle.read()
+def http_get_json_or_yaml(path):
+    api = os.environ.get('API')
+    if api == 'consonant.web.service.json':
+      return http_get(path, 'application/json')
+    elif api == 'consonant.web.service.yaml':
+      return http_get(path, 'application/x-yaml')
+    else:
+      raise Exception('API "%s" unsupported' % api)
 
 def http_post(path, content_type, data):
     url = 'http://localhost:42000%s' % path
@@ -147,12 +153,14 @@ if os.path.exists('use-memcached'):
 store = os.path.join("$DATADIR", "test-store")
 p = subprocess.Popen([executable, store, "42000"] + args)
 ready = False
-while not ready:
+attempts = 0
+while not ready and attempts < 10:
     try:
-        http_get_yaml('/name')
+        http_get('/name', 'application/x-yaml')
         ready = True
-    except:
-        pass
+    except Exception, e:
+        attempts += 1
+        time.sleep(0.1)
 try:
     $CODE
 finally:

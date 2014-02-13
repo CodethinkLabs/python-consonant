@@ -13,7 +13,7 @@ Fetch objects of a given class from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
     EOF
 
     fail_unknown_api
@@ -27,7 +27,7 @@ Fetch objects of a given class from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
     EOF
 
     fail_unknown_api
@@ -41,7 +41,7 @@ Fetch objects of a given class from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
+    print http_get_json_or_yaml("/commits/$MATCH_2/classes/$MATCH_1/objects")
     EOF
 
     fail_unknown_api

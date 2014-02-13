@@ -12,7 +12,7 @@ Fetch objects from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/commits/$MATCH_1/objects")
+    print http_get_json_or_yaml("/commits/$MATCH_1/objects")
     EOF
 
     fail_unknown_api
@@ -25,7 +25,7 @@ Fetch objects from a store
     EOF
 
     run_consonant_web_service <<-EOF || true
-    print http_get_yaml("/commits/$MATCH_1/objects")
+    print http_get_json_or_yaml("/commits/$MATCH_1/objects")
     EOF
 
     fail_unknown_api
@@ -38,7 +38,7 @@ Fetch objects from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/objects")
+    print http_get_json_or_yaml("/objects")
     EOF
 
     fail_unknown_api
@@ -66,10 +66,10 @@ Fetch objects from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    objects = yaml.load(http_get_yaml("/refs/$MATCH_1/objects"))
+    objects = yaml.load(http_get_json_or_yaml("/refs/$MATCH_1/objects"))
         print objects
         print '---'
-        schema = yaml.load(http_get_yaml("/refs/$MATCH_1/schema"))
+        schema = yaml.load(http_get_json_or_yaml("/refs/$MATCH_1/schema"))
         raw = {}
         for klass, klass_objects in objects.iteritems():
             for object in klass_objects:

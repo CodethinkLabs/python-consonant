@@ -11,7 +11,7 @@ Fetch all refs from a store
     EOF
 
     run_consonant_web_service <<-EOF
-    print http_get_yaml("/refs")
+    print http_get_json_or_yaml("/refs")
     EOF
 
     fail_unknown_api
