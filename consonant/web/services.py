@@ -66,6 +66,9 @@ class Page(Resource):
     def respond(self, request, data, content_type=None):
         """Convert data to return an appropriate response to a request."""
 
+        # allow cross-domain requests to this web service
+        request.setHeader('Access-Control-Allow-Origin', '*')
+
         if content_type is not None:
             accept = request.getHeader('Accept')
             if not accept or accept == content_type:
