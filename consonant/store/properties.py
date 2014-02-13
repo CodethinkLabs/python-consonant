@@ -56,6 +56,12 @@ class IntProperty(Property):
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:int', str(prop.value))
 
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of an int property."""
+
+        return prop.value
+
 
 class FloatProperty(Property):
 
@@ -72,6 +78,12 @@ class FloatProperty(Property):
 
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:float', str(prop.value))
+
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a float property."""
+
+        return prop.value
 
 
 class BooleanProperty(Property):
@@ -90,6 +102,12 @@ class BooleanProperty(Property):
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:bool', 'true' if prop.value else 'false')
 
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a boolean property."""
+
+        return prop.value
+
 
 class TextProperty(Property):
 
@@ -105,6 +123,12 @@ class TextProperty(Property):
         """Return a YAML representation of a text property."""
 
         return dumper.represent_scalar(u'tag:yaml.org,2002:str', prop.value)
+
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a text property."""
+
+        return prop.value
 
 
 class TimestampProperty(Property):
@@ -123,6 +147,12 @@ class TimestampProperty(Property):
         return dumper.represent_scalar(
             u'tag:yaml.org,2002:str', prop.value.raw())
 
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a timestamp property."""
+
+        return prop.value.raw()
+
 
 class ReferenceProperty(Property):
 
@@ -130,17 +160,29 @@ class ReferenceProperty(Property):
 
     yaml_tag = u'!ReferenceProperty'
 
+    def to_dict(self):
+        """Return a dictionary representation of the reference property."""
+
+        mapping = {}
+        mapping['uuid'] = self.value.uuid
+        if self.value.service:
+            mapping['service'] = self.value.service
+        if self.value.ref:
+            mapping['ref'] = self.value.ref
+        return mapping
+
     @classmethod
     def to_yaml(cls, dumper, prop):
         """Return a YAML representation of an int property."""
 
-        m = {}
-        m['uuid'] = prop.value.uuid
-        if prop.value.service:
-            m['service'] = prop.value.service
-        if prop.value.ref:
-            m['ref'] = prop.value.ref
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', prop.to_dict())
+
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a reference property."""
+
+        return prop.to_dict()
 
 
 class ListProperty(Property):
@@ -165,6 +207,12 @@ class ListProperty(Property):
 
         return dumper.represent_sequence(u'tag:yaml.org,2002:seq', prop.value)
 
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a list property."""
+
+        return prop.value
+
 
 class RawProperty(Property):
 
@@ -177,3 +225,9 @@ class RawProperty(Property):
         """Return a YAML representation of an int property."""
 
         return dumper.represent_scalar(u'tag:yaml.org,2002:str', prop.value)
+
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a raw property."""
+
+        return prop.value

@@ -90,17 +90,27 @@ class Object(yaml.YAMLObject):
         """Return the property value or fallback value if not set."""
         return self[key] if key in self else fallback_value
 
+    def to_dict(self):  # pragma: no cover
+        """Return a dictionary representation of the object."""
+
+        properties_mapping = {}
+        for name, prop in sorted(self.properties.iteritems()):
+            properties_mapping[name] = prop.value
+        return {
+            'uuid': self.uuid,
+            'class': self.klass.name,
+            'properties': properties_mapping
+            }
+
     @classmethod
     def to_yaml(cls, dumper, object):  # pragma: no cover
         """Return a YAML representation for an Object."""
 
-        properties_mapping = {}
-        for name, prop in sorted(object.properties.iteritems()):
-            properties_mapping[name] = prop.value
-
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'uuid': object.uuid,
-                'class': object.klass.name,
-                'properties': properties_mapping,
-                })
+            u'tag:yaml.org,2002:map', object.to_dict())
+
+    @classmethod
+    def to_json(cls, object):  # pragma: no cover
+        """Return a JSON representation for an Object."""
+
+        return object.to_dict()
