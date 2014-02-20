@@ -65,14 +65,16 @@ class Check(Command):
     def _run_scenario_tests(self):
         sys.stdout.write('Running scenario tests\n')
 
-        suites = {
-            'consonant.register': (),
-            'consonant.store': ('local',),
-            'consonant.web.service': ('local',),
-        }
+        suites = (
+            ('consonant.register', ()),
+            ('consonant.store', ('local',)),
+            ('consonant.web.service.json', ('local',)),
+            ('consonant.web.service.yaml', ('local',)),
+        )
 
-        for suite, locations in suites.iteritems():
-            self._run_scenario_test_suite(suite, locations)
+        for suite in suites:
+            name, locations = suite[0], suite[1]
+            self._run_scenario_test_suite(name, locations)
 
     def _run_scenario_test_suite(self, suite, locations):
         sys.stdout.write('Running scenario tests for %s\n' % suite)

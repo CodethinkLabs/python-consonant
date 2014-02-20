@@ -66,9 +66,21 @@ class Page(Resource):
     def respond(self, request, data, content_type=None):
         """Convert data to return an appropriate response to a request."""
 
+        # allow cross-domain requests to this web service
+        request.setHeader('Access-Control-Allow-Origin', '*')
+
+        # parse the accept header if there is one
+        if request.getHeader('Accept'):
+            if ';' in request.getHeader('Accept'):
+                accepted_types = request.getHeader('Accept').split(';')[0]
+            else:
+                accepted_types = request.getHeader('Accept')
+            accepted_types = [x.strip() for x in accepted_types.split(',')]
+        else:
+            accepted_types = []
+
         if content_type is not None:
-            accept = request.getHeader('Accept')
-            if not accept or accept == content_type:
+            if not accepted_types or content_type in accepted_types:
                 request.setHeader('Content-Type', content_type)
                 return data
             else:
@@ -76,11 +88,11 @@ class Page(Resource):
                 request.setResponseCode(406)
                 return ''
         else:
-            accept = request.getHeader('Accept') or 'application/json'
-            if accept == 'application/json':
+            if any(t in accepted_types for t in ('application/json', '*/*')):
                 request.setHeader('Content-Type', 'application/json')
-                return json.dumps(data)
-            elif accept == 'application/x-yaml':
+                return json.dumps(
+                    data, cls=consonant.util.converters.JSONObjectEncoder)
+            elif 'application/x-yaml' in accepted_types:
                 request.setHeader('Content-Type', 'application/x-yaml')
                 return yaml.dump(data, default_flow_style=False)
             else:

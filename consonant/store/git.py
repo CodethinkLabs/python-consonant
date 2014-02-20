@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,16 +50,27 @@ class Ref(yaml.YAMLObject):
                 yield alias
                 seen.add(alias)
 
+    def to_dict(self):
+        """Returna dictionary representation of the ref."""
+
+        return {
+            'type': self.type,
+            'url-aliases': self.aliases,
+            'head': self.head
+            }
+
     @classmethod
     def to_yaml(cls, dumper, ref):
         """Return a YAML representation for the given Ref."""
 
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'type': ref.type,
-                'url-aliases': ref.aliases,
-                'head': ref.head
-                })
+            u'tag:yaml.org,2002:map', ref.to_dict())
+
+    @classmethod
+    def to_json(cls, ref):
+        """Return a JSON representation for the given Ref."""
+
+        return ref.to_dict()
 
 
 class Commit(yaml.YAMLObject):
@@ -90,17 +101,28 @@ class Commit(yaml.YAMLObject):
         lines = self.message.splitlines(True)
         return ''.join(lines[2:]) if lines else ''
 
+    def to_dict(self):
+        """Return a dictionary representation of the commit."""
+
+        return {
+            'sha1': self.sha1,
+            'author': self.author,
+            'author-date': self.author_date,
+            'committer': self.committer,
+            'committer-date': self.committer_date,
+            'subject': self.message_subject(),
+            'parents': self.parents,
+            }
+
     @classmethod
     def to_yaml(cls, dumper, commit):
         """Return a YAML representation of the given Commit."""
 
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'sha1': commit.sha1,
-                'author': commit.author,
-                'author-date': commit.author_date,
-                'committer': commit.committer,
-                'committer-date': commit.committer_date,
-                'subject': commit.message_subject(),
-                'parents': commit.parents,
-                })
+            u'tag:yaml.org,2002:map', commit.to_dict())
+
+    @classmethod
+    def to_json(cls, commit):
+        """Return a JSON representation of the given Commit."""
+
+        return commit.to_dict()

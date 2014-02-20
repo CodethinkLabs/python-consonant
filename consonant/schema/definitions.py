@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,6 +36,28 @@ class PropertyDefinition(yaml.YAMLObject):
         return self.name == other.name \
             and self.optional == other.optional
 
+    def to_dict(self):
+        """Return a dictionary representation of the property definition."""
+
+        mapping = {}
+        mapping['type'] = self.property_type
+        if self.optional:
+            mapping['optional'] = True
+        return mapping
+
+    @classmethod
+    def to_yaml(cls, dumper, prop):
+        """Return a YAML representation of a property definition."""
+
+        return dumper.represent_mapping(
+            u'tag:yaml.org,2002:map', prop.to_dict())
+
+    @classmethod
+    def to_json(cls, prop):
+        """Return a JSON representation of a property definition."""
+
+        return prop.to_dict()
+
 
 class BooleanPropertyDefinition(PropertyDefinition):
 
@@ -43,16 +65,6 @@ class BooleanPropertyDefinition(PropertyDefinition):
 
     yaml_tag = u'!BooleanPropertyDefinition'
     property_type = 'boolean'
-
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a boolean property definition."""
-
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
 
 
 class IntPropertyDefinition(PropertyDefinition):
@@ -62,16 +74,6 @@ class IntPropertyDefinition(PropertyDefinition):
     yaml_tag = u'!IntPropertyDefinition'
     property_type = 'int'
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a int property definition."""
-
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
-
 
 class FloatPropertyDefinition(PropertyDefinition):
 
@@ -80,16 +82,6 @@ class FloatPropertyDefinition(PropertyDefinition):
     yaml_tag = u'!FloatPropertyDefinition'
     property_type = 'float'
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a float property definition."""
-
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
-
 
 class TimestampPropertyDefinition(PropertyDefinition):
 
@@ -97,16 +89,6 @@ class TimestampPropertyDefinition(PropertyDefinition):
 
     yaml_tag = u'!TimestampPropertyDefinition'
     property_type = 'timestamp'
-
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a timestamp property definition."""
-
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
 
 
 class TextPropertyDefinition(PropertyDefinition):
@@ -127,18 +109,13 @@ class TextPropertyDefinition(PropertyDefinition):
             and self.optional == other.optional \
             and self.expressions == other.expressions
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a text property definition."""
+    def to_dict(self):
+        """Return a dict representation of a text property definition."""
 
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        if prop.expressions:
-            m['regex'] = [x.pattern for x in prop.expressions]
-
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
+        mapping = PropertyDefinition.to_dict(self)
+        if self.expressions:
+            mapping['regex'] = [x.pattern for x in self.expressions]
+        return mapping
 
 
 class RawPropertyDefinition(PropertyDefinition):
@@ -159,18 +136,14 @@ class RawPropertyDefinition(PropertyDefinition):
             and self.optional == other.optional \
             and self.expressions == other.expressions
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a raw property definition."""
+    def to_dict(self):
+        """Return a dict representation of a raw property definition."""
 
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        if prop.expressions:
-            m['content-type-regex'] = [x.pattern for x in prop.expressions]
-
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
+        mapping = PropertyDefinition.to_dict(self)
+        if self.expressions:
+            mapping['content-type-regex'] = \
+                [x.pattern for x in self.expressions]
+        return mapping
 
 
 class ReferencePropertyDefinition(PropertyDefinition):
@@ -196,21 +169,16 @@ class ReferencePropertyDefinition(PropertyDefinition):
             and self.schema == other.schema \
             and self.bidirectional == other.bidirectional
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a reference property definition."""
+    def to_dict(self):
+        """Return a dict representation of a reference property definition."""
 
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        m['class'] = prop.klass
-        if prop.schema:
-            m['schema'] = prop.schema
-        if prop.bidirectional:
-            m['bidirectional'] = prop.bidirectional
-
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
+        mapping = PropertyDefinition.to_dict(self)
+        mapping['class'] = self.klass
+        if self.schema:
+            mapping['schema'] = self.schema
+        if self.bidirectional:
+            mapping['bidirectional'] = self.bidirectional
+        return mapping
 
 
 class ListPropertyDefinition(PropertyDefinition):
@@ -231,17 +199,12 @@ class ListPropertyDefinition(PropertyDefinition):
             and self.optional == other.optional \
             and self.elements == other.elements
 
-    @classmethod
-    def to_yaml(cls, dumper, prop):
-        """Return a YAML representation of a list property definition."""
+    def to_dict(self):
+        """Return a dict representation of a list property definition."""
 
-        m = {}
-        m['type'] = prop.property_type
-        if prop.optional:
-            m['optional'] = True
-        m['elements'] = prop.elements
-
-        return dumper.represent_mapping(u'tag:yaml.org,2002:map', m)
+        mapping = PropertyDefinition.to_dict(self)
+        mapping['elements'] = self.elements
+        return mapping
 
 
 class ClassDefinition(yaml.YAMLObject):
@@ -261,16 +224,26 @@ class ClassDefinition(yaml.YAMLObject):
             return False
         return self.name == other.name and self.properties == other.properties
 
+    def to_dict(self):
+        """Return a dictionary representation of the class definition."""
+
+        properties_mapping = {}
+        for name, prop in sorted(self.properties.iteritems()):
+            properties_mapping[name] = prop
+        return {
+            'name': self.name,
+            'properties': properties_mapping
+            }
+
     @classmethod
     def to_yaml(cls, dumper, klass):
         """Return a YAML representation of the class definition."""
 
-        properties_mapping = {}
-        for name, prop in sorted(klass.properties.iteritems()):
-            properties_mapping[name] = prop
-
         return dumper.represent_mapping(
-            u'tag:yaml.org,2002:map', {
-                'name': klass.name,
-                'properties': properties_mapping,
-                })
+            u'tag:yaml.org,2002:map', klass.to_dict())
+
+    @classmethod
+    def to_json(cls, klass):
+        """Return a JSON representation of the class definition."""
+
+        return klass.to_dict()

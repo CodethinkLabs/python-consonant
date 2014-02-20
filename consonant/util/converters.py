@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2014 Codethink Limited.
+# Copyright (C) 2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,11 +15,20 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-"""Miscellaneous utility classes."""
+"""Converters for various data formats like JSON."""
 
 
-import converters
-import expressions
-import gitcli
-import phase
-import timestamps
+import json
+
+
+class JSONObjectEncoder(json.JSONEncoder):
+
+    """Encoder capable of automatically converting objects to JSON."""
+
+    def default(self, o):
+        """Return a JSON representation for a given object."""
+
+        if hasattr(o.__class__, 'to_json'):
+            return getattr(o.__class__, 'to_json')(o)
+        else:
+            return json.JSONEncoder.default(self, o)

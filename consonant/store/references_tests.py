@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Codethink Limited.
+# Copyright (C) 2013-2014 Codethink Limited.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,10 +19,12 @@
 
 
 import itertools
+import json
 import unittest
 import yaml
 
 from consonant.store import references
+from consonant.util.converters import JSONObjectEncoder
 
 
 class ReferenceTests(unittest.TestCase):
@@ -102,6 +104,47 @@ class ReferenceTests(unittest.TestCase):
         string = yaml.dump(references.Reference(
             '1f3f242f-377d-413b-82e3-d9639403d2f3', 'issues', 'master'))
         data = yaml.load(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'service': 'issues',
+                'ref': 'master'
+                })
+
+    def test_json_representation_has_all_expected_fields(self):
+        """Verify that the JSON representation of Reference objects is ok."""
+
+        string = json.dumps(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', None, None),
+            cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertEqual(
+            data, {'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3'})
+
+        string = json.dumps(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', 'issues', None),
+            cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'service': 'issues'
+                })
+
+        string = json.dumps(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', None, 'master'),
+            cls=JSONObjectEncoder)
+        data = json.loads(string)
+        self.assertEqual(
+            data, {
+                'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
+                'ref': 'master'
+                })
+
+        string = json.dumps(references.Reference(
+            '1f3f242f-377d-413b-82e3-d9639403d2f3', 'issues', 'master'),
+            cls=JSONObjectEncoder)
+        data = json.loads(string)
         self.assertEqual(
             data, {
                 'uuid': '1f3f242f-377d-413b-82e3-d9639403d2f3',
