@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript">
+      function render(obj, parent_element, level) {
+        if (obj instanceof Object) {
+          if ('uuid' in obj && 'class' in obj) {
+            if (level == 0) {
+              $(parent_element).append('<li id="' + obj.uuid + '"></li>');
+              $('#' + obj.uuid).append('<table></table>');
+              var table = $('#' + obj.uuid + ' table');
+              $(table).append('<tr><th>uuid</th><th>' + obj.uuid + '</th></tr>');
+              $(table).append('<tr><th>class</th><th>' + obj.class + '</th></tr>');
+              if ('properties' in obj) {
+                $.each(obj.properties, function (name, value) {
+                  $(table).append('<tr><td>' + name + '</td><td></td></tr>');
+                  var td = $(table).find('td:last')
+                  render(value, td, level+1);
+                });
+              }
+            }
+          } else if ('uuid' in obj) {
+            $(parent_element).append('<a href="#' + obj.uuid + '">&rarr; ' + obj.uuid + '</a>');
+          } else {
+            $(parent_element).append('<ul></ul>');
+            $.each(obj, function (key, value) {
+              $(parent_element).find('ul:last').append('<li></li>');
+              render(value, $(parent_element).find('ul:last li:last'), level+1);
+            })
+          }
+        } else {
+          $(parent_element).append(obj);
+        }
+      }
+
+      function refresh() {
+        $('#classes').empty();
+        $.getJSON('http://localhost:8989/objects', function (objects) {
+            $.each(objects, function(klass, klass_objects) {
+              class_id = 'class_' + klass
+              $('#classes').append('<div id="' + class_id + '"></div>');
+              $('#' + class_id).append('<h2>' + klass + ' objects</h2>');
+              $('#' + class_id).append('<ul class="objects"></ul>');
+              $.each(klass_objects, function(index, obj) {
+                render(obj, $('#' + class_id + ' .objects'), 0);
+              });
+            });
+        });
+        setTimeout(refresh, 5000);
+      }
+
+      $(document).ready(function() {
+        refresh();
+      });
+    </script>
+    <style type="text/css">
+      ul, ol {
+        padding-left: 0em;
+        list-style: none;
+      }
+      table {
+        margin-bottom: 1em;
+        background: #efefef;
+      }
+      th, td {
+        vertical-align: top;
+        padding: 0.25em;
+      }
+      th {
+        padding-right: 2em;
+      }
+      h2 {
+        border-bottom: thin solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">Objects in Consonant service <tt>http://localhost:8989</tt></h1>
+    <div id="classes">
+    </div>
+  </body>
+</html>
