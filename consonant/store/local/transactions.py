@@ -368,8 +368,7 @@ class TransactionPreparer(object):
         data = {}
         for prop_name, prop in properties.iteritems():
             data[prop_name] = self._create_property_value(schema, klass, prop)
-        yaml_data = yaml.dump(
-            data, Dumper=yaml.CDumper, default_flow_style=False)
+        yaml_data = yaml.dump(data, default_flow_style=False)
 
         # generate the properties.yaml blob
         blob_oid = self.store.repo.create_blob(yaml_data)
