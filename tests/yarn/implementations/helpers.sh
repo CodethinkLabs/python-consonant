@@ -113,6 +113,7 @@ run_consonant_web_service()
     cd $DATADIR
     CODE=$(cat)
     python /dev/stdin >$DATADIR/stdout 2>$DATADIR/stderr <<-EOF
+import json
 import os
 import subprocess
 import time
@@ -132,7 +133,8 @@ def http_get(path, accept=None):
 def http_get_json_or_yaml(path):
     api = os.environ.get('API')
     if api == 'consonant.web.service.json':
-      return http_get(path, 'application/json')
+      return json.dumps(json.loads(
+          http_get(path, 'application/json')), indent=2)
     elif api == 'consonant.web.service.yaml':
       return http_get(path, 'application/x-yaml')
     else:

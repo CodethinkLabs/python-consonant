@@ -3,7 +3,7 @@ Fetching objects from a store using an object cache
 
 Fetch objects once:
 
-    SCENARIO fetch objects from a commit in a store once using an object cache cache
+    SCENARIO fetch objects from a commit in a store once using an object cache
     GIVEN    the standard test store "consonant-test-store-01"
     AND      an object cache
     WHEN     fetching objects from commit 9a52d24f
@@ -66,7 +66,7 @@ Fetch objects once:
 
 Fetch objects twice:
 
-    SCENARIO fetch objects from a commit in a store twice using an object cache cache
+    SCENARIO fetch objects from a commit in a store twice using an object cache
     GIVEN    the standard test store "consonant-test-store-01"
     AND      an object cache
     WHEN     fetching objects from commit 9a52d24f
