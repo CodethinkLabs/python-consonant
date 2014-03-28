@@ -19,7 +19,6 @@
 
 
 import email
-import json
 import yaml
 
 from consonant.store import properties
@@ -696,7 +695,7 @@ class TransactionParser(object):
                 phase.error(ActionInvalidYAMLError(phase, part, e))
         else:
             try:
-                return json.loads(part.get_payload())
+                return yaml.load(part.get_payload())
             except Exception, e:
                 phase.error(ActionInvalidJSONError(phase, part, e))
 

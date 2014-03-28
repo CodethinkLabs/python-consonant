@@ -76,6 +76,15 @@ class Page(Resource):
 
         # allow cross-domain requests to this web service
         request.setHeader('Access-Control-Allow-Origin', '*')
+        request.setHeader('Access-Control-Expose-Headers',
+                          'Content-Length, Content-Type, Location')
+
+        if request.method == 'OPTIONS':
+            request.setHeader('Access-Control-Allow-Headers',
+                              'Content-Length, Content-Type, '
+                              'X-Annotator-Auth-Token, X-Requested-With')
+            request.setHeader('Access-Control-Allow-Methods',
+                              'GET, POST, PUT, DELETE, OPTIONS')
 
         # parse the accept header if there is one
         if request.getHeader('Accept'):
@@ -343,18 +352,23 @@ class TransactionsPage(Page):
 
     """Renders /transactions."""
 
+    def render_OPTIONS(self, request):
+        return self.render_POST(request)
+
     def render_POST(self, request):
         """Try to apply a submitted transaction and return a response."""
 
-        if not request.getHeader('Content-Type') == 'multipart/mixed':
+        if request.method == 'OPTIONS':
+            return self.respond(request, '')
+        elif not request.getHeader('Content-Type') == 'multipart/mixed':
             request.setResponseCode(406)
-            return ''
+            return self.respond(request, '')
         else:
             body = request.content.read()
             parser = consonant.transaction.parser.TransactionParser()
             transaction = parser.parse(body)
             self.context.store.apply_transaction(transaction)
-            return ''
+            return self.respond(request, '')
 
 
 class SimpleWebService(object):
