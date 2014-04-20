@@ -463,8 +463,8 @@ class ReferencePropertyTest(unittest.TestCase):
         data = yaml.load(string)
         self.assertTrue(isinstance(data, dict))
         self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
-        self.assertTrue(not 'service' in data)
-        self.assertTrue(not 'ref' in data)
+        self.assertTrue('service' not in data)
+        self.assertTrue('ref' not in data)
 
         prop = properties.ReferenceProperty(
             'name', references.Reference(
@@ -474,7 +474,7 @@ class ReferencePropertyTest(unittest.TestCase):
         self.assertTrue(isinstance(data, dict))
         self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
         self.assertEqual(data['service'], 'issues')
-        self.assertTrue(not 'ref' in data)
+        self.assertTrue('ref' not in data)
 
         prop = properties.ReferenceProperty(
             'name', references.Reference(
@@ -497,8 +497,8 @@ class ReferencePropertyTest(unittest.TestCase):
         data = json.loads(string)
         self.assertTrue(isinstance(data, dict))
         self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
-        self.assertTrue(not 'service' in data)
-        self.assertTrue(not 'ref' in data)
+        self.assertTrue('service' not in data)
+        self.assertTrue('ref' not in data)
 
         prop = properties.ReferenceProperty(
             'name', references.Reference(
@@ -508,7 +508,7 @@ class ReferencePropertyTest(unittest.TestCase):
         self.assertTrue(isinstance(data, dict))
         self.assertEqual(data['uuid'], '5f2c9a1d-1113-49f1-9d1d-29aaa4a520b0')
         self.assertEqual(data['service'], 'issues')
-        self.assertTrue(not 'ref' in data)
+        self.assertTrue('ref' not in data)
 
         prop = properties.ReferenceProperty(
             'name', references.Reference(

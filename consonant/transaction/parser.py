@@ -475,7 +475,7 @@ class TransactionParser(object):
             if data.get('action', None) != 'begin':
                 phase.error(ActionNoBeginActionError(phase, part))
 
-            if not 'source' in data:
+            if 'source' not in data:
                 phase.error(ActionSourceCommitUndefinedError(phase, part))
 
             source = data.get('source', None)
@@ -499,20 +499,20 @@ class TransactionParser(object):
                 phase.error(ActionNoCommitActionError(phase, part))
 
         if not phase.errors:
-            if not 'target' in data:
+            if 'target' not in data:
                 phase.error(ActionTargetRefUndefinedError(phase, part))
 
             if not isinstance(data.get('target', ''), basestring):
                 phase.error(ActionTargetRefNotAStringError(phase, part))
 
-            if not 'author' in data:
+            if 'author' not in data:
                 phase.error(ActionAuthorUndefinedError(phase, part))
 
             author = data.get('author', None)
             if not expressions.commit_author.match(author):
                 phase.error(ActionAuthorInvalidError(phase, part, author))
 
-            if not 'author-date' in data:
+            if 'author-date' not in data:
                 phase.error(ActionAuthorDateUndefinedError(phase, part))
 
             author_date = data.get('author-date', None)
@@ -520,7 +520,7 @@ class TransactionParser(object):
                 phase.error(ActionAuthorDateInvalidError(
                     phase, part, author_date))
 
-            if not 'committer' in data:
+            if 'committer' not in data:
                 phase.error(ActionCommitterUndefinedError(phase, part))
 
             committer = data.get('committer', None)
@@ -528,7 +528,7 @@ class TransactionParser(object):
                 phase.error(ActionCommitterInvalidError(
                     phase, part, committer))
 
-            if not 'committer-date' in data:
+            if 'committer-date' not in data:
                 phase.error(ActionCommitterDateUndefinedError(phase, part))
 
             committer_date = data.get('committer-date', None)
@@ -536,7 +536,7 @@ class TransactionParser(object):
                 phase.error(ActionCommitterDateInvalidError(
                     phase, part, committer_date))
 
-            if not 'message' in data:
+            if 'message' not in data:
                 phase.error(ActionCommitMessageUndefinedError(phase, part))
 
             if not isinstance(data.get('message', ''), basestring):
@@ -559,7 +559,7 @@ class TransactionParser(object):
         if not phase.errors:
             data = self._load_action_data(phase, part)
 
-        if not phase.errors and not 'action' in data:
+        if not phase.errors and 'action' not in data:
             phase.error(ActionWithoutActionTypeError(phase, part))
 
         if not phase.errors:
@@ -574,7 +574,7 @@ class TransactionParser(object):
             return getattr(self, parse_func)(phase, index, part, parts, data)
 
     def _parse_create_action(self, phase, index, part, parts, data):
-        if not 'class' in data:
+        if 'class' not in data:
             phase.error(ActionClassUndefinedError(phase, part))
 
         if not phase.errors:
@@ -593,14 +593,14 @@ class TransactionParser(object):
             return action, index + 1
 
     def _parse_update_action(self, phase, index, part, parts, data):
-        if not 'object' in data:
+        if 'object' not in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
             obj = data['object']
             if not isinstance(obj, dict):
                 phase.error(ActionObjectInvalidError(phase, part))
             else:
-                if not 'action' in obj and not 'uuid' in obj:
+                if 'action' not in obj and 'uuid' not in obj:
                     phase.error(ActionObjectInvalidError(phase, part))
                 elif 'action' in obj and 'uuid' in obj:
                     phase.error(ActionObjectAmbiguousError(phase, part))
@@ -618,14 +618,14 @@ class TransactionParser(object):
             return action, index + 1
 
     def _parse_delete_action(self, phase, index, part, parts, data):
-        if not 'object' in data:
+        if 'object' not in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
             obj = data['object']
             if not isinstance(obj, dict):
                 phase.error(ActionObjectInvalidError(phase, part))
             else:
-                if not 'action' in obj and not 'uuid' in obj:
+                if 'action' not in obj and 'uuid' not in obj:
                     phase.error(ActionObjectInvalidError(phase, part))
                 elif 'action' in obj and 'uuid' in obj:
                     phase.error(ActionObjectAmbiguousError(phase, part))
@@ -639,7 +639,7 @@ class TransactionParser(object):
 
     def _parse_unset_raw_property_action(
             self, phase, index, part, parts, data):
-        if not 'object' in data:
+        if 'object' not in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
             obj = self._load_object_or_action_reference(phase, part, data)
@@ -654,7 +654,7 @@ class TransactionParser(object):
 
     def _parse_update_raw_property_action(
             self, phase, index, part, parts, data):
-        if not 'object' in data:
+        if 'object' not in data:
             phase.error(ActionObjectUndefinedError(phase, part))
         else:
             obj = self._load_object_or_action_reference(phase, part, data)
@@ -666,7 +666,7 @@ class TransactionParser(object):
         if not phase.errors:
             raw_data_part = parts[index + 1]
 
-            if not 'Content-Type' in raw_data_part:
+            if 'Content-Type' not in raw_data_part:
                 phase.error(ActionRawPropertyContentTypeUndefinedError(
                     phase, part))
 
@@ -681,11 +681,11 @@ class TransactionParser(object):
             return action, index + 2
 
     def _check_for_content_type(self, phase, part, *types):
-        if not 'Content-Type' in part:
+        if 'Content-Type' not in part:
             phase.error(ActionWithoutContentTypeError(phase, part))
 
         if not phase.errors:
-            if not part['Content-Type'] in types:
+            if part['Content-Type'] not in types:
                 phase.error(ActionUnsupportedContentTypeError(phase, part))
 
     def _load_action_data(self, phase, part):
@@ -705,14 +705,14 @@ class TransactionParser(object):
         if not isinstance(obj, dict):
             phase.error(ActionObjectInvalidError(phase, part))
         else:
-            if not 'action' in obj and not 'uuid' in obj:
+            if 'action' not in obj and 'uuid' not in obj:
                 phase.error(ActionObjectInvalidError(phase, part))
             elif 'action' in obj and 'uuid' in obj:
                 phase.error(ActionObjectAmbiguousError(phase, part))
         return obj
 
     def _load_raw_property_name(self, phase, part, data):
-        if not 'property' in data:
+        if 'property' not in data:
             phase.error(ActionRawPropertyUndefinedError(phase, part))
         else:
             prop = data.get('property', '')

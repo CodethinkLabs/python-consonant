@@ -40,7 +40,7 @@ class ServiceFactory(object):
 
         """
 
-        if not url in self.services:
+        if url not in self.services:
             self.services[url] = self._load_service(url)
         return self.services[url]
 

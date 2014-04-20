@@ -431,7 +431,7 @@ class SchemaParser(object):
             return schemas.Schema(name, classes)
 
     def _validate_schema_name(self, phase, data):
-        if not 'name' in data:
+        if 'name' not in data:
             phase.error(SchemaNameUndefinedError(phase))
 
         phase.schema = data['name']
@@ -446,7 +446,7 @@ class SchemaParser(object):
         return data['name']
 
     def _validate_class_definitions(self, phase, data):
-        if not 'classes' in data:
+        if 'classes' not in data:
             phase.error(SchemaClassesUndefinedError(phase))
 
         if not isinstance(data['classes'], dict):
@@ -478,7 +478,7 @@ class SchemaParser(object):
         return definitions.ClassDefinition(class_name, props)
 
     def _validate_property_definitions(self, phase, class_name, data):
-        if not 'properties' in data:
+        if 'properties' not in data:
             phase.error(SchemaPropertiesUndefinedError(phase))
 
         if not isinstance(data['properties'], dict):
@@ -512,11 +512,11 @@ class SchemaParser(object):
             phase.error(SchemaPropertyNotADictionaryError(phase, data))
 
         if 'optional' in data:
-            if not data['optional'] in (True, False):
+            if data['optional'] not in (True, False):
                 phase.error(SchemaPropertyOptionalHintError(
                     phase, data['optional']))
 
-        if not 'type' in data:
+        if 'type' not in data:
             phase.error(SchemaPropertyTypeUndefinedError(phase))
 
         prop_type = str(data['type'])

@@ -306,13 +306,13 @@ class TransactionPreparer(object):
         return None, new_tree
 
     def _validate_object_class(self, action, klass, schema):
-        if not klass in schema.classes:
+        if klass not in schema.classes:
             raise validation.ActionClassUnknownError(action, schema, klass)
 
     def _validate_object_properties(
             self, phase, action, schema, klass, property_names):
         for name in property_names:
-            if not name in schema.classes[klass].properties:
+            if name not in schema.classes[klass].properties:
                 phase.error(validation.ActionPropertyUnknownError(
                     action, schema, klass, name))
 
@@ -358,7 +358,7 @@ class TransactionPreparer(object):
             raise validation.ActionReferencesANonExistentActionError(
                 action, schema, action.action_id)
         target_action = actions[0]
-        if not target_action in self.action_objects:
+        if target_action not in self.action_objects:
             raise validation.ActionReferencesALaterActionError(
                 action, schema, action.action_id)
         return target_action

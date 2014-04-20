@@ -24,7 +24,7 @@ import subprocess
 def subcommand(repo, command, **kwargs):
     """Run a git subcommand in a local repository and return its output."""
 
-    if not 'cwd' in kwargs:
+    if 'cwd' not in kwargs:
         kwargs['cwd'] = repo.path
 
     return subprocess.check_output(['git'] + command, **kwargs)

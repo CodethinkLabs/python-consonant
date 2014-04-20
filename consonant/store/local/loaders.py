@@ -508,7 +508,7 @@ class Loader(object):
     def _metadata_in_tree(self, context):
         """Return the raw meta data in the given tree of the store."""
 
-        if not 'consonant.yaml' in context.tree:
+        if 'consonant.yaml' not in context.tree:
             context.error(MetaDataFileMissingError(context), now=True)
 
         entry = context.tree['consonant.yaml']
@@ -532,7 +532,7 @@ class Loader(object):
 
         data = self._metadata_in_tree(context)
 
-        if not 'name' in data:
+        if 'name' not in data:
             raise ServiceNameUndefinedError(context)
         elif not isinstance(data['name'], basestring):
             raise ServiceNameNotAStringError(context, data['name'])
@@ -546,7 +546,7 @@ class Loader(object):
 
         data = self._metadata_in_tree(context)
 
-        if not 'schema' in data:
+        if 'schema' not in data:
             raise SchemaNameUndefinedError(context, self.commit)
         elif not isinstance(data['schema'], basestring):
             raise SchemaNameNotAStringError(context, data['schema'])
@@ -812,12 +812,12 @@ class Loader(object):
                         context, prop_def.name, data))
 
         object_tree = self.repo[object_entry.oid]
-        if not 'raw' in object_tree:
+        if 'raw' not in object_tree:
             context.error(RawPropertyEntriesMissingError(
                 context, prop_def.name))
         else:
             raw_tree = self.repo[object_tree['raw'].oid]
-            if not prop_def.name in raw_tree:
+            if prop_def.name not in raw_tree:
                 context.error(RawPropertyDataMissingError(
                     context, prop_def.name, data))
 
@@ -833,7 +833,7 @@ class Loader(object):
 
             return None
         else:
-            if not 'uuid' in data:
+            if 'uuid' not in data:
                 context.error(ReferencePropertyUUIDUndefinedError(
                     context, prop_def.name, data))
             elif not isinstance(data['uuid'], basestring):

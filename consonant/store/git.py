@@ -46,7 +46,7 @@ class Ref(yaml.YAMLObject):
 
         seen = set()
         for alias in aliases:
-            if not alias in seen:
+            if alias not in seen:
                 yield alias
                 seen.add(alias)
 

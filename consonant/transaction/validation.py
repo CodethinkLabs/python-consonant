@@ -190,7 +190,7 @@ class CommitValidator(object):
     def add_hook(self, hook):
         """Register a validation hook with the validator."""
 
-        if not hook in self.hooks:
+        if hook not in self.hooks:
             self.hooks.append(hook)
 
     def remove_hook(self, hook):
